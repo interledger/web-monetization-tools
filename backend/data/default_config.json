@@ -1,0 +1,21 @@
+{
+  "fontName": "Arial",
+  "buttonText": "Click me",
+  "buttonBorder": "Light",
+  "buttonTextColor": "#ffffff",
+  "buttonBackgroundColor": "#ff808c",
+  "bannerTitleText": "My title",
+  "bannerDescriptionText": "Lorem ipsum dolor sit amet. In adipisci tempora qui assumenda praesentium aut ipsam reiciendis. Et sint maxime ea recusandae amet eum nihil assumenda et enim laborum.",
+  "bannerSlideAnimation": "None",
+  "bannerTextColor": "#ffffff",
+  "bannerBackgroundColor": "#ff808c",
+  "widgetDonateAmount": 1,
+  "widgetTitleText": "Future of support",
+  "widgetDescriptionText": "Lorem ipsum dolor sit amet. In adipisci tempora qui assumenda praesentium aut ipsam reiciendis. Et sint maxime ea recusandae amet eum nihil assumenda et enim laborum.",
+  "widgetButtonText": "Support me",
+  "widgetButtonBackgroundColor": "#a2bddb",
+  "widgetButtonTextColor": "#ffffff",
+  "widgetButtonBorder": "Light",
+  "widgetTextColor": "#ffffff",
+  "widgetBackgroundColor": "#7f76b2"
+}
