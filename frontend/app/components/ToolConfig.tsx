@@ -14,7 +14,7 @@ import {
   slideOptions,
   widgetControlOptions
 } from "~/lib/presets"
-import { Button, Input, Select, ColorPicker, Textarea, Toggle } from "./"
+import { Button, Input, Select, ColorPicker, Textarea } from "./"
 
 type ToolConfigProps = {
   type?: string
@@ -209,9 +209,12 @@ const BannerConfig = ({
             }
           />
         </div>
+      </div>
+      <div className="flex items-start w-full gap-2 mt-4">
         <div className="flex items-center max-w-36 w-32 shrink-0">
           <Select
             withBorder
+            label="Animation"
             name="bannerSlideAnimation"
             placeholder="Select banner animation"
             options={slideOptions}
@@ -223,6 +226,21 @@ const BannerConfig = ({
                 ...config,
                 bannerSlideAnimation: value as SlideAnimationType
               })
+            }
+          />
+        </div>
+        <div className="flex items-center max-w-72 w-72 shrink-0">
+          <Select
+            withBorder
+            label="Border"
+            name="bannerBorder"
+            placeholder="Select Rounding"
+            options={cornerOptions}
+            value={cornerOptions.find(
+              (opt) => opt.value == config?.bannerBorder
+            )}
+            onChange={(value) =>
+              setToolConfig({ ...config, bannerBorder: value as CornerType })
             }
           />
         </div>
@@ -380,7 +398,10 @@ const WidgetConfig = ({
               (opt) => opt.value == config?.widgetButtonBorder
             )}
             onChange={(value) =>
-              setToolConfig({ ...config, widgetButtonBorder: value as CornerType })
+              setToolConfig({
+                ...config,
+                widgetButtonBorder: value as CornerType
+              })
             }
           />
         </div>
@@ -443,7 +464,15 @@ const renderElementConfig = ({
   }
 }
 
-const WalletAddress = ({ errors }: { errors?: ElementErrors }) => {
+const WalletAddress = ({
+  errors,
+  config,
+  setToolConfig
+}: {
+  errors?: ElementErrors
+  config: ElementConfigType
+  setToolConfig: React.Dispatch<React.SetStateAction<ElementConfigType>>
+}) => {
   return (
     <div className="w-full my-4">
       <Input
@@ -451,6 +480,12 @@ const WalletAddress = ({ errors }: { errors?: ElementErrors }) => {
         label="Wallet address"
         placeholder="https://ase-provider-url/jdoe"
         error={errors?.fieldErrors.walletAddress}
+        onChange={(e) =>
+          setToolConfig({
+            ...config,
+            walletAddress: e.target.value ?? ""
+          })
+        }
         withBorder
       />
     </div>
@@ -468,7 +503,11 @@ export const ToolConfig = ({
     <div className="flex flex-col">
       {renderElementConfig({ type, toolConfig, setToolConfig, errors })}
       <div className="flex w-full items-center">
-        <WalletAddress errors={errors} />
+        <WalletAddress
+          errors={errors}
+          config={toolConfig}
+          setToolConfig={setToolConfig}
+        />
       </div>
       <div className="flex justify-end items-end">
         <div className="flex">

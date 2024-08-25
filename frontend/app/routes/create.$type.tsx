@@ -16,7 +16,11 @@ import {
   ToolPreview
 } from "~/components"
 import { ApiClient, ApiResponse } from "~/lib/apiClient"
-import { messageStorage, setMessageAndRedirect } from "~/lib/message.server"
+import {
+  type Message,
+  messageStorage,
+  setMessageAndRedirect
+} from "~/lib/message.server"
 import { ElementConfigType, ElementErrors } from "~/lib/types"
 import {
   createBannerSchema,
@@ -26,18 +30,27 @@ import {
 
 const validConfigTypes = ["button", "banner", "widget"]
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ params, request }: LoaderFunctionArgs) {
   const elementType = params.type
+
+  const cookies = request.headers.get("cookie")
+
+  const session = await messageStorage.getSession(cookies)
+  const message = session.get("script") as Message
 
   // get default config
   const apiResponse: ApiResponse = await ApiClient.getDefaultConfig()
   const defaultConfig: ElementConfigType = apiResponse?.payload
 
-  return { elementType, defaultConfig }
+  const ilpayUrl = process.env.ILPAY_URL || ""
+  const toolsUrl = process.env.FRONTEND_URL || ""
+
+  return { elementType, defaultConfig, message, ilpayUrl, toolsUrl }
 }
 
 export default function Create() {
-  const { elementType, defaultConfig } = useLoaderData<typeof loader>()
+  const { elementType, defaultConfig, message, ilpayUrl, toolsUrl } =
+    useLoaderData<typeof loader>()
   const response = useActionData<typeof action>()
   const { state } = useNavigation()
   const isSubmitting = state === "submitting"
@@ -45,11 +58,21 @@ export default function Create() {
   const [toolConfig, setToolConfig] = useState<ElementConfigType>(defaultConfig)
   const [modalOpen, setModalOpen] = useState(false)
 
+  const scriptToDisplay = `<script src="${toolsUrl}init.js?wa=${toolConfig?.walletAddress || ""}&type=${elementType}"></script>`
+
   useEffect(() => {
     if (response) {
       console.log(response)
+      setModalOpen(true)
     }
   }, [response])
+
+  useEffect(() => {
+    console.log(message)
+    if (!message) {
+      return
+    }
+  }, [message])
 
   return (
     <div className="flex flex-col gap-6 min-w-128 max-w-prose mx-auto my-8">
@@ -58,7 +81,11 @@ export default function Create() {
         <div className="flex flex-col">
           <Form method="post" replace>
             <fieldset disabled={isSubmitting}>
-              <ToolPreview type={elementType} toolConfig={toolConfig} />
+              <ToolPreview
+                type={elementType}
+                toolConfig={toolConfig}
+                ilpayUrl={ilpayUrl}
+              />
               <ToolConfig
                 type={elementType}
                 toolConfig={toolConfig}
@@ -77,6 +104,7 @@ export default function Create() {
       )}
       <ScriptModal
         title="Your script"
+        scriptForDisplay={scriptToDisplay}
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
       />
@@ -87,8 +115,6 @@ export default function Create() {
 export async function action({ request, params }: ActionFunctionArgs) {
   const elementType = params.type
   const formData = Object.fromEntries(await request.formData())
-
-  console.log(elementType)
 
   const walletAddress = String(formData.walletAddress)
 
@@ -122,6 +148,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     result.data
   )
   console.log(apiResponse)
+  return json({ apiResponse }, { status: 200 })
 
   const session = await messageStorage.getSession(request.headers.get("cookie"))
 

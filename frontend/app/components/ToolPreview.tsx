@@ -1,16 +1,13 @@
 import { cx } from "class-variance-authority"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { bgColors } from "~/lib/presets"
 import { ElementConfigType, SlideAnimationType } from "~/lib/types"
 import { generateCss } from "~/lib/utils"
-import { WebExtensionClient } from "~/lib/webExtesnsionClient"
+import { WidgetFooter } from "./WidgetFooter"
 
 const ButtonConfig = ({ config }: { config: ElementConfigType }) => {
   return (
-    <button
-      className="wm_button"
-      onClick={(e) => WebExtensionClient.triggerWebExtensionWindow(e)}
-    >
+    <button className="wm_button" onClick={(e) => console.log(e)}>
       {config.buttonText || "?"}
     </button>
   )
@@ -49,23 +46,62 @@ const BannerConfig = ({ config }: { config: ElementConfigType }) => {
   )
 }
 
-const WidgetConfig = ({ config }: { config: ElementConfigType }) => {
+const WidgetConfig = ({
+  config,
+  ilpayUrl
+}: {
+  config: ElementConfigType
+  ilpayUrl: string
+}) => {
   const [widgetOpen, setWidgetOpen] = useState(false)
+  const [iframeUrl, setIframeUrl] = useState("")
+  const ref = useRef(null)
+
+  useEffect(() => {
+    const iframeSrc = `${ilpayUrl}?action=${encodeURI(
+      config.widgetButtonText
+    )}&receiver=${encodeURI(config.walletAddress || "")}`
+    setIframeUrl(iframeSrc)
+
+    setTimeout(() => {
+      if (ref.current) {
+        // send compiled css to iframe
+        const configCss = generateCss(config, true)
+        const iframe = document.getElementById(
+          "ilpay_iframe"
+        ) as HTMLIFrameElement
+        const iframeContent = iframe.contentWindow
+
+        if (iframe && iframeContent) {
+          iframeContent.postMessage({ configCss }, "*")
+        }
+      }
+    }, 1000)
+  }, [ref.current, config])
+
   return (
     <div className="flex flex-col items-end wm_widget">
       <div
         className={cx(
-          "content flex flex-col justify-between w-56 h-96 overflow-hidden border border-white-300 rounded transition-all ease-in-out duration-1000 rounded-md p-1 focus:outline-none",
+          "content flex flex-col w-96 h-176 overflow-hidden border border-white-300 rounded transition-all ease-in-out duration-1000 rounded-md p-1 focus:outline-none",
           widgetOpen
-            ? "max-w-56 max-h-96 opacity-1"
+            ? "max-w-96 max-h-176 opacity-1"
             : "max-w-0 max-h-0 opacity-0"
         )}
       >
-        <h5>{config?.widgetTitleText}</h5>
-        <p>{config?.widgetDescriptionText}</p>
-        <button onClick={(e) => WebExtensionClient.triggerWebExtensionWindow(e)}>
-          {config?.widgetButtonText}
-        </button>
+        <div className="flex flex-col h-auto w-full">
+          <h5>{config?.widgetTitleText}</h5>
+          <p>{config?.widgetDescriptionText}</p>
+        </div>
+        <div className="flex h-full overflow-hidden"> 
+          <iframe
+            id="ilpay_iframe"
+            ref={ref}
+            className="h-full w-full overflow-hidden"
+            src={iframeUrl}
+          />
+        </div>
+        <WidgetFooter />
       </div>
       <div className="trigger flex mt-4">
         <img
@@ -83,14 +119,18 @@ const NotFoundConfig = () => {
   return <div>This is not a valid option</div>
 }
 
-const renderElementConfig = (type: string, toolConfig: ElementConfigType) => {
+const renderElementConfig = (
+  type: string,
+  toolConfig: ElementConfigType,
+  ilpayUrl: string
+) => {
   switch (type) {
     case "button":
       return <ButtonConfig config={toolConfig} />
     case "banner":
       return <BannerConfig config={toolConfig} />
     case "widget":
-      return <WidgetConfig config={toolConfig} />
+      return <WidgetConfig config={toolConfig} ilpayUrl={ilpayUrl} />
     default:
       return <NotFoundConfig />
   }
@@ -99,9 +139,14 @@ const renderElementConfig = (type: string, toolConfig: ElementConfigType) => {
 type ToolPreviewProps = {
   type?: string
   toolConfig: ElementConfigType
+  ilpayUrl: string
 }
 
-export const ToolPreview = ({ type, toolConfig }: ToolPreviewProps) => {
+export const ToolPreview = ({
+  type,
+  toolConfig,
+  ilpayUrl
+}: ToolPreviewProps) => {
   const bgColor = bgColors[type as keyof typeof bgColors] ?? bgColors.button
 
   return (
@@ -112,7 +157,7 @@ export const ToolPreview = ({ type, toolConfig }: ToolPreviewProps) => {
       )}
     >
       {generateCss(toolConfig)}
-      {renderElementConfig(type ?? "", toolConfig)}
+      {renderElementConfig(type ?? "", toolConfig, ilpayUrl)}
     </div>
   )
 }

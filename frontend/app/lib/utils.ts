@@ -23,7 +23,7 @@ const getSelectedFont = (name: string) => {
   }
 }
 
-export const generateCss = (config: ElementConfigType) => {
+export const generateCss = (config: ElementConfigType, returnRaw = false) => {
   const selectedFont = getSelectedFont(config.fontName)
   const buttonBorder =
     config.buttonBorder == CornerType.Light
@@ -32,12 +32,19 @@ export const generateCss = (config: ElementConfigType) => {
       ? "1rem"
       : "0"
 
-    const widgetButtonBorder =
-      config.widgetButtonBorder == CornerType.Light
-        ? "0.375rem"
-        : config.widgetButtonBorder == CornerType.Pill
-        ? "1rem"
-        : "0"
+  const bannerBorder =
+    config.bannerBorder == CornerType.Light
+      ? "0.375rem"
+      : config.bannerBorder == CornerType.Pill
+      ? "1rem"
+      : "0"
+
+  const widgetButtonBorder =
+    config.widgetButtonBorder == CornerType.Light
+      ? "0.375rem"
+      : config.widgetButtonBorder == CornerType.Pill
+      ? "1rem"
+      : "0"
 
   const css = `       
         .wm_button {
@@ -55,6 +62,7 @@ export const generateCss = (config: ElementConfigType) => {
             font-size: 16px;
             padding: 12px 20px;
             border: 1px solid transparent;
+            border-radius: ${bannerBorder};
             color: ${config.bannerTextColor};
             background-color: ${config.bannerBackgroundColor};
             transition: all 0.5s ease;
@@ -74,9 +82,32 @@ export const generateCss = (config: ElementConfigType) => {
         .wm_widget .content h5 {
           font-size: 16px;
         }
-        .wm_widget .content button {
-            padding: 6px 16px;
-            border: 1px solid transparent;
+
+        .ilpay_body {
+          font-family: ${selectedFont}, system-ui, sans-serif !important;
+          color: ${config.widgetTextColor};
+        }
+
+        .ilpay_body #headlessui-portal-root {
+          all:revert;
+        }
+
+        .ilpay_body .amount-display,
+        .ilpay_body li,
+        #extension-pay-form label {
+          color: ${config.widgetTextColor};
+        }
+
+        #extension-pay-form input {
+          color: #000000;
+        }
+
+        #extension-pay-form input.disabled {
+          background-color: #eeeeee;
+          color: #666;
+        }
+
+        .ilpay_body button.wmt-formattable-button {
             color: ${config.widgetButtonTextColor};
             background-color: ${config.widgetButtonBackgroundColor};
             border-radius: ${widgetButtonBorder};
@@ -97,6 +128,9 @@ export const generateCss = (config: ElementConfigType) => {
           }
         }
     `
+  if (returnRaw) {
+    return css
+  }
 
   return React.createElement("style", {
     dangerouslySetInnerHTML: { __html: css }
