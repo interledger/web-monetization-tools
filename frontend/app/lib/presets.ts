@@ -58,11 +58,11 @@ export const widgetControlOptions = [
 export const slideOptions = [
   {
     value: SlideAnimationType.None,
-    label: "None"
+    label: "No"
   },
   {
     value: SlideAnimationType.Down,
-    label: "Slide"
+    label: "Yes"
   }
 ]
 

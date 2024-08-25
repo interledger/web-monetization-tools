@@ -18,6 +18,7 @@ export enum SlideAnimationType {
 
 export interface ElementConfigType {
   fontName: string
+  walletAddress?: string
 
   // button specific
   buttonText: string
@@ -29,6 +30,7 @@ export interface ElementConfigType {
   bannerTitleText: string
   bannerDescriptionText: string
   bannerSlideAnimation: SlideAnimationType
+  bannerBorder: CornerType
   bannerTextColor: string
   bannerBackgroundColor: string
 
