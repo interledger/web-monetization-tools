@@ -23,10 +23,11 @@ import { Button, Footer, Header, Snackbar } from "./components"
 import { XCircle } from "./components/icons"
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const cookies = request.headers.get("cookie")
+  // const cookies = request.headers.get("cookie")
 
-  const session = await messageStorage.getSession(cookies)
-  const message = session.get("message") as Message
+  // const session = await messageStorage.getSession(cookies)
+  // const message = session.get("message") as Message
+  let message
 
   const env = {
     ENV: {
@@ -39,14 +40,14 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   }
 
   return json(
-    { message, ...env },
-    {
-      headers: {
-        "Set-Cookie": await messageStorage.destroySession(session, {
-          maxAge: -1
-        })
-      }
-    }
+    { message, ...env }
+    // {
+    //   headers: {
+    //     "Set-Cookie": await messageStorage.destroySession(session, {
+    //       maxAge: -1
+    //     })
+    //   }
+    // }
   )
 }
 
@@ -71,8 +72,10 @@ export default function App() {
       </head>
       <body className="h-screen">
         <main className="h-screen flex flex-col justify-between">
-          <Header />
-          <Outlet />
+          <div className="flex flex-col">
+            <Header />
+            <Outlet />
+          </div>
           <Footer />
         </main>
         <Snackbar
@@ -168,6 +171,10 @@ export const meta: MetaFunction = () => [
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
-  { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+  {
+    rel: "preconnect",
+    href: "https://fonts.gstatic.com",
+    crossOrigin: "anonymous"
+  },
   { rel: "stylesheet", href: stylesheet }
 ]

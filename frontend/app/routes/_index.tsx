@@ -10,7 +10,7 @@ export const meta: MetaFunction = () => {
 
 const tools = [
   {
-    enabled: true,
+    enabled: false,
     title: "Button",
     image: "button_representation.svg",
     bgColor: "from-wm-green to-wm-green-fade",
@@ -19,7 +19,7 @@ const tools = [
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam dictum felis eget dui ullamcorper, sit amet hendrerit ante sollicitudin. Donec eget metus lectus."
   },
   {
-    enabled: false,
+    enabled: true,
     title: "Widget",
     image: "widget_representation.svg",
     bgColor: "from-wm-red to-wm-red-fade",

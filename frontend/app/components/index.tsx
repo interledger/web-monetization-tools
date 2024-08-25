@@ -1,5 +1,6 @@
 export * from './Button'
 export * from './ColorPicker'
+export * from './CopyButton'
 export * from './Dropdown'
 export * from './ErrorPanel'
 export * from './FieldError'
