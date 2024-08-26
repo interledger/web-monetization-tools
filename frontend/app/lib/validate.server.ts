@@ -7,6 +7,7 @@ export const sharedSchema = z.object({
 })
 
 export const createButtonSchema = z.object({
+  tag: z.literal('button'),
   buttonText: z.string().min(1, { message: "Button label cannot be empty" }),
   buttonBorder: z.nativeEnum(CornerType),
   buttonTextColor: z.string().min(6),
@@ -14,6 +15,7 @@ export const createButtonSchema = z.object({
 }).merge(sharedSchema)
 
 export const createBannerSchema = z.object({
+  tag: z.literal('banner'),
   bannerDescriptionText: z.string().min(1, { message: "Banner text cannot be empty" }),
   bannerTextColor: z.string().min(6),
   bannerBackgroundColor: z.string().min(6),
@@ -21,13 +23,14 @@ export const createBannerSchema = z.object({
 }).merge(sharedSchema)
 
 export const createWidgetSchema = z.object({
+  tag: z.literal('widget'),
   widgetButtonText: z.string().min(1),
   widgetDescriptionText: z.string().min(1),
   widgetButtonBorder: z.nativeEnum(CornerType),
   widgetButtonBackgroundColor: z.string().min(1),
   widgetButtonTextColor: z.string().min(1),
   widgetTextColor: z.string().min(1), 
-  widgetBackgroundColor: z.string().min(1)
+  widgetBackgroundColor: z.string().min(1),
 }).merge(sharedSchema)
 
 export const getElementSchema = (type: string) => {
