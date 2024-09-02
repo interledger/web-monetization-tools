@@ -1,6 +1,7 @@
 const FRONTEND_URL = "http://localhost:5100/"
 const API_URL = "http://localhost:5101/"
-const ILPAY_URL = "https://localhost:5200/extension/"
+// const ILPAY_URL = "https://localhost:5200/extension/"
+const ILPAY_URL = "https://interledgerpay.com/extension/"
 
 const scriptUrl = new URL(import.meta.url)
 const params = new URLSearchParams(scriptUrl.search)
@@ -99,20 +100,13 @@ const drawElement = (type, walletAddress, config) => {
   const { shadowHost, shadowRoot } = createShadowDOM()
 
   switch (type) {
-    case "widget": {
+    case "widget": { console.log({config})
       const css = getCSSFile("css/widget.css")
       const style = addIframeCss(config)
       const element = drawWidget(walletAddress, config)
       shadowRoot.appendChild(css)
       shadowRoot.appendChild(element)
       document.body.appendChild(shadowHost)
-      setTimeout(() => {
-        const iframe = shadowRoot.getElementById("ilpay_iframe")
-        const iframeContent = iframe.contentWindow
-        if (iframe && iframeContent) {
-            iframeContent.postMessage({ configCss: style }, "*")
-          }
-      }, 1500)
       break
     }
     case "banner":
@@ -135,7 +129,7 @@ const drawElement = (type, walletAddress, config) => {
   }
 }
 
-const drawBanner = (walletAddress, config) => {
+const drawBanner = (config) => {
   // check if user closed the banner
   const closedByUser = sessionStorage.getItem("_wm_tools_closed_by_user")
 

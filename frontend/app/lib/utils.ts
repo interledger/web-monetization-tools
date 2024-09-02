@@ -1,6 +1,5 @@
 import React from "react";
 import { CornerType, ElementConfigType } from "./types";
-import { l } from "node_modules/vite/dist/node/types.d-aGj9QkWt";
 
 export const getEnv = (key: string) => {
   if (typeof window !== "undefined") {
@@ -180,9 +179,9 @@ const rgbToHex = (r: number, g: number, b: number) => {
 };
 
 // Inspired from: https://github.com/sveltejs/svelte/blob/main/sites/svelte-5-preview/src/routes/gzip.js
-export const encodeAndCompressCss = async (css: string) => {
+export const encodeAndCompressParameters = async (params: string) => {
   let buffer = "";
-  const reader = new Blob([css])
+  const reader = new Blob([params])
     .stream()
     .pipeThrough(new CompressionStream("gzip"))
     .getReader();
