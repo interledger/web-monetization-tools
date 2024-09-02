@@ -10,6 +10,17 @@
   overflow: hidden;
 }
 
+._wm_tools_banner_header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+._wm_tools_banner_header span{
+  cursor: pointer;
+}
+
 ._wm_tools_banner h5 {
   font-size: 1rem;
   margin: 15px 0;
@@ -38,6 +49,10 @@
 ._wm_link, ._wm_link a {
     display: flex;
     color: inherit;
+}
+
+._wm_tools_hidden {
+  display: none;
 }
 
 @keyframes slideUp {

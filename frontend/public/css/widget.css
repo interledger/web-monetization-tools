@@ -4,7 +4,6 @@
   right: 0;
   bottom: 0;
   padding: 10px 25px;
-  padding-bottom: 30px;
   z-index: 99999;
   text-align: justify;
   overflow: hidden;
@@ -75,10 +74,20 @@
 }
 
 ._wm_tools_widget_open {
-  max-width: 24rem;
-  max-height: 44rem;
+  max-width: 20rem;
+  max-height: 40rem;
   margin-right: 10px;
   opacity: 1;
+}
+
+._wm_tools_widget_open._wm_short_screen {
+  margin-right: 70px;
+  margin-bottom: -65px;
+}
+
+._wm_tools_widget_open._wm_small_screen {
+  margin-right: 0px;
+  margin-bottom: -65px;
 }
 
 ._wm_tools_widget_content h5 {
@@ -103,3 +112,4 @@
 ._wm_tools_widget_poweredby img {
   height: 2.5rem;
 }
+
