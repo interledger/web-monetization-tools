@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import express from "express"
 
 // Import individual route profiles from controllers

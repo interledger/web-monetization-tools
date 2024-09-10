@@ -7,6 +7,7 @@
   "bannerTitleText": "How to support?",
   "bannerDescriptionText": "You can support this page and my work by a one time donation or proportional to the time you spend on this website through web monetization.",
   "bannerSlideAnimation": "Down",
+  "bannerPosition": "Bottom",
   "bannerTextColor": "#ffffff",
   "bannerBackgroundColor": "#ff808c",
   "bannerBorder": "Light",

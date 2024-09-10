@@ -1,7 +1,7 @@
 {
   "name": "webmonetization_tools_backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Small utility (REST API) that reads and writes configs for the WM Tools to AWS S3",
   "main": "index.js",
   "scripts": {
     "start": "nodemon server.ts"
@@ -15,6 +15,8 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.645.0",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "module-alias": "^2.2.3",
     "nodemon": "^3.1.3"
