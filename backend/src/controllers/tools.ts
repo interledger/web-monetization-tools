@@ -53,12 +53,22 @@ export const getUserConfig = async (req: Request, res: Response) => {
       throw new S3FileNotFoundError("Wallet address is required")
     }
 
+    // ensure we have all keys w default values, user config will overwrite values that exist in saved json
+    const defaultData = await getDefaultData()
+
     const { s3, params } = getS3AndParams(id)
     const data = await s3.send(new GetObjectCommand(params))
     // Convert the file stream to a string
-    const fileContent = await streamToString(data.Body as NodeJS.ReadableStream)
+    const fileContentString = await streamToString(
+      data.Body as NodeJS.ReadableStream
+    )
 
-    res.status(200).send(JSON.parse(fileContent))
+    const fileContent = Object.assign(
+      JSON.parse(defaultData),
+      ...[JSON.parse(fileContentString)]
+    )
+
+    res.status(200).send(fileContent)
   } catch (error) {
     const err = error as Error
     if (err.name === "NoSuchKey") {

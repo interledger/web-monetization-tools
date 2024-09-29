@@ -3,6 +3,7 @@ import { fileURLToPath } from "url"
 import { dirname, join } from "path"
 
 import { S3Client } from "@aws-sdk/client-s3"
+import { NodeHttpHandler } from "@smithy/node-http-handler"
 
 // Get the directory name of the current module
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -13,7 +14,11 @@ export const getS3AndParams = (walletAddress: string) => {
     credentials: {
       accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || ""
-    }
+    },
+    maxAttempts: Number(process.env.AWS_RETRY_MAX_ATTEMPTS || 1),
+    requestHandler: new NodeHttpHandler({
+      connectionTimeout: Number(process.env.AWS_RETRY_TIMEOUT || 3000) // Set timeout (in milliseconds)
+    })
   })
 
   const fileKey = `${walletAddress

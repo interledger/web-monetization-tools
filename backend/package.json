@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.645.0",
+    "@smithy/node-http-handler": "^3.2.3",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "module-alias": "^2.2.3",
