@@ -1,4 +1,6 @@
 import axios from "axios"
+import https from "https"
+import fs from "fs"
 import { getEnv } from "./utils"
 import { ElementConfigType } from "./types"
 
@@ -9,10 +11,21 @@ export type ApiResponse<T = any> = {
   readonly errors?: Array<string>
 }
 
+const nodeEnv = getEnv("NODE_ENV")
+
+// Load self-signed certificate
+const backendCert = fs.readFileSync("/certs/cert.pem")
+
+// Create an HTTPS agent with the certificate
+const httpsAgent = new https.Agent({
+  rejectUnauthorized: nodeEnv != "development", // false in dev mode
+  ca: backendCert // Add cert to trusted CAs
+})
+
 export class ApiClient {
   public static async getDefaultConfig(): Promise<ApiResponse> {
     const apiUrl = getEnv("API_URL")
-    const response = await axios.get(`${apiUrl}tools/default`)
+    const response = await axios.get(`${apiUrl}tools/default`, { httpsAgent })
 
     if (response.status === 200) {
       return {
@@ -28,19 +41,12 @@ export class ApiClient {
   }
 
   public static async saveUserConfig(
-    walletAddress: string,
     configData: Partial<ElementConfigType>
   ): Promise<ApiResponse> {
     const apiUrl = getEnv("API_URL")
-
-    if (!walletAddress) {
-      return {
-        errors: [`status 400: wallet address is required`],
-        isFailure: true
-      }
-    }
-
-    const response = await axios.post(`${apiUrl}tools/${walletAddress}`, configData)
+    const response = await axios.post(`${apiUrl}tools`, configData, {
+      httpsAgent
+    })
 
     if (response.status === 200) {
       return {
