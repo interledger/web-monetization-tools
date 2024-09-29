@@ -1,23 +1,28 @@
-const FRONTEND_URL = "http://localhost:5100/"
-const API_URL = "http://localhost:5101/"
-// const ILPAY_URL = "https://localhost:5200/extension/"
+const FRONTEND_URL = "https://localhost:5100/"
+const API_URL = "https://localhost:5101/"
+// const ILPAY_URL = "http://localhost:3000/extension/"
 const ILPAY_URL = "https://interledgerpay.com/extension/"
 
 const scriptUrl = new URL(import.meta.url)
 const params = new URLSearchParams(scriptUrl.search)
-const paramType = params.get("type")
+const paramTypes = (params.get("types") || "").split("|")
 const paramWallet = params.get("wa")
+const urlWallet = encodeURIComponent(params.get("wa"))
 
-var config = fetch(`${API_URL}tools/default`)
+// check
+if (!paramTypes || !paramWallet) {
+  throw "Missing parameters! Could not initialise WM Tools."
+}
+
+fetch(`${API_URL}tools/${urlWallet}`)
   .then((response) => response.json())
   .then((resp) => {
     const config = resp
-    drawElement(paramType, paramWallet, config)
+    drawElement(paramTypes, paramWallet, config)
   })
   .catch((error) => console.log(error))
 
-//   functions
-
+// functions
 const getWebMonetizationLink = () => {
   const userAgent = navigator.userAgent
 
@@ -96,36 +101,38 @@ const addIframeCss = (config) => {
     `
 }
 
-const drawElement = (type, walletAddress, config) => {
+const drawElement = (types, walletAddress, config) => {
   const { shadowHost, shadowRoot } = createShadowDOM()
 
-  switch (type) {
-    case "widget": { console.log({config})
-      const css = getCSSFile("css/widget.css")
-      const style = addIframeCss(config)
-      const element = drawWidget(walletAddress, config)
-      shadowRoot.appendChild(css)
-      shadowRoot.appendChild(element)
-      document.body.appendChild(shadowHost)
-      break
-    }
-    case "banner":
-    default:
-      // add the monetization link first, 
-      // so we have something to check against when displaying the banner
-      const monetizationElement = document.createElement("link")
-      monetizationElement.rel = "monetization"
-      monetizationElement.href = `https://${walletAddress}`
-
-      document.body.appendChild(monetizationElement)
-      const css = getCSSFile("css/banner.css")
-      const element = drawBanner(walletAddress, config)
-      if(element){
+  for (let key in types) {
+    const type = types[key]
+    switch (type) {
+      case "widget": {
+        const css = getCSSFile("css/widget.css")
+        // const style = addIframeCss(config)
+        const element = drawWidget(walletAddress, config)
         shadowRoot.appendChild(css)
         shadowRoot.appendChild(element)
+        document.body.appendChild(shadowHost)
+        break
       }
-      document.body.appendChild(shadowHost)
+      case "banner":
+      default:
+        // add the monetization link first,
+        // so we have something to check against when displaying the banner
+        const monetizationElement = document.createElement("link")
+        monetizationElement.rel = "monetization"
+        monetizationElement.href = `https://${walletAddress}`
+        document.body.appendChild(monetizationElement)
 
+        const css = getCSSFile("css/banner.css")
+        const element = drawBanner(config)
+        if (element) {
+          shadowRoot.appendChild(css)
+          shadowRoot.appendChild(element)
+        }
+        document.body.appendChild(shadowHost)
+    }
   }
 }
 
@@ -136,10 +143,11 @@ const drawBanner = (config) => {
   // check if user / visitor has monetization
   const monetizationLinks = document.querySelector("link[rel=monetization]")
   if (
-    (monetizationLinks && monetizationLinks.relList.supports("monetization")) || closedByUser
+    (monetizationLinks && monetizationLinks.relList.supports("monetization")) ||
+    closedByUser
   ) {
     // prevent element being created, if the extension is installed
-    return;
+    return
   }
 
   const element = document.createElement("div")
@@ -172,9 +180,11 @@ const drawBanner = (config) => {
   bannerHeader.className = "_wm_tools_banner_header"
   if (config.bannerTitleText) {
     bannerHeader.innerHTML = `<h5>${config.bannerTitleText}</h5>`
+  } else {
+    bannerHeader.innerHTML = `<span></span>`
   }
   const closeButton = document.createElement("span")
-  closeButton.innerHTML = 'x'
+  closeButton.innerHTML = "x"
   closeButton.addEventListener("click", () => {
     sessionStorage.setItem("_wm_tools_closed_by_user", true)
     element.classList.add("_wm_tools_hidden")
@@ -182,8 +192,14 @@ const drawBanner = (config) => {
   bannerHeader.append(closeButton)
 
   element.append(bannerHeader)
-  element.insertAdjacentHTML('beforeend', `<span>${config.bannerDescriptionText}</span>`)
-  element.insertAdjacentHTML('beforeend', `<span class="_wm_link">${getWebMonetizationLink()}</span>`)
+  element.insertAdjacentHTML(
+    "beforeend",
+    `<span>${config.bannerDescriptionText}</span>`
+  )
+  element.insertAdjacentHTML(
+    "beforeend",
+    `<span class="_wm_link">${getWebMonetizationLink()}</span>`
+  )
 
   return element
 }
@@ -200,9 +216,11 @@ const drawWidget = (walletAddress, config) => {
   content.style.color = config.widgetTextColor
   content.style.backgroundColor = config.widgetBackgroundColor
 
+  const css = config.css || undefined
   const iframeUrl = `${ILPAY_URL}?action=${encodeURI(
     config.widgetButtonText
-  )}&receiver=https://${encodeURI(walletAddress || "")}`
+  )}&css=${css}&receiver=https://${encodeURI(walletAddress || "")}`
+
   content.innerHTML = `
         <div class="_wm_tools_widget_header">
           <h5>${config.widgetTitleText}</h5>
@@ -231,10 +249,10 @@ const drawWidget = (walletAddress, config) => {
           alt="widget trigger"
         />`
   trigger.addEventListener("click", () => {
-    if(vpHeight < 710) {
+    if (vpHeight < 710) {
       content.classList.toggle("_wm_short_screen")
     }
-    if(vpWidth < 400) {
+    if (vpWidth < 400) {
       content.classList.toggle("_wm_small_screen")
     }
     content.classList.toggle("_wm_tools_widget_open")
