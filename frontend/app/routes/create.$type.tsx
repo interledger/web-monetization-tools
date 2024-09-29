@@ -59,23 +59,16 @@ export default function Create() {
   const [toolConfig, setToolConfig] = useState<ElementConfigType>(defaultConfig)
   const [modalOpen, setModalOpen] = useState(false)
 
-  const scriptToDisplay = `<script src="${toolsUrl}init.js?wa=${
-    toolConfig?.walletAddress || ""
-  }&type=${elementType}"></script>`
+  const wa = (toolConfig?.walletAddress || "")
+    .replace("$", "")
+    .replace("https://", "")
+  const scriptToDisplay = `<script type="module" src="${toolsUrl}init.js?wa=${wa}&types=[elements]"></script>`
 
   useEffect(() => {
     if (response) {
-      console.log(response)
       setModalOpen(true)
     }
   }, [response])
-
-  useEffect(() => {
-    console.log(message)
-    if (!message) {
-      return
-    }
-  }, [message])
 
   return (
     <div className="flex flex-col gap-6 min-w-128 max-w-prose mx-auto my-8">
@@ -107,6 +100,7 @@ export default function Create() {
       )}
       <ScriptModal
         title="Your script"
+        defaultType={elementType}
         scriptForDisplay={scriptToDisplay}
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -119,25 +113,21 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const elementType = params.type
   const formData = Object.fromEntries(await request.formData())
 
-  const walletAddress = String(formData.walletAddress)
-
   let currentSchema
-  let tag
 
   switch (elementType) {
-    case "banner":
-      currentSchema = createBannerSchema
+    case "button":
+      currentSchema = createButtonSchema
       break
     case "widget":
       currentSchema = createWidgetSchema
-      tag = "widget"
       break
-    case "button":
+    case "banner":
     default:
-      currentSchema = createButtonSchema
+      currentSchema = createBannerSchema
   }
   const result = currentSchema.safeParse(
-    Object.assign(formData, { ...(tag === "widget" ? { tag } : {}) })
+    Object.assign(formData, { ...{ elementType } })
   )
 
   const errors: ElementErrors = {
@@ -152,59 +142,66 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   const payload = result.data
 
-  if (result.data.tag === "widget") {
+  if (payload.elementType == "widget") {
     const selectedFont = result.data.fontName ?? ""
 
     const widgetButtonBorder =
-      result.data.widgetButtonBorder == "Light"
+      payload.widgetButtonBorder == "Light"
         ? "0.375rem"
-        : result.data.widgetButtonBorder == "Pill"
+        : payload.widgetButtonBorder == "Pill"
         ? "1rem"
         : "0"
 
+    // use + to preserve spaces
     const css = await encodeAndCompressParameters(
       `
       .ilpay_body {
         font-family: ${selectedFont}, system-ui, sans-serif !important;
-        color: ${result.data.widgetTextColor};
+        color: ${payload.widgetTextColor};
       }
-      .ilpay_body button.wmt-formattable-button {
-        color: ${result.data.widgetButtonTextColor};
-        background-color: ${result.data.widgetButtonBackgroundColor};
+      .ilpay_body+button.wmt-formattable-button {
+        color: ${payload.widgetButtonTextColor};
+        background-color: ${payload.widgetButtonBackgroundColor};
         border-radius: ${widgetButtonBorder};
         transition: all 0.5s ease;
       }
-      .ilpay_body .amount-display,
-      .ilpay_body li,
-      #extension-pay-form label {
-        color: ${result.data.widgetTextColor};
+      .ilpay_body+.amount-display,
+      .ilpay_body+li,
+      #extension-pay-form+label {
+        color: ${payload.widgetTextColor};
       }
-      .ilpay_body #headlessui-portal-root {
+      .ilpay_body+#headlessui-portal-root {
         all: revert;
       }   
-      #extension-pay-form input {
+      #extension-pay-form+input {
         color: #000000;
       }
-      #extension-pay-form input.disabled {
+      #extension-pay-form+input.disabled {
         background-color: #eeeeee;
         color: #666;
-      }`
+      }
+      #quote-form > div.flex:nth-child(3) {
+        flex-direction: column;
+      }
+      #__next > div.flex.h-full.flex-col.items-center.justify-center.px-5 > div") {
+        bacground-color: #ffffff;
+      }
+      #__next > div.flex.h-full.flex-col.items-center.justify-center.px-5 > div > div.mt-20.text-base {
+        margin-top: 2rem;
+      }
+      `
         .trim()
         .replaceAll(" ", "")
         .replaceAll("\n", "")
+        .replaceAll("+", " ")
     )
 
     Object.assign(payload, { css })
   }
 
-  console.log(payload)
-
-  // const apiResponse: ApiResponse = await ApiClient.saveUserConfig(
-  //   walletAddress,
-  //   payload
-  // );
-  // console.log(apiResponse);
-  return json({}, { status: 200 })
+  const apiResponse: ApiResponse = await ApiClient.saveUserConfig(payload)
+  console.log(apiResponse)
+  return json({ errors }, { status: 200 })
 
   const session = await messageStorage.getSession(request.headers.get("cookie"))
 
