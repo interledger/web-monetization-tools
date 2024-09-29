@@ -6,16 +6,16 @@ export default {
     extend: {
       spacing: {
         "256": "72rem",
-        "176": "44rem",
+        "148": "42rem",
         "128": "36rem"
       },
       width: {
         "256": "72rem",
-        "176": "44rem",
+        "148": "42rem",
         "128": "36rem"
       },
       height: {
-        "176": "44rem"
+        "148": "42rem"
       },
       colors: {
         "wm-green": "#5BC8BB",
