@@ -1,15 +1,15 @@
-import React from "react";
-import { CornerType, ElementConfigType } from "./types";
+import React from "react"
+import { CornerType, ElementConfigType } from "./types"
 
 export const getEnv = (key: string) => {
   if (typeof window !== "undefined") {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const windowEnv = (window as any).ENV;
-    return windowEnv[key] ?? undefined;
+    const windowEnv = (window as any).ENV
+    return windowEnv[key] ?? undefined
   }
-  const processEnv = process.env;
-  return processEnv[key] ?? undefined;
-};
+  const processEnv = process.env
+  return processEnv[key] ?? undefined
+}
 
 const getSelectedFont = (name: string) => {
   switch (name) {
@@ -17,34 +17,34 @@ const getSelectedFont = (name: string) => {
     case "Roboto":
     case "Open Sans":
     case "Titillium Web":
-      return name;
+      return name
     default:
-      return `Arial`;
+      return `Arial`
   }
-};
+}
 
 export const generateCss = (config: ElementConfigType, returnRaw = false) => {
-  const selectedFont = getSelectedFont(config.fontName);
+  const selectedFont = getSelectedFont(config.fontName)
   const buttonBorder =
     config.buttonBorder == CornerType.Light
       ? "0.375rem"
       : config.buttonBorder == CornerType.Pill
       ? "1rem"
-      : "0";
+      : "0"
 
   const bannerBorder =
     config.bannerBorder == CornerType.Light
       ? "0.375rem"
       : config.bannerBorder == CornerType.Pill
       ? "1rem"
-      : "0";
+      : "0"
 
   const widgetButtonBorder =
     config.widgetButtonBorder == CornerType.Light
       ? "0.375rem"
       : config.widgetButtonBorder == CornerType.Pill
       ? "1rem"
-      : "0";
+      : "0"
 
   const css = `       
         .wm_button {
@@ -127,18 +127,18 @@ export const generateCss = (config: ElementConfigType, returnRaw = false) => {
               max-height: 300px;
           }
         }
-    `;
+    `
   if (returnRaw) {
-    return css;
+    return css
   }
 
   return React.createElement("style", {
-    dangerouslySetInnerHTML: { __html: css },
-  });
-};
+    dangerouslySetInnerHTML: { __html: css }
+  })
+}
 
 export const isColorLight = (color: string) => {
-  let r, g, b, colorPart;
+  let r, g, b, colorPart
 
   // Check the format of the color, HEX or RGB?
   if (color.match(/^rgb/)) {
@@ -146,59 +146,86 @@ export const isColorLight = (color: string) => {
     colorPart =
       color.match(
         /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/
-      ) || [];
+      ) || []
 
-    r = colorPart[1];
-    g = colorPart[2];
-    b = colorPart[3];
+    r = colorPart[1]
+    g = colorPart[2]
+    b = colorPart[3]
   } else {
     // If RGB --> Convert it to HEX: http://gist.github.com/983661
     if (color.length < 5) {
-      colorPart = +("0x" + color.slice(1).replace(/./g, "$&$&"));
+      colorPart = +("0x" + color.slice(1).replace(/./g, "$&$&"))
     } else {
-      colorPart = +("0x" + color.slice(1));
+      colorPart = +("0x" + color.slice(1))
     }
 
-    r = colorPart >> 16;
-    g = (colorPart >> 8) & 255;
-    b = colorPart & 255;
+    r = colorPart >> 16
+    g = (colorPart >> 8) & 255
+    b = colorPart & 255
   }
 
-  r = Number(r);
-  g = Number(g);
-  b = Number(b);
+  r = Number(r)
+  g = Number(g)
+  b = Number(b)
   // HSP equation from http://alienryderflex.com/hsp.html
-  const hsp = Math.sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b));
+  const hsp = Math.sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b))
 
   // Using the HSP value, the color is light or not (dark)
-  return hsp > 192 ? true : false;
-};
+  return hsp > 192 ? true : false
+}
 
 const rgbToHex = (r: number, g: number, b: number) => {
-  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-};
+  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
+}
+
+export const removeItem = <T>(arr: Array<T>, value: T): Array<T> => {
+  const index = arr.indexOf(value)
+  if (index > -1) {
+    arr.splice(index, 1)
+  }
+  return arr
+}
 
 // Inspired from: https://github.com/sveltejs/svelte/blob/main/sites/svelte-5-preview/src/routes/gzip.js
 export const encodeAndCompressParameters = async (params: string) => {
-  let buffer = "";
+  let buffer = ""
   const reader = new Blob([params])
     .stream()
     .pipeThrough(new CompressionStream("gzip"))
-    .getReader();
+    .getReader()
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    const { done, value } = await reader.read();
+    const { done, value } = await reader.read()
     if (done) {
-      reader.releaseLock();
-      break;
+      reader.releaseLock()
+      break
     } else {
       for (let i = 0; i < value.length; i++) {
         // decoding as utf-8 will make btoa reject the string
-        buffer += String.fromCharCode(value[i]);
+        buffer += String.fromCharCode(value[i])
       }
     }
   }
 
-  return btoa(buffer).replaceAll("+", "-").replaceAll("/", "_");
-};
+  return btoa(buffer).replaceAll("+", "-").replaceAll("/", "_")
+}
+
+export const getWebMonetizationLink = () => {
+  const userAgent = typeof navigator !== "undefined" ? navigator.userAgent : ""
+
+  // Detect browsers
+  if (userAgent.includes("Firefox")) {
+    return `Get the&nbsp;<a rel="noindex nofollow" target="_blank" href="https://addons.mozilla.org/en-US/firefox/addon/web-monetization-extension/">extension</a>`
+  } else if (userAgent.includes("Chrome") && !userAgent.includes("Edg")) {
+    return `Get the&nbsp;<a rel="noindex nofollow" target="_blank" href="https://chromewebstore.google.com/detail/web-monetization-extensio/oiabcfomehhigdepbbclppomkhlknpii">extension</a>`
+    //   } else if (userAgent.includes("Edg")) {
+    //     return "Microsoft Edge"
+    //   } else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
+    //     return "Safari"
+    //   } else if (userAgent.includes("MSIE") || userAgent.includes("Trident")) {
+    //     return "Internet Explorer"
+  } else {
+    return `Learn more <a rel="noindex nofollow" target="_blank" href="https://webmonetization.org/">here</a>.`
+  }
+}

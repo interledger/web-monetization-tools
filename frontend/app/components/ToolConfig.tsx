@@ -4,7 +4,8 @@ import {
   CornerType,
   ElementConfigType,
   ElementErrors,
-  SlideAnimationType
+  SlideAnimationType,
+  PositionType
 } from "~/lib/types"
 import {
   bgColors,
@@ -12,6 +13,7 @@ import {
   cornerOptions,
   fontOptions,
   slideOptions,
+  positionOptions,
   widgetControlOptions
 } from "~/lib/presets"
 import { Button, Input, Select, ColorPicker, Textarea } from "./"
@@ -212,6 +214,24 @@ const BannerConfig = ({
       </div>
       <div className="flex items-start w-full gap-2 mt-4">
         <div className="flex items-center max-w-36 w-32 shrink-0">
+          <Select
+            withBorder
+            label="Poisition"
+            name="bannerPosition"
+            placeholder="Select banner position"
+            options={positionOptions}
+            value={positionOptions.find(
+              (opt) => opt.value == config?.bannerPosition
+            )}
+            onChange={(value) =>
+              setToolConfig({
+                ...config,
+                bannerPosition: value as PositionType
+              })
+            }
+          />
+        </div>
+        <div className="flex items-center max-w-36 w-36 shrink-0">
           <Select
             withBorder
             label="Animation"

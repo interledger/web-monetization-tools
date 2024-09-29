@@ -16,6 +16,11 @@ export enum SlideAnimationType {
   Down = "Down"
 }
 
+export enum PositionType {
+  Top = "Top",
+  Bottom = "Bottom"
+}
+
 export interface ElementConfigType {
   fontName: string
   walletAddress?: string
@@ -30,6 +35,7 @@ export interface ElementConfigType {
   bannerTitleText: string
   bannerDescriptionText: string
   bannerSlideAnimation: SlideAnimationType
+  bannerPosition: PositionType
   bannerBorder: CornerType
   bannerTextColor: string
   bannerBackgroundColor: string

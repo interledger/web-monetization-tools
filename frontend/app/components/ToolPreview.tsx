@@ -2,7 +2,11 @@ import { cx } from "class-variance-authority"
 import { useEffect, useRef, useState } from "react"
 import { bgColors } from "~/lib/presets"
 import { ElementConfigType, SlideAnimationType } from "~/lib/types"
-import { generateCss } from "~/lib/utils"
+import {
+  encodeAndCompressParameters,
+  generateCss,
+  getWebMonetizationLink
+} from "~/lib/utils"
 import { WidgetFooter } from "./WidgetFooter"
 
 const ButtonConfig = ({ config }: { config: ElementConfigType }) => {
@@ -18,10 +22,16 @@ const BannerConfig = ({ config }: { config: ElementConfigType }) => {
     config.bannerSlideAnimation != SlideAnimationType.None
   )
   const [triggerAnimation, setTriggerAnimation] = useState(false)
+  const [extensionLink, setExtensionLink] = useState("")
 
   useEffect(() => {
     setAnimated(config.bannerSlideAnimation != SlideAnimationType.None)
   }, [config])
+
+  useEffect(() => {
+    const link = getWebMonetizationLink()
+    setExtensionLink(link)
+  }, [])
 
   return (
     <div>
@@ -41,6 +51,11 @@ const BannerConfig = ({ config }: { config: ElementConfigType }) => {
       >
         {config.bannerTitleText && <h5>{config.bannerTitleText}</h5>}
         <span>{config.bannerDescriptionText}</span>
+        <br />
+        <span
+          className="_wm_link underline cursor-pointer"
+          dangerouslySetInnerHTML={{ __html: extensionLink }}
+        ></span>
       </div>
     </div>
   )
@@ -55,37 +70,25 @@ const WidgetConfig = ({
 }) => {
   const [widgetOpen, setWidgetOpen] = useState(false)
   const [iframeUrl, setIframeUrl] = useState("")
-  const ref = useRef(null)
 
   useEffect(() => {
-    const iframeSrc = `${ilpayUrl}?action=${encodeURI(
-      config.widgetButtonText
-    )}&receiver=${encodeURI(config.walletAddress || "")}`
-    setIframeUrl(iframeSrc)
-
-    setTimeout(() => {
-      if (ref.current) {
-        // send compiled css to iframe
-        const configCss = generateCss(config, true)
-        const iframe = document.getElementById(
-          "ilpay_iframe"
-        ) as HTMLIFrameElement
-        const iframeContent = iframe.contentWindow
-
-        if (iframe && iframeContent) {
-          iframeContent.postMessage({ configCss }, "*")
-        }
-      }
-    }, 1000)
-  }, [ref.current, config])
+    ;(async () => {
+      const configCss = generateCss(config, true)
+      const css = await encodeAndCompressParameters(String(configCss))
+      const iframeSrc = `${ilpayUrl}?action=${encodeURI(
+        config.widgetButtonText
+      )}&receiver=${encodeURI(config.walletAddress || "")}&css=${css}`
+      setIframeUrl(iframeSrc)
+    })()
+  }, [config])
 
   return (
     <div className="flex flex-col items-end wm_widget">
       <div
         className={cx(
-          "content flex flex-col w-96 h-176 overflow-hidden border border-white-300 rounded transition-all ease-in-out duration-1000 rounded-md p-1 focus:outline-none",
+          "content flex flex-col w-96 h-148 overflow-hidden border border-white-300 rounded transition-all ease-in-out duration-1000 rounded-md p-1 focus:outline-none",
           widgetOpen
-            ? "max-w-96 max-h-176 opacity-1"
+            ? "max-w-96 max-h-148 opacity-1"
             : "max-w-0 max-h-0 opacity-0"
         )}
       >
@@ -93,10 +96,9 @@ const WidgetConfig = ({
           <h5>{config?.widgetTitleText}</h5>
           <p>{config?.widgetDescriptionText}</p>
         </div>
-        <div className="flex h-full overflow-hidden"> 
+        <div className="flex h-full overflow-hidden">
           <iframe
             id="ilpay_iframe"
-            ref={ref}
             className="h-full w-full overflow-hidden"
             src={iframeUrl}
           />

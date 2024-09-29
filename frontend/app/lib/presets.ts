@@ -1,4 +1,4 @@
-import { CornerType, SlideAnimationType } from "./types"
+import { CornerType, SlideAnimationType, PositionType } from "./types"
 
 export const textColorPresets = ["#ffffff", "#000000"]
 export const backgroundColorPresets = [
@@ -63,6 +63,17 @@ export const slideOptions = [
   {
     value: SlideAnimationType.Down,
     label: "Yes"
+  }
+]
+
+export const positionOptions = [
+  {
+    value: PositionType.Bottom,
+    label: "Bottom"
+  },
+  {
+    value: PositionType.Top,
+    label: "Top"
   }
 ]
 
