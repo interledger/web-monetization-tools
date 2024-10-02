@@ -19,5 +19,6 @@
   "widgetButtonTextColor": "#ffffff",
   "widgetButtonBorder": "Light",
   "widgetTextColor": "#ffffff",
-  "widgetBackgroundColor": "#7f76b2"
+  "widgetBackgroundColor": "#7f76b2",
+  "css": ""
 }
