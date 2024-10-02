@@ -4,7 +4,7 @@ import { bgColors } from "~/lib/presets"
 import { ElementConfigType, SlideAnimationType } from "~/lib/types"
 import {
   encodeAndCompressParameters,
-  generateCss,
+  generateConfigCss,
   getWebMonetizationLink
 } from "~/lib/utils"
 import { WidgetFooter } from "./WidgetFooter"
@@ -73,7 +73,7 @@ const WidgetConfig = ({
 
   useEffect(() => {
     ;(async () => {
-      const configCss = generateCss(config, true)
+      const configCss = generateConfigCss(config, true)
       const css = await encodeAndCompressParameters(String(configCss))
       const iframeSrc = `${ilpayUrl}?action=${encodeURI(
         config.widgetButtonText
@@ -158,7 +158,7 @@ export const ToolPreview = ({
         bgColor
       )}
     >
-      {generateCss(toolConfig)}
+      {generateConfigCss(toolConfig)}
       {renderElementConfig(type ?? "", toolConfig, ilpayUrl)}
     </div>
   )

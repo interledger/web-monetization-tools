@@ -23,7 +23,62 @@ const getSelectedFont = (name: string) => {
   }
 }
 
-export const generateCss = (config: ElementConfigType, returnRaw = false) => {
+export const getIlpayCss = (config: ElementConfigType) => {
+  const selectedFont = getSelectedFont(config.fontName)
+  const widgetButtonBorder =
+    config.widgetButtonBorder == "Light"
+      ? "0.375rem"
+      : config.widgetButtonBorder == "Pill"
+      ? "1rem"
+      : "0"
+
+  // use + to preserve spaces
+  return `
+      .ilpay_body {
+        font-family: ${selectedFont}, system-ui, sans-serif !important;
+        color: ${config.widgetTextColor};
+      }
+      .ilpay_body+button.wmt-formattable-button {
+        color: ${config.widgetButtonTextColor};
+        background-color: ${config.widgetButtonBackgroundColor};
+        border-radius: ${widgetButtonBorder};
+        transition: all 0.5s ease;
+      }
+      .ilpay_body+.amount-display,
+      .ilpay_body+li,
+      #extension-pay-form+label {
+        color: ${config.widgetTextColor};
+      }
+      .ilpay_body+#headlessui-portal-root {
+        all: revert;
+      }   
+      #extension-pay-form+input {
+        color: #000000;
+      }
+      #extension-pay-form+input.disabled {
+        background-color: #eeeeee;
+        color: #666;
+      }
+      #quote-form > div.flex:nth-child(3) {
+        flex-direction: column;
+      }
+      #__next > div.flex.h-full.flex-col.items-center.justify-center.px-5 > div") {
+        bacground-color: #ffffff;
+      }
+      #__next > div.flex.h-full.flex-col.items-center.justify-center.px-5 > div > div.mt-20.text-base {
+        margin-top: 2rem;
+      }
+      `
+    .trim()
+    .replaceAll(" ", "")
+    .replaceAll("\n", "")
+    .replaceAll("+", " ")
+}
+
+export const generateConfigCss = (
+  config: ElementConfigType,
+  returnRaw = false
+) => {
   const selectedFont = getSelectedFont(config.fontName)
   const buttonBorder =
     config.buttonBorder == CornerType.Light

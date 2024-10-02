@@ -12,21 +12,15 @@ import {
   ScrollRestoration,
   useLoaderData,
   useRouteError,
-  isRouteErrorResponse,
-  useMatches
+  isRouteErrorResponse
 } from "@remix-run/react"
 import type { ReactNode } from "react"
 import { useEffect, useState } from "react"
 import stylesheet from "~/tailwind.css?url"
-import { messageStorage, type Message } from "~/lib/message.server"
 import { Button, Footer, Header, Snackbar } from "./components"
 import { XCircle } from "./components/icons"
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  // const cookies = request.headers.get("cookie")
-
-  // const session = await messageStorage.getSession(cookies)
-  // const message = session.get("message") as Message
   let message
 
   const env = {
@@ -39,16 +33,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return json({ message: null, ...env })
   }
 
-  return json(
-    { message, ...env }
-    // {
-    //   headers: {
-    //     "Set-Cookie": await messageStorage.destroySession(session, {
-    //       maxAge: -1
-    //     })
-    //   }
-    // }
-  )
+  return json({ message, ...env })
 }
 
 export default function App() {

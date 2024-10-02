@@ -16,13 +16,9 @@ import {
   ToolPreview
 } from "~/components"
 import { ApiClient, ApiResponse } from "~/lib/apiClient"
-import {
-  type Message,
-  messageStorage,
-  setMessageAndRedirect
-} from "~/lib/message.server"
+import { type Message, messageStorage } from "~/lib/message.server"
 import { ElementConfigType, ElementErrors } from "~/lib/types"
-import { encodeAndCompressParameters } from "~/lib/utils"
+import { encodeAndCompressParameters, getIlpayCss } from "~/lib/utils"
 import {
   createBannerSchema,
   createButtonSchema,
@@ -50,7 +46,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 }
 
 export default function Create() {
-  const { elementType, defaultConfig, message, ilpayUrl, toolsUrl } =
+  const { elementType, defaultConfig, ilpayUrl, toolsUrl } =
     useLoaderData<typeof loader>()
   const response = useActionData<typeof action>()
   const { state } = useNavigation()
@@ -65,7 +61,8 @@ export default function Create() {
   const scriptToDisplay = `<script type="module" src="${toolsUrl}init.js?wa=${wa}&types=[elements]"></script>`
 
   useEffect(() => {
-    if (response) {
+    const errors = Object.keys(response?.errors?.fieldErrors || {})
+    if (response && !errors.length) {
       setModalOpen(true)
     }
   }, [response])
@@ -143,74 +140,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const payload = result.data
 
   if (payload.elementType == "widget") {
-    const selectedFont = result.data.fontName ?? ""
-
-    const widgetButtonBorder =
-      payload.widgetButtonBorder == "Light"
-        ? "0.375rem"
-        : payload.widgetButtonBorder == "Pill"
-        ? "1rem"
-        : "0"
-
-    // use + to preserve spaces
     const css = await encodeAndCompressParameters(
-      `
-      .ilpay_body {
-        font-family: ${selectedFont}, system-ui, sans-serif !important;
-        color: ${payload.widgetTextColor};
-      }
-      .ilpay_body+button.wmt-formattable-button {
-        color: ${payload.widgetButtonTextColor};
-        background-color: ${payload.widgetButtonBackgroundColor};
-        border-radius: ${widgetButtonBorder};
-        transition: all 0.5s ease;
-      }
-      .ilpay_body+.amount-display,
-      .ilpay_body+li,
-      #extension-pay-form+label {
-        color: ${payload.widgetTextColor};
-      }
-      .ilpay_body+#headlessui-portal-root {
-        all: revert;
-      }   
-      #extension-pay-form+input {
-        color: #000000;
-      }
-      #extension-pay-form+input.disabled {
-        background-color: #eeeeee;
-        color: #666;
-      }
-      #quote-form > div.flex:nth-child(3) {
-        flex-direction: column;
-      }
-      #__next > div.flex.h-full.flex-col.items-center.justify-center.px-5 > div") {
-        bacground-color: #ffffff;
-      }
-      #__next > div.flex.h-full.flex-col.items-center.justify-center.px-5 > div > div.mt-20.text-base {
-        margin-top: 2rem;
-      }
-      `
-        .trim()
-        .replaceAll(" ", "")
-        .replaceAll("\n", "")
-        .replaceAll("+", " ")
+      getIlpayCss(payload as unknown as ElementConfigType)
     )
 
     Object.assign(payload, { css })
   }
 
   const apiResponse: ApiResponse = await ApiClient.saveUserConfig(payload)
-  console.log(apiResponse)
-  return json({ errors }, { status: 200 })
 
-  const session = await messageStorage.getSession(request.headers.get("cookie"))
-
-  return setMessageAndRedirect({
-    session,
-    message: {
-      content: "Script ready.",
-      type: "success"
-    },
-    location: `/create/${elementType}`
-  })
+  return json({ errors, apiResponse }, { status: 200 })
 }
