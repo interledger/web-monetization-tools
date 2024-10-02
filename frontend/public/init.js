@@ -217,9 +217,15 @@ const drawWidget = (walletAddress, config) => {
   content.style.backgroundColor = config.widgetBackgroundColor
 
   const css = config.css || undefined
-  const iframeUrl = `${ILPAY_URL}?action=${encodeURI(
-    config.widgetButtonText
-  )}&css=${css}&receiver=https://${encodeURI(walletAddress || "")}`
+  let iframeUrl = `${ILPAY_URL}?receiver=https://${encodeURI(
+    walletAddress || ""
+  )}&`
+  if (config.widgetButtonText) {
+    iframeUrl += `action=${encodeURI(config.widgetButtonText)}&`
+  }
+  if (css) {
+    iframeUrl += `css=${css}&`
+  }
 
   content.innerHTML = `
         <div class="_wm_tools_widget_header">
