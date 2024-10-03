@@ -1,0 +1,56 @@
+name: wm-tools
+services:
+  backend:
+    build:
+      context: ../.. # Adjust based on your actual Dockerfile location
+      dockerfile: ./backend/Dockerfile.dev
+    command: pnpm tsx src/server.ts
+    ports:
+      - "5101:5101"
+    expose:
+      - "5101"
+    volumes:
+      - ../../backend:/app
+      - ../../certs:/certs # Ensure certificates are available
+    networks:
+      - wm-tools
+    environment:
+      PORT: 5101
+      NODE_ENV: development
+      SSL_CERT: /certs/cert.pem
+      SSL_KEY: /certs/key.pem
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
+      AWS_RETRY_MAX_ATTEMPTS: ${AWS_RETRY_MAX_ATTEMPTS}
+      AWS_RETRY_TIMEOUT: ${AWS_RETRY_TIMEOUT}
+
+  frontend:
+    build:
+      context: ../.. # Adjust based on your actual Dockerfile location
+      dockerfile: ./frontend/Dockerfile.dev
+    ports:
+      - "5100:5100"
+    expose:
+      - "5100"
+    environment:
+      PORT: 5100
+      NODE_ENV: development
+      SSL_CERT: /certs/cert.pem
+      SSL_KEY: /certs/key.pem
+      API_URL: ${API_URL}
+      FRONTEND_URL: ${FRONTEND_URL}
+      ILPAY_URL: ${ILPAY_URL}
+    networks:
+      - wm-tools
+    command: pnpm run dev
+    depends_on: 
+      - backend
+    volumes:
+      - ../../frontend:/app
+      - ../../certs:/certs # Ensure certificates are available
+
+networks:
+  wm-tools:
+    driver: bridge

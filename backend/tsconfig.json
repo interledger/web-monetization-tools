@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "outDir": "dist",
+    "rootDir": "./",
+    "module": "ESNext",
+    "target": "ESNext",
+    "skipLibCheck": true,
+    "strict": true,
+    "sourceMap": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "baseUrl": "./",
+    "paths": {
+      "@controllers/*": ["src/controllers/*"],
+      "@routes/*": ["src/routes/*"],
+      "@data/*": ["src/data/*"]
+    }
+  },
+  "exclude": ["node_modules"]
+}
