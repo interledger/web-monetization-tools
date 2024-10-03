@@ -29,16 +29,16 @@ const getWebMonetizationLink = () => {
   // Detect browsers
   if (userAgent.includes("Firefox")) {
     return `Get the&nbsp;<a rel="noindex nofollow" target="_blank" href="https://addons.mozilla.org/en-US/firefox/addon/web-monetization-extension/">extension</a>`
-  } else if (userAgent.includes("Chrome") && !userAgent.includes("Edg")) {
+  } else if (userAgent.includes("Chrome") && !userAgent.includes("Edg") && !userAgent.includes("OPR")) {
     return `Get the&nbsp;<a rel="noindex nofollow" target="_blank" href="https://chromewebstore.google.com/detail/web-monetization-extensio/oiabcfomehhigdepbbclppomkhlknpii">extension</a>`
-    //   } else if (userAgent.includes("Edg")) {
-    //     return "Microsoft Edge"
+  } else if (userAgent.includes("Edg")) {
+    return `Get the&nbsp;<a rel="noindex nofollow" target="_blank" href="https://microsoftedge.microsoft.com/addons/detail/web-monetization-extensio/imjgemgmeoioefpmfefmffbboogighjl">extension</a>`
     //   } else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
     //     return "Safari"
     //   } else if (userAgent.includes("MSIE") || userAgent.includes("Trident")) {
     //     return "Internet Explorer"
   } else {
-    return `Learn more <a rel="noindex nofollow" target="_blank" href="https://webmonetization.org/">here</a>.`
+    return `Learn more&nbsp;<a rel="noindex nofollow" target="_blank" href="https://webmonetization.org/">here</a>.`
   }
 }
 
@@ -249,9 +249,10 @@ const drawWidget = (walletAddress, config) => {
 
   const trigger = document.createElement("div")
   trigger.className = "_wm_tools_widget_trigger"
+  trigger.style.backgroundColor = config.widgetBackgroundColor
   trigger.innerHTML = `
         <img
-          src="${FRONTEND_URL}images/widget_logo.svg"
+          src="${FRONTEND_URL}images/wm_logo_animated.svg"
           alt="widget trigger"
         />`
   trigger.addEventListener("click", () => {

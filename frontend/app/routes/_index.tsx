@@ -9,14 +9,15 @@ export const meta: MetaFunction = () => {
 }
 
 const tools = [
+
   {
-    enabled: false,
-    title: "Button",
-    image: "button_representation.svg",
-    bgColor: "from-wm-green to-wm-green-fade",
-    link: "create/button",
+    enabled: true,
+    title: "Banner",
+    image: "banner_representation.svg",
+    bgColor: "from-wm-dark-green to-wm-dark-green-fade",
+    link: "create/banner",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam dictum felis eget dui ullamcorper, sit amet hendrerit ante sollicitudin. Donec eget metus lectus."
+      "A banner to display on your website for visitors who do not have WM extension active. A call-to-action with a link to the extension or description of the options. It will also add a paiment pointer to your website."
   },
   {
     enabled: true,
@@ -25,17 +26,26 @@ const tools = [
     bgColor: "from-wm-red to-wm-red-fade",
     link: "create/widget",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam dictum felis eget dui ullamcorper, sit amet hendrerit ante sollicitudin. Donec eget metus lectus."
+      "A widget to display a small explanation or description of your choice and a solution for donations or a one-time payment, even for visitors who do not have the WM extension active."
   },
   {
-    enabled: true,
-    title: "Banner",
-    image: "banner_representation.svg",
-    bgColor: "from-wm-dark-green to-wm-dark-green-fade",
-    link: "create/banner",
+    enabled: false,
+    title: "Button",
+    image: "button_representation.svg",
+    bgColor: "from-wm-green to-wm-green-fade",
+    link: "create/button",
+    description:
+      "Add a custom button to your website with a short tooltip, that triggers a payment option for donations or one-time payments in a full page overlay, for a convenient option for your visitors to support your work / content."
+  },
+  {
+    enabled: false,
+    title: "Exclusive content",
+    image: "exclusive_representation.svg",
+    bgColor: "from-wm-green to-wm-green-fade",
+    link: "create/exclusive",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam dictum felis eget dui ullamcorper, sit amet hendrerit ante sollicitudin. Donec eget metus lectus."
-  }
+  },
 ].filter((tool) => tool.enabled)
 
 export default function Index() {
