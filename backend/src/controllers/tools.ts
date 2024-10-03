@@ -1,10 +1,11 @@
 import type { Request, Response } from "express"
 import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3"
+import _ from "underscore"
 import {
   getDefaultData,
   getS3AndParams,
   streamToString
-} from "../services/tools"
+} from "../services/utils"
 import { S3FileNotFoundError } from "../services/errors"
 
 export const getDefault = async (_: Request, res: Response) => {
@@ -28,10 +29,24 @@ export const saveUserConfig = async (req: Request, res: Response) => {
 
     const { s3, params } = getS3AndParams(data.walletAddress)
 
-    // get defaults, then overwrite set values
+    // get defaults, get existing config, then overwrite values
     const defaultData = await getDefaultData()
+
+    const s3data = await s3.send(new GetObjectCommand(params))
+    // Convert the file stream to a string
+    const fileContentString = await streamToString(
+      s3data.Body as NodeJS.ReadableStream
+    )
+    const changedValues = _.omit(data, function (value, key) {
+      return defaultData[key] === value
+    })
+
+    const currentData = Object.assign(
+      JSON.parse(defaultData),
+      JSON.parse(fileContentString)
+    )
     const fileContent = JSON.stringify(
-      Object.assign(JSON.parse(defaultData), ...[data])
+      Object.assign(currentData, ...[changedValues])
     )
 
     const extendedParams = { ...params, Body: fileContent }
