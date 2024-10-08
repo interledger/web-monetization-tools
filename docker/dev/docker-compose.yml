@@ -39,9 +39,10 @@ services:
       NODE_ENV: development
       SSL_CERT: /certs/cert.pem
       SSL_KEY: /certs/key.pem
-      API_URL: ${API_URL}
-      FRONTEND_URL: ${FRONTEND_URL}
-      ILPAY_URL: ${ILPAY_URL}
+      VITE_INTERNAL_API_URL: ${INTERNAL_API_URL}
+      VITE_API_URL: ${API_URL} # VITE_ prefix to accomodate VITE in FE
+      VITE_FRONTEND_URL: ${FRONTEND_URL}
+      VITE_ILPAY_URL: ${ILPAY_URL}
     networks:
       - wm-tools
     command: pnpm run dev

@@ -105,10 +105,12 @@ const WidgetConfig = ({
         </div>
         <WidgetFooter />
       </div>
-      <div className="trigger w-14 h-14 flex items-center justify-center mt-4 border-transparent rounded-full">
+      <div
+        onClick={() => setWidgetOpen(!widgetOpen)}
+        className="trigger cursor-pointer w-14 h-14 flex items-center justify-center mt-4 border-transparent rounded-full"
+      >
         <img
-          onClick={() => setWidgetOpen(!widgetOpen)}
-          className="w-8 cursor-pointer"
+          className="w-8"
           src={`/images/wm_logo_animated.svg`}
           alt="widget trigger"
         />

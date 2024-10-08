@@ -23,21 +23,15 @@ import { XCircle } from "./components/icons"
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   let message
 
-  const env = {
-    ENV: {
-      API_URL: process.env.API_URL
-    }
-  }
-
   if (!message) {
-    return json({ message: null, ...env })
+    return json({ message: null })
   }
 
-  return json({ message, ...env })
+  return json({ message })
 }
 
 export default function App() {
-  const { message, ENV } = useLoaderData<typeof loader>()
+  const { message } = useLoaderData<typeof loader>()
   const [snackbarOpen, setSnackbarOpen] = useState(false)
 
   useEffect(() => {
@@ -69,11 +63,6 @@ export default function App() {
           show={snackbarOpen}
           message={message}
           dismissAfter={2000}
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `window.ENV = ${JSON.stringify(ENV)}`
-          }}
         />
         <ScrollRestoration />
         <Scripts />

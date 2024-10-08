@@ -1,16 +1,6 @@
 import React from "react"
 import { CornerType, ElementConfigType } from "./types"
 
-export const getEnv = (key: string) => {
-  if (typeof window !== "undefined") {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const windowEnv = (window as any).ENV
-    return windowEnv[key] ?? undefined
-  }
-  const processEnv = process.env
-  return processEnv[key] ?? undefined
-}
-
 const getSelectedFont = (name: string) => {
   switch (name) {
     case "Cookie":

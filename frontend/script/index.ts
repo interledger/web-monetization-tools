@@ -1,13 +1,20 @@
-const FRONTEND_URL = "https://localhost:5100/"
-const API_URL = "https://localhost:5101/"
-// const ILPAY_URL = "http://localhost:3000/extension/"
-const ILPAY_URL = "https://interledgerpay.com/extension/"
 
-const scriptUrl = new URL(import.meta.url)
-const params = new URLSearchParams(scriptUrl.search)
-const paramTypes = (params.get("types") || "").split("|")
-const paramWallet = params.get("wa")
-const urlWallet = encodeURIComponent(params.get("wa"))
+const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL
+const API_URL = import.meta.env.VITE_API_URL
+const ILPAY_URL = import.meta.env.VITE_ILPAY_URL
+
+let paramTypes: string[] | undefined, paramWallet: string | undefined, urlWallet
+
+const currentScript = document.getElementById(
+  "wmt-init-script"
+) as HTMLScriptElement
+if (currentScript) {
+  const scriptUrl = new URL(currentScript.src)
+  const params = new URLSearchParams(scriptUrl.search)
+  paramTypes = (params.get("types") || "").split("|")
+  paramWallet = params.get("wa") || undefined
+  urlWallet = encodeURIComponent(params.get("wa") || "")
+}
 
 // check
 if (!paramTypes || !paramWallet) {
@@ -18,7 +25,7 @@ fetch(`${API_URL}tools/${urlWallet}`)
   .then((response) => response.json())
   .then((resp) => {
     const config = resp
-    drawElement(paramTypes, paramWallet, config)
+    drawElement(paramTypes, paramWallet as string, config)
   })
   .catch((error) => console.log(error))
 
@@ -29,7 +36,11 @@ const getWebMonetizationLink = () => {
   // Detect browsers
   if (userAgent.includes("Firefox")) {
     return `Get the&nbsp;<a rel="noindex nofollow" target="_blank" href="https://addons.mozilla.org/en-US/firefox/addon/web-monetization-extension/">extension</a>`
-  } else if (userAgent.includes("Chrome") && !userAgent.includes("Edg") && !userAgent.includes("OPR")) {
+  } else if (
+    userAgent.includes("Chrome") &&
+    !userAgent.includes("Edg") &&
+    !userAgent.includes("OPR")
+  ) {
     return `Get the&nbsp;<a rel="noindex nofollow" target="_blank" href="https://chromewebstore.google.com/detail/web-monetization-extensio/oiabcfomehhigdepbbclppomkhlknpii">extension</a>`
   } else if (userAgent.includes("Edg")) {
     return `Get the&nbsp;<a rel="noindex nofollow" target="_blank" href="https://microsoftedge.microsoft.com/addons/detail/web-monetization-extensio/imjgemgmeoioefpmfefmffbboogighjl">extension</a>`
@@ -49,7 +60,7 @@ const createShadowDOM = () => {
   return { shadowHost, shadowRoot }
 }
 
-const getCSSFile = (url) => {
+const getCSSFile = (url: string) => {
   const link = document.createElement("link")
 
   link.rel = "stylesheet"
@@ -59,57 +70,18 @@ const getCSSFile = (url) => {
   return link
 }
 
-const addIframeCss = (config) => {
-  const selectedFont = ""
-
-  const widgetButtonBorder =
-    config.widgetButtonBorder == "Light"
-      ? "0.375rem"
-      : config.widgetButtonBorder == "Pill"
-      ? "1rem"
-      : "0"
-
-  return `
-        .ilpay_body {
-            font-family: ${selectedFont}, system-ui, sans-serif !important;
-            color: ${config.widgetTextColor};
-        }
-        .ilpay_body button.wmt-formattable-button {
-            color: ${config.widgetButtonTextColor};
-            background-color: ${config.widgetButtonBackgroundColor};
-            border-radius: ${widgetButtonBorder};
-            transition: all 0.5s ease;
-        }
-        .ilpay_body .amount-display,
-        .ilpay_body li,
-        #extension-pay-form label {
-          color: ${config.widgetTextColor};
-        }
-
-        .ilpay_body #headlessui-portal-root {
-            all: revert;
-        }
-        
-        #extension-pay-form input {
-            color: #000000;
-        }
-        
-        #extension-pay-form input.disabled {
-            background-color: #eeeeee;
-            color: #666;
-        }
-    `
-}
-
-const drawElement = (types, walletAddress, config) => {
+const drawElement = (
+  types: string[] | undefined,
+  walletAddress: string,
+  config: any
+) => {
   const { shadowHost, shadowRoot } = createShadowDOM()
 
   for (let key in types) {
-    const type = types[key]
+    const type = types[Number(key)]
     switch (type) {
       case "widget": {
         const css = getCSSFile("css/widget.css")
-        // const style = addIframeCss(config)
         const element = drawWidget(walletAddress, config)
         shadowRoot.appendChild(css)
         shadowRoot.appendChild(element)
@@ -136,12 +108,14 @@ const drawElement = (types, walletAddress, config) => {
   }
 }
 
-const drawBanner = (config) => {
+const drawBanner = (config: any) => {
   // check if user closed the banner
   const closedByUser = sessionStorage.getItem("_wm_tools_closed_by_user")
 
   // check if user / visitor has monetization
-  const monetizationLinks = document.querySelector("link[rel=monetization]")
+  const monetizationLinks = document.querySelector(
+    "link[rel=monetization]"
+  ) as any
   if (
     (monetizationLinks && monetizationLinks.relList.supports("monetization")) ||
     closedByUser
@@ -186,7 +160,7 @@ const drawBanner = (config) => {
   const closeButton = document.createElement("span")
   closeButton.innerHTML = "x"
   closeButton.addEventListener("click", () => {
-    sessionStorage.setItem("_wm_tools_closed_by_user", true)
+    sessionStorage.setItem("_wm_tools_closed_by_user", "true")
     element.classList.add("_wm_tools_hidden")
   })
   bannerHeader.append(closeButton)
@@ -204,7 +178,7 @@ const drawBanner = (config) => {
   return element
 }
 
-const drawWidget = (walletAddress, config) => {
+const drawWidget = (walletAddress: string, config: any) => {
   const vpHeight = window.innerHeight
   const vpWidth = window.innerWidth
   const element = document.createElement("div")
