@@ -10,7 +10,7 @@ export type ApiResponse<T = any> = {
   readonly errors?: Array<string>
 }
 
-const isProd = import.meta.env.PROD
+const isProd = import.meta.env.PROD 
 const apiUrl = isProd
   ? import.meta.env.VITE_API_URL
   : import.meta.env.VITE_INTERNAL_API_URL // internal because docker issues
