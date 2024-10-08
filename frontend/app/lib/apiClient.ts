@@ -1,7 +1,6 @@
 import axios from "axios"
 import https from "https"
 import fs from "fs"
-import { getEnv } from "./utils"
 import { ElementConfigType } from "./types"
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -11,20 +10,24 @@ export type ApiResponse<T = any> = {
   readonly errors?: Array<string>
 }
 
-const nodeEnv = getEnv("NODE_ENV")
+const isProd = import.meta.env.PROD 
+const apiUrl = isProd
+  ? import.meta.env.VITE_API_URL
+  : import.meta.env.VITE_INTERNAL_API_URL // internal because docker issues
 
 // Load self-signed certificate
 const backendCert = fs.readFileSync("/certs/cert.pem")
 
 // Create an HTTPS agent with the certificate
-const httpsAgent = new https.Agent({
-  rejectUnauthorized: nodeEnv != "development", // false in dev mode
-  ca: backendCert // Add cert to trusted CAs
-})
+const httpsAgent = isProd
+  ? undefined
+  : new https.Agent({
+      rejectUnauthorized: isProd, // false in dev mode
+      ca: backendCert // Add cert to trusted CAs
+    })
 
 export class ApiClient {
   public static async getDefaultConfig(): Promise<ApiResponse> {
-    const apiUrl = getEnv("API_URL")
     const response = await axios.get(`${apiUrl}tools/default`, { httpsAgent })
 
     if (response.status === 200) {
@@ -43,7 +46,6 @@ export class ApiClient {
   public static async saveUserConfig(
     configData: Partial<ElementConfigType>
   ): Promise<ApiResponse> {
-    const apiUrl = getEnv("API_URL")
     const response = await axios.post(`${apiUrl}tools`, configData, {
       httpsAgent
     })
