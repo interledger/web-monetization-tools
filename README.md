@@ -16,7 +16,6 @@ If you are curious about the Web Monetization Tools architecture , then follow t
 
 Never heard of Interledger before, or you would like to learn more? Here are some good places to start:
 
-- [Good first issues](https://github.com/interledger/testnet/contribute)
 - [Interledger Explainer Video](https://twitter.com/Interledger/status/1567916000074678272)
 - [Interledger Website](https://interledger.org)
 - [Payment pointers](https://paymentpointers.org/)
