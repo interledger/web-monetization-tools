@@ -116,6 +116,7 @@ const drawBanner = (config: any) => {
   const monetizationLinks = document.querySelector(
     "link[rel=monetization]"
   ) as any
+
   if (
     (monetizationLinks && monetizationLinks.relList.supports("monetization")) ||
     closedByUser
