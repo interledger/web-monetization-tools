@@ -11,20 +11,19 @@
   "author": "Arpi <arpad.lengyel@breakpointit.eu>",
   "scripts": {
     "build": "pnpm -r build",
-    "compose": "docker compose -f ./docker/dev/docker-compose.yml",
-    "localenv:start": "pnpm compose up -d --build",
-    "localenv:stop": "pnpm compose down"
+    "localenv:start": "docker compose -f ./docker/dev/docker-compose.yml build --no-cache && docker compose -f ./docker/dev/docker-compose.yml up -d",
+    "localenv:stop": "docker compose -f ./docker/dev/docker-compose.yml down"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
     "typescript": "^5.5.4"
   },
   "engines": {
-    "pnpm": "^9.1.4",
+    "pnpm": "^9.12.1",
     "npm": "pnpm",
     "yarn": "pnpm",
     "node": "^20.12.1"
   },
   "private": true,
-  "packageManager": "pnpm@9.1.4"
+  "packageManager": "pnpm@9.12.1"
 }

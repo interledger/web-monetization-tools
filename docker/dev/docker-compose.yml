@@ -2,8 +2,8 @@ name: wm-tools
 services:
   backend:
     build:
-      context: ../.. # Adjust based on your actual Dockerfile location
-      dockerfile: ./backend/Dockerfile.dev
+      context: ../../backend # Adjust based on your actual Dockerfile location
+      dockerfile: Dockerfile.dev
     command: pnpm tsx src/server.ts
     ports:
       - "5101:5101"
@@ -12,6 +12,7 @@ services:
     volumes:
       - ../../backend:/app
       - ../../certs:/certs # Ensure certificates are available
+      - /app/node_modules
     networks:
       - wm-tools
     environment:
@@ -28,8 +29,8 @@ services:
 
   frontend:
     build:
-      context: ../.. # Adjust based on your actual Dockerfile location
-      dockerfile: ./frontend/Dockerfile.dev
+      context: ../../frontend # Adjust based on your actual Dockerfile location
+      dockerfile: Dockerfile.dev
     ports:
       - "5100:5100"
     expose:
@@ -51,7 +52,7 @@ services:
     volumes:
       - ../../frontend:/app
       - ../../certs:/certs # Ensure certificates are available
-
+      - /app/node_modules
 networks:
   wm-tools:
     driver: bridge
