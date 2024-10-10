@@ -4,14 +4,25 @@ FROM node:20-alpine
 # Set the working directory
 WORKDIR /app
 
+RUN corepack enable
+RUN corepack prepare pnpm@9.12.1 --activate
+
 # Copy package.json and pnpm lock file
-COPY package.json pnpm-lock.yaml ./
+COPY pnpm-lock.yaml package.json tsconfig.json tsconfig.build.json ./
+
+# Set NODE_ENV to development to install devDependencies
+ENV NODE_ENV=development
 
 # Install pnpm and dependencies
-RUN npm install -g pnpm && pnpm install
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm fetch \
+    | grep -v "cross-device link not permitted\|Falling back to copying packages from store"
 
-# Copy the rest of the application code
-COPY . .
+COPY . ./
+
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm i \
+    --frozen-lockfile
 
 # Expose the backend port
 EXPOSE 5101
