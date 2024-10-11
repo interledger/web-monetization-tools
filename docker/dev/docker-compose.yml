@@ -2,9 +2,9 @@ name: wm-tools
 services:
   backend:
     build:
-      context: ../../backend # Adjust based on your actual Dockerfile location
+      context: ../../backend
       dockerfile: Dockerfile.dev
-    command: pnpm tsx src/server.ts
+    command: pnpm nodemon --watch . --ext ts,js,mjs,cjs,json --exec "pnpm tsx src/server.ts"
     ports:
       - "5101:5101"
     expose:
@@ -20,6 +20,7 @@ services:
       NODE_ENV: development
       SSL_CERT: /certs/cert.pem
       SSL_KEY: /certs/key.pem
+      CHOKIDAR_USEPOLLING: "true"
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_REGION: ${AWS_REGION}
@@ -29,7 +30,7 @@ services:
 
   frontend:
     build:
-      context: ../../frontend # Adjust based on your actual Dockerfile location
+      context: ../../frontend
       dockerfile: Dockerfile.dev
     ports:
       - "5100:5100"
@@ -40,6 +41,7 @@ services:
       NODE_ENV: development
       SSL_CERT: /certs/cert.pem
       SSL_KEY: /certs/key.pem
+      CHOKIDAR_USEPOLLING: "true"
       VITE_INTERNAL_API_URL: ${INTERNAL_API_URL}
       VITE_API_URL: ${API_URL} # VITE_ prefix to accomodate VITE in FE
       VITE_FRONTEND_URL: ${FRONTEND_URL}
@@ -51,7 +53,7 @@ services:
       - backend
     volumes:
       - ../../frontend:/app
-      - ../../certs:/certs # Ensure certificates are available
+      - ../../certs:/certs
       - /app/node_modules
 networks:
   wm-tools:
