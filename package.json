@@ -11,12 +11,16 @@
   "author": "Arpi <arpad.lengyel@breakpointit.eu>",
   "scripts": {
     "build": "pnpm -r build",
+    "localenv:install": "pnpm i && pnpm --filter ./backend install && pnpm --filter ./frontend install",
     "localenv:start": "docker compose -f ./docker/dev/docker-compose.yml build --no-cache && docker compose -f ./docker/dev/docker-compose.yml up -d",
     "localenv:stop": "docker compose -f ./docker/dev/docker-compose.yml down"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
     "typescript": "^5.5.4"
+  },
+  "resolutions": {
+    "esbuild": "0.23.1"
   },
   "engines": {
     "pnpm": "^9.12.1",

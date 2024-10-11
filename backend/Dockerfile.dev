@@ -27,8 +27,5 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 # Expose the backend port
 EXPOSE 5101
 
-# Install nodemon globally to monitor file changes and auto-restart the server
-RUN pnpm add nodemon --save-dev
-
 # Use Nodemon to watch for file changes and restart the server
 CMD ["pnpm", "nodemon", "--watch", ".", "--ext", "ts,js,mjs,cjs,json", "--exec", "pnpm", "tsx", "src/server.ts"]
