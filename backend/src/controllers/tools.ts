@@ -1,12 +1,12 @@
-import type { Request, Response } from "express"
-import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3"
-import _ from "underscore"
+import type { Request, Response } from 'express'
+import { PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
+import _ from 'underscore'
 import {
   getDefaultData,
   getS3AndParams,
   streamToString
-} from "../services/utils"
-import { S3FileNotFoundError } from "../services/errors"
+} from '../services/utils'
+import { S3FileNotFoundError } from '../services/errors'
 
 export const getDefault = async (_: Request, res: Response) => {
   try {
@@ -15,7 +15,7 @@ export const getDefault = async (_: Request, res: Response) => {
     res.status(200).send(JSON.parse(data))
   } catch (error) {
     console.log(error)
-    res.status(500).send("An error occurred when fetching data")
+    res.status(500).send('An error occurred when fetching data')
   }
 }
 
@@ -24,7 +24,7 @@ export const saveUserConfig = async (req: Request, res: Response) => {
     const data = req.body
 
     if (!data.walletAddress) {
-      throw "Wallet address is required"
+      throw 'Wallet address is required'
     }
 
     const { s3, params } = getS3AndParams(data.walletAddress)
@@ -32,11 +32,24 @@ export const saveUserConfig = async (req: Request, res: Response) => {
     // get defaults, get existing config, then overwrite values
     const defaultData = await getDefaultData()
 
-    const s3data = await s3.send(new GetObjectCommand(params))
-    // Convert the file stream to a string
-    const fileContentString = await streamToString(
-      s3data.Body as NodeJS.ReadableStream
-    )
+    let fileContentString = '{}'
+    try {
+      // existing config
+      const s3data = await s3.send(new GetObjectCommand(params))
+      // Convert the file stream to a string
+      fileContentString = await streamToString(
+        s3data.Body as NodeJS.ReadableStream
+      )
+    } catch (error) {
+      const err = error as Error
+      if (err.name === 'NoSuchKey') {
+        // file / config not found, continue with defaults
+      } else {
+        console.log(error)
+        res.status(500).send('An error occurred while fetching data')
+      }
+    }
+
     const changedValues = _.omit(data, function (value, key) {
       return defaultData[key] === value
     })
@@ -54,9 +67,9 @@ export const saveUserConfig = async (req: Request, res: Response) => {
     await s3.send(new PutObjectCommand(extendedParams))
 
     res.status(200).send(data)
-  } catch (error) {
-    console.log(error)
-    res.status(500).send("An error occurred when saving data")
+  } catch (err) {
+    console.log(err)
+    res.status(500).send('An error occurred when saving data')
   }
 }
 
@@ -65,7 +78,7 @@ export const getUserConfig = async (req: Request, res: Response) => {
     const id = req.params.id
 
     if (!id) {
-      throw new S3FileNotFoundError("Wallet address is required")
+      throw new S3FileNotFoundError('Wallet address is required')
     }
 
     // ensure we have all keys w default values, user config will overwrite values that exist in saved json
@@ -86,13 +99,13 @@ export const getUserConfig = async (req: Request, res: Response) => {
     res.status(200).send(fileContent)
   } catch (error) {
     const err = error as Error
-    if (err.name === "NoSuchKey") {
+    if (err.name === 'NoSuchKey') {
       // file / config not found, serve default
       const defaultData = await getDefaultData()
       res.status(200).send(defaultData)
     } else {
       console.log(error)
-      res.status(500).send("An error occurred while fetching data")
+      res.status(500).send('An error occurred while fetching data')
     }
   }
 }
