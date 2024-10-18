@@ -1,8 +1,8 @@
-import { vitePlugin as remix } from "@remix-run/dev"
-import { defineConfig } from "vite"
-import tsconfigPaths from "vite-tsconfig-paths"
-import fs from "fs"
-import path from "path"
+import { vitePlugin as remix } from '@remix-run/dev'
+import { defineConfig } from 'vite'
+import tsconfigPaths from 'vite-tsconfig-paths'
+import fs from 'fs'
+import path from 'path'
 
 export default defineConfig(({ mode }) => {
   const isDevelopment = mode === 'development'
@@ -11,15 +11,18 @@ export default defineConfig(({ mode }) => {
     server: {
       watch: isDevelopment
         ? {
-          usePolling: true,
-        } : undefined,
-      https: {
-        key: fs.readFileSync(path.resolve(__dirname, "../certs/key.pem")),
-        cert: fs.readFileSync(path.resolve(__dirname, "../certs/cert.pem"))
-      },
+            usePolling: true
+          }
+        : undefined,
+      https: isDevelopment
+        ? {
+            key: fs.readFileSync(path.resolve(__dirname, '../certs/key.pem')),
+            cert: fs.readFileSync(path.resolve(__dirname, '../certs/cert.pem'))
+          }
+        : undefined,
       port: 5100,
       strictPort: true,
-      host: "0.0.0.0",
+      host: '0.0.0.0',
       proxy: {}
     },
     plugins: [

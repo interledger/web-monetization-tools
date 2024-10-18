@@ -1,7 +1,7 @@
-import axios from "axios"
-import https from "https"
-import fs from "fs"
-import { ElementConfigType } from "./types"
+import axios from 'axios'
+import https from 'https'
+import fs from 'fs'
+import { ElementConfigType } from './types'
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 export type ApiResponse<T = any> = {
@@ -10,22 +10,29 @@ export type ApiResponse<T = any> = {
   readonly errors?: Array<string>
 }
 
-const isProd = import.meta.env.PROD 
+const isProd = import.meta.env.PROD
 const apiUrl = isProd
   ? import.meta.env.VITE_API_URL
   : import.meta.env.VITE_INTERNAL_API_URL // internal because docker issues
 
-// Load self-signed certificate
-const backendCert = fs.readFileSync("/certs/cert.pem")
+let httpsAgent: https.Agent | undefined
 
-// Create an HTTPS agent with the certificate
-const httpsAgent = isProd
-  ? undefined
-  : new https.Agent({
-      rejectUnauthorized: isProd, // false in dev mode
-      ca: backendCert // Add cert to trusted CAs
-    })
+if (!isProd) {
+  try {
+    // Load self-signed certificate
+    const backendCert = fs.readFileSync('/certs/cert.pem')
 
+    // Create an HTTPS agent with the certificate
+    httpsAgent = isProd
+      ? undefined
+      : new https.Agent({
+          rejectUnauthorized: isProd, // false in dev mode
+          ca: backendCert // Add cert to trusted CAs
+        })
+  } catch (err) {
+    console.error('Could not load certificate:', err)
+  }
+}
 export class ApiClient {
   public static async getDefaultConfig(): Promise<ApiResponse> {
     const response = await axios.get(`${apiUrl}tools/default`, { httpsAgent })
