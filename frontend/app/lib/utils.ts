@@ -101,6 +101,7 @@ export const generateConfigCss = (
             background-color: ${config.buttonBackgroundColor};
             border-radius: ${buttonBorder};
             transition: all 0.5s ease;
+            margin-top: 20px;
         }       
         .wm_banner {
             font-family: ${selectedFont}, system-ui, sans-serif !important;
@@ -129,6 +130,35 @@ export const generateConfigCss = (
         }
         .wm_widget .content h5 {
           font-size: 16px;
+        }
+
+        .button-tippy-wrapper {
+          font-family: ${selectedFont}, system-ui, sans-serif !important;
+          color: ${config.buttonTooltipTextColor};
+        }
+        .button-tippy-wrapper .tippy-content {
+          padding: 4px 10px;
+          border-radius: ${buttonBorder};
+          background-color: ${config.buttonTooltipBackgroundColor};
+        }
+
+        .button-tippy-wrapper .tippy-arrow,
+        .button-tippy-wrapper .tippy-arrow::before {
+          position: absolute;
+          width: 8px;
+          height: 8px;
+          margin-top: -2px;
+          background-color: ${config.buttonTooltipBackgroundColor};
+        }
+
+        .button-tippy-wrapper .tippy-arrow {
+          visibility: hidden;
+        }
+
+        .button-tippy-wrapper .tippy-arrow::before {
+          visibility: visible;
+          content: '';
+          transform: rotate(45deg);
         }
 
         .ilpay_body {

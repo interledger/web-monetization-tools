@@ -55,6 +55,25 @@ export const widgetControlOptions = [
   }
 ]
 
+export const buttonControlOptions = [
+  {
+    value: "background",
+    label: "Background"
+  },
+  {
+    value: "text",
+    label: "Text"
+  },
+  {
+    value: "tooltipbackground",
+    label: "Tooltip background"
+  },
+  {
+    value: "tooltiptext",
+    label: "Tooltip Text"
+  }
+]
+
 export const slideOptions = [
   {
     value: SlideAnimationType.None,
@@ -63,6 +82,21 @@ export const slideOptions = [
   {
     value: SlideAnimationType.Down,
     label: "Yes"
+  }
+]
+
+export const buttonTooltipOptions = [
+  {
+    value: "0",
+    label: "Hide"
+  },
+  {
+    value: "1",
+    label: "Show"
+  },
+  {
+    value: "2",
+    label: "Hover"
   }
 ]
 
