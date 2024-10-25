@@ -29,7 +29,7 @@ const tools = [
       "A widget to display a small explanation or description of your choice and a solution for donations or a one-time payment, even for visitors who do not have the WM extension active."
   },
   {
-    enabled: false,
+    enabled: true,
     title: "Button",
     image: "button_representation.svg",
     bgColor: "from-wm-green to-wm-green-fade",

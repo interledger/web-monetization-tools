@@ -123,7 +123,7 @@ export const Select = ({
                 <Combobox.Option
                   key={option.value}
                   className={({ active }) =>
-                    `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                    `relative cursor-default select-none py-2 pl-7 pr-4 ${
                       active ? "bg-teal-600 text-white" : "text-gray-900"
                     }`
                   }
@@ -140,7 +140,7 @@ export const Select = ({
                       </span>
                       {selected ? (
                         <span
-                          className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
+                          className={`absolute inset-y-0 left-0 flex items-center pl-1 ${
                             active ? "text-white" : "text-teal-600"
                           }`}
                         >
