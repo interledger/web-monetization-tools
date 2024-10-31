@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "@webmonetizationtools/frontend",
   "private": true,
   "sideEffects": false,
   "type": "module",
