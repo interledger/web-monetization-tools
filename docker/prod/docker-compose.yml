@@ -1,0 +1,45 @@
+name: wm-tools
+services:
+  backend:
+    build:
+      context: ../..
+      dockerfile: backend/Dockerfile
+    ports:
+      - '5101:5101'
+    expose:
+      - '5101'
+    networks:
+      - wm-tools
+    environment:
+      PORT: 5101
+      NODE_ENV: production
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
+      AWS_RETRY_MAX_ATTEMPTS: ${AWS_RETRY_MAX_ATTEMPTS}
+      AWS_RETRY_TIMEOUT: ${AWS_RETRY_TIMEOUT}
+
+  frontend:
+    build:
+      context: ../..
+      dockerfile: frontend/Dockerfile
+    ports:
+      - '5100:5100'
+    expose:
+      - '5100'
+    environment:
+      PORT: 5100
+      NODE_ENV: production
+      VITE_INTERNAL_API_URL: ${INTERNAL_API_URL}
+      VITE_API_URL: ${API_URL} # VITE_ prefix to accomodate VITE in FE
+      VITE_FRONTEND_URL: ${FRONTEND_URL}
+      VITE_ILPAY_URL: ${ILPAY_URL}
+    networks:
+      - wm-tools
+    depends_on:
+      - backend
+
+networks:
+  wm-tools:
+    driver: bridge
