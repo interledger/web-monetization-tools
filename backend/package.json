@@ -1,5 +1,5 @@
 {
-  "name": "webmonetization_tools_backend",
+  "name": "@wm-tools/backend",
   "version": "1.0.0",
   "type": "module",
   "description": "Small utility (REST API) that reads and writes configs for the WM Tools to AWS S3",
