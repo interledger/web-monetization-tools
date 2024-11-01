@@ -1,10 +1,10 @@
-import type { ComponentPropsWithoutRef, ReactNode } from "react"
-import { forwardRef, useId } from "react"
-import { cx } from "class-variance-authority"
-import { FieldError } from "./FieldError"
-import { Label } from "./Label"
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+import { forwardRef, useId } from 'react'
+import { cx } from 'class-variance-authority'
+import { FieldError } from './FieldError'
+import { Label } from './Label'
 
-type TextareaProps = ComponentPropsWithoutRef<"textarea"> & {
+type TextareaProps = ComponentPropsWithoutRef<'textarea'> & {
   label?: string
   error?: string | string[]
   description?: ReactNode
@@ -18,7 +18,11 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div className="flex flex-col mt-4">
         {label && (
-          <Label className="w-full" htmlFor={internalId} required={props.required ?? false}>
+          <Label
+            className="w-full"
+            htmlFor={internalId}
+            required={props.required ?? false}
+          >
             {label}
           </Label>
         )}
@@ -27,7 +31,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             id={internalId}
             rows={3}
             className={cx(
-              "block w-full p-2 rounded-md border border-tealish/50 transition-colors duration-150 placeholder:font-extralight focus:border-tealish focus:outline-none focus:ring-0 disabled:bg-mercury"
+              'block w-full p-2 rounded-md border border-tealish/50 transition-colors duration-150 placeholder:font-extralight focus:border-tealish focus:outline-none focus:ring-0 disabled:bg-mercury'
             )}
             {...props}
           />
@@ -41,4 +45,4 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   }
 )
 
-Textarea.displayName = "Textarea"
+Textarea.displayName = 'Textarea'

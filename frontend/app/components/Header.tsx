@@ -1,4 +1,4 @@
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from '@remix-run/react'
 
 export const Header = () => {
   const navigate = useNavigate()
@@ -26,4 +26,4 @@ export const Header = () => {
   )
 }
 
-Header.displayName = "Header"
+Header.displayName = 'Header'

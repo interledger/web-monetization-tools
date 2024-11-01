@@ -1,12 +1,12 @@
-import { cx } from "class-variance-authority"
-import { useState } from "react"
+import { cx } from 'class-variance-authority'
+import { useState } from 'react'
 import {
   CornerType,
   ElementConfigType,
   ElementErrors,
   SlideAnimationType,
   PositionType
-} from "~/lib/types"
+} from '~/lib/types'
 import {
   bgColors,
   controlOptions,
@@ -15,8 +15,8 @@ import {
   slideOptions,
   positionOptions,
   widgetControlOptions
-} from "~/lib/presets"
-import { Button, Input, Select, ColorPicker, Textarea } from "./"
+} from '~/lib/presets'
+import { Button, Input, Select, ColorPicker, Textarea } from './'
 
 type ToolConfigProps = {
   type?: string
@@ -26,14 +26,14 @@ type ToolConfigProps = {
   errors?: ElementErrors
 }
 
-type PartialToolConfigProps = Omit<ToolConfigProps, "defaultConfig">
+type PartialToolConfigProps = Omit<ToolConfigProps, 'defaultConfig'>
 
 const ButtonConfig = ({
   toolConfig: config,
   setToolConfig,
   errors
-}: Omit<PartialToolConfigProps, "type">) => {
-  const [displayedControl, setDisplayedControl] = useState("background")
+}: Omit<PartialToolConfigProps, 'type'>) => {
+  const [displayedControl, setDisplayedControl] = useState('background')
   const defaultFontValue = fontOptions.find(
     (option) => option.value == config?.fontName
   )
@@ -44,7 +44,7 @@ const ButtonConfig = ({
     <div className="w-full">
       <div
         className={cx(
-          "main_controls flex justify-between bg-gradient-to-r",
+          'main_controls flex justify-between bg-gradient-to-r',
           bgColor
         )}
       >
@@ -60,7 +60,7 @@ const ButtonConfig = ({
                 buttonBackgroundColor: value
               })
             }
-            className={cx(displayedControl != "background" && "hidden")}
+            className={cx(displayedControl != 'background' && 'hidden')}
           />
           <ColorPicker
             label="Text color"
@@ -70,7 +70,7 @@ const ButtonConfig = ({
             updateColor={(value) => {
               setToolConfig({ ...config, buttonTextColor: value })
             }}
-            className={cx(displayedControl != "text" && "hidden")}
+            className={cx(displayedControl != 'text' && 'hidden')}
           />
         </div>
         <div className="flex items-center max-w-36 w-32 mr-3">
@@ -78,7 +78,7 @@ const ButtonConfig = ({
             placeholder="Background"
             options={controlOptions}
             defaultValue={controlOptions.find(
-              (opt) => opt.value == "background"
+              (opt) => opt.value == 'background'
             )}
             onChange={(value) => setDisplayedControl(value)}
           />
@@ -93,7 +93,7 @@ const ButtonConfig = ({
             options={fontOptions}
             value={defaultFontValue}
             onChange={(value) =>
-              setToolConfig({ ...config, fontName: value ?? "" })
+              setToolConfig({ ...config, fontName: value ?? '' })
             }
           />
         </div>
@@ -101,11 +101,11 @@ const ButtonConfig = ({
           <Input
             withBorder
             name="buttonText"
-            value={config?.buttonText || ""}
+            value={config?.buttonText || ''}
             className="w-full"
             error={errors?.fieldErrors.buttonText}
             onChange={(e) =>
-              setToolConfig({ ...config, buttonText: e.target.value ?? "" })
+              setToolConfig({ ...config, buttonText: e.target.value ?? '' })
             }
           />
         </div>
@@ -132,8 +132,8 @@ const BannerConfig = ({
   toolConfig: config,
   setToolConfig,
   errors
-}: Omit<PartialToolConfigProps, "type">) => {
-  const [displayedControl, setDisplayedControl] = useState("background")
+}: Omit<PartialToolConfigProps, 'type'>) => {
+  const [displayedControl, setDisplayedControl] = useState('background')
   const defaultFontValue = fontOptions.find(
     (option) => option.value == config?.fontName
   )
@@ -144,7 +144,7 @@ const BannerConfig = ({
     <div className="w-full">
       <div
         className={cx(
-          "main_controls flex justify-between bg-gradient-to-r",
+          'main_controls flex justify-between bg-gradient-to-r',
           bgColor
         )}
       >
@@ -160,7 +160,7 @@ const BannerConfig = ({
                 bannerBackgroundColor: value
               })
             }
-            className={cx(displayedControl != "background" && "hidden")}
+            className={cx(displayedControl != 'background' && 'hidden')}
           />
           <ColorPicker
             label="Text color"
@@ -170,7 +170,7 @@ const BannerConfig = ({
             updateColor={(value) => {
               setToolConfig({ ...config, bannerTextColor: value })
             }}
-            className={cx(displayedControl != "text" && "hidden")}
+            className={cx(displayedControl != 'text' && 'hidden')}
           />
         </div>
         <div className="flex items-center max-w-36 w-32 mr-3">
@@ -178,7 +178,7 @@ const BannerConfig = ({
             placeholder="Background"
             options={controlOptions}
             defaultValue={controlOptions.find(
-              (opt) => opt.value == "background"
+              (opt) => opt.value == 'background'
             )}
             onChange={(value) => setDisplayedControl(value)}
           />
@@ -193,7 +193,7 @@ const BannerConfig = ({
             options={fontOptions}
             value={defaultFontValue}
             onChange={(value) =>
-              setToolConfig({ ...config, fontName: value ?? "" })
+              setToolConfig({ ...config, fontName: value ?? '' })
             }
           />
         </div>
@@ -201,12 +201,12 @@ const BannerConfig = ({
           <Input
             withBorder
             name="bannerTitleText"
-            value={config?.bannerTitleText || ""}
+            value={config?.bannerTitleText || ''}
             className="w-full"
             onChange={(e) =>
               setToolConfig({
                 ...config,
-                bannerTitleText: e.target.value ?? ""
+                bannerTitleText: e.target.value ?? ''
               })
             }
           />
@@ -270,11 +270,11 @@ const BannerConfig = ({
           className="p-2"
           label="Text"
           name="bannerDescriptionText"
-          value={config?.bannerDescriptionText || ""}
+          value={config?.bannerDescriptionText || ''}
           onChange={(e) =>
             setToolConfig({
               ...config,
-              bannerDescriptionText: e.target.value ?? ""
+              bannerDescriptionText: e.target.value ?? ''
             })
           }
           error={errors?.fieldErrors.bannerDescriptionText}
@@ -288,8 +288,8 @@ const WidgetConfig = ({
   toolConfig: config,
   setToolConfig,
   errors
-}: Omit<PartialToolConfigProps, "type">) => {
-  const [displayedControl, setDisplayedControl] = useState("background")
+}: Omit<PartialToolConfigProps, 'type'>) => {
+  const [displayedControl, setDisplayedControl] = useState('background')
   const defaultFontValue = fontOptions.find(
     (option) => option.value == config?.fontName
   )
@@ -300,7 +300,7 @@ const WidgetConfig = ({
     <div className="w-full">
       <div
         className={cx(
-          "main_controls flex justify-between bg-gradient-to-r",
+          'main_controls flex justify-between bg-gradient-to-r',
           bgColor
         )}
       >
@@ -316,7 +316,7 @@ const WidgetConfig = ({
                 widgetBackgroundColor: value
               })
             }
-            className={cx(displayedControl != "background" && "hidden")}
+            className={cx(displayedControl != 'background' && 'hidden')}
           />
           <ColorPicker
             label="Text color"
@@ -326,7 +326,7 @@ const WidgetConfig = ({
             updateColor={(value) => {
               setToolConfig({ ...config, widgetTextColor: value })
             }}
-            className={cx(displayedControl != "text" && "hidden")}
+            className={cx(displayedControl != 'text' && 'hidden')}
           />
           <ColorPicker
             label="Button Background color"
@@ -339,7 +339,7 @@ const WidgetConfig = ({
                 widgetButtonBackgroundColor: value
               })
             }
-            className={cx(displayedControl != "buttonbackground" && "hidden")}
+            className={cx(displayedControl != 'buttonbackground' && 'hidden')}
           />
           <ColorPicker
             label="Button Text color"
@@ -349,7 +349,7 @@ const WidgetConfig = ({
             updateColor={(value) => {
               setToolConfig({ ...config, widgetButtonTextColor: value })
             }}
-            className={cx(displayedControl != "buttontext" && "hidden")}
+            className={cx(displayedControl != 'buttontext' && 'hidden')}
           />
         </div>
         <div className="flex items-center max-w-36 w-32 mr-3">
@@ -357,7 +357,7 @@ const WidgetConfig = ({
             placeholder="Background"
             options={widgetControlOptions}
             defaultValue={widgetControlOptions.find(
-              (opt) => opt.value == "background"
+              (opt) => opt.value == 'background'
             )}
             onChange={(value) => setDisplayedControl(value)}
           />
@@ -372,7 +372,7 @@ const WidgetConfig = ({
             options={fontOptions}
             value={defaultFontValue}
             onChange={(value) =>
-              setToolConfig({ ...config, fontName: value ?? "" })
+              setToolConfig({ ...config, fontName: value ?? '' })
             }
           />
         </div>
@@ -380,12 +380,12 @@ const WidgetConfig = ({
           <Input
             withBorder
             name="widgetTitleText"
-            value={config?.widgetTitleText || ""}
+            value={config?.widgetTitleText || ''}
             className="w-full"
             onChange={(e) =>
               setToolConfig({
                 ...config,
-                widgetTitleText: e.target.value ?? ""
+                widgetTitleText: e.target.value ?? ''
               })
             }
           />
@@ -396,11 +396,11 @@ const WidgetConfig = ({
           className="p-2"
           label="Text"
           name="widgetDescriptionText"
-          value={config?.widgetDescriptionText || ""}
+          value={config?.widgetDescriptionText || ''}
           onChange={(e) =>
             setToolConfig({
               ...config,
-              widgetDescriptionText: e.target.value ?? ""
+              widgetDescriptionText: e.target.value ?? ''
             })
           }
           error={errors?.fieldErrors.widgetDescriptionText}
@@ -429,12 +429,12 @@ const WidgetConfig = ({
           <Input
             withBorder
             name="widgetButtonText"
-            value={config?.widgetButtonText || ""}
+            value={config?.widgetButtonText || ''}
             className="w-full mt-7"
             onChange={(e) =>
               setToolConfig({
                 ...config,
-                widgetButtonText: e.target.value ?? ""
+                widgetButtonText: e.target.value ?? ''
               })
             }
           />
@@ -455,7 +455,7 @@ const renderElementConfig = ({
   errors
 }: PartialToolConfigProps) => {
   switch (type) {
-    case "button":
+    case 'button':
       return (
         <ButtonConfig
           toolConfig={toolConfig}
@@ -463,7 +463,7 @@ const renderElementConfig = ({
           errors={errors}
         />
       )
-    case "banner":
+    case 'banner':
       return (
         <BannerConfig
           toolConfig={toolConfig}
@@ -471,7 +471,7 @@ const renderElementConfig = ({
           errors={errors}
         />
       )
-    case "widget":
+    case 'widget':
       return (
         <WidgetConfig
           toolConfig={toolConfig}
@@ -503,7 +503,7 @@ const WalletAddress = ({
         onChange={(e) =>
           setToolConfig({
             ...config,
-            walletAddress: e.target.value ?? ""
+            walletAddress: e.target.value ?? ''
           })
         }
         withBorder
@@ -541,7 +541,7 @@ export const ToolConfig = ({
           </Button>
           <Button aria-label="save config" type="submit">
             <img
-              className={cx("flex max-h-24 mr-2")}
+              className={cx('flex max-h-24 mr-2')}
               src={`/images/refresh.svg`}
               alt="generate"
             />

@@ -16,7 +16,7 @@ const AnchorOrLink = forwardRef<HTMLAnchorElement, AnchorOrLinkProps>(
       }
 
       return (
-        <a ref={ref} rel='noreferrer' href={href} {...props}>
+        <a ref={ref} rel="noreferrer" href={href} {...props}>
           {children}
         </a>
       )

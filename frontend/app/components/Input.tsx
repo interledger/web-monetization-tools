@@ -1,10 +1,10 @@
-import type { ComponentPropsWithoutRef, ReactNode } from "react"
-import { forwardRef, useEffect, useId, useState } from "react"
-import { FieldError } from "./FieldError"
-import { Label } from "./Label"
-import { cx } from "class-variance-authority"
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+import { forwardRef, useEffect, useId, useState } from 'react'
+import { FieldError } from './FieldError'
+import { Label } from './Label'
+import { cx } from 'class-variance-authority'
 
-type InputProps = ComponentPropsWithoutRef<"input"> & {
+type InputProps = ComponentPropsWithoutRef<'input'> & {
   label?: string
   error?: string | string[]
   description?: ReactNode
@@ -26,7 +26,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     }, [error])
 
     return (
-      <div className={cx("flex flex-col", className)}>
+      <div className={cx('flex flex-col', className)}>
         {label && (
           <Label
             className="w-full"
@@ -38,19 +38,19 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         <div
           className={cx(
-            "flex relative w-full p-2",
-            withBorder && "border rounded-lg"
+            'flex relative w-full p-2',
+            withBorder && 'border rounded-lg'
           )}
         >
           <input
             id={internalId}
             ref={ref}
-            type={type ?? "text"}
+            type={type ?? 'text'}
             className={cx(
-              "block w-full h-full text-sm transition-colors duration-150 placeholder:font-extralight focus:border-tealish focus:outline-none focus:ring-0 disabled:bg-mercury"
+              'block w-full h-full text-sm transition-colors duration-150 placeholder:font-extralight focus:border-tealish focus:outline-none focus:ring-0 disabled:bg-mercury'
             )}
             {...props}
-            onKeyDown={() => setLocalError("")}
+            onKeyDown={() => setLocalError('')}
           />
         </div>
         {description ? (
@@ -62,4 +62,4 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   }
 )
 
-Input.displayName = "Input"
+Input.displayName = 'Input'

@@ -1,9 +1,9 @@
-import fs from "fs/promises"
-import { fileURLToPath } from "url"
-import { dirname, join } from "path"
+import fs from 'fs/promises'
+import { fileURLToPath } from 'url'
+import { dirname, join } from 'path'
 
-import { S3Client } from "@aws-sdk/client-s3"
-import { NodeHttpHandler } from "@smithy/node-http-handler"
+import { S3Client } from '@aws-sdk/client-s3'
+import { NodeHttpHandler } from '@smithy/node-http-handler'
 
 // Get the directory name of the current module
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -12,8 +12,8 @@ export const getS3AndParams = (walletAddress: string) => {
   const s3 = new S3Client({
     region: process.env.AWS_REGION,
     credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || ""
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || ''
     },
     maxAttempts: Number(process.env.AWS_RETRY_MAX_ATTEMPTS || 1),
     requestHandler: new NodeHttpHandler({
@@ -22,8 +22,8 @@ export const getS3AndParams = (walletAddress: string) => {
   })
 
   const fileKey = `${walletAddress
-    .replace("$", "")
-    .replace("https://", "")}.json`
+    .replace('$', '')
+    .replace('https://', '')}.json`
 
   const params = {
     Bucket: process.env.AWS_BUCKET_NAME,
@@ -34,9 +34,9 @@ export const getS3AndParams = (walletAddress: string) => {
 }
 
 export const getDefaultData = async () => {
-  const defaultDataPath = join(__dirname, "../data/default_config.json")
+  const defaultDataPath = join(__dirname, '../data/default_config.json')
   const data = await fs.readFile(defaultDataPath, {
-    encoding: "utf8"
+    encoding: 'utf8'
   })
   return data
 }
@@ -47,10 +47,10 @@ export const streamToString = (
 ): Promise<string> => {
   return new Promise((resolve, reject) => {
     const chunks: Uint8Array[] = []
-    readableStream.on("data", (chunk) => chunks.push(chunk))
-    readableStream.on("end", () =>
-      resolve(Buffer.concat(chunks).toString("utf-8"))
+    readableStream.on('data', (chunk) => chunks.push(chunk))
+    readableStream.on('end', () =>
+      resolve(Buffer.concat(chunks).toString('utf-8'))
     )
-    readableStream.on("error", reject)
+    readableStream.on('error', reject)
   })
 }
