@@ -4,6 +4,7 @@
   "homepage": "https://github.com/interledger/web-monetization-tools#readme",
   "bugs": "https://github.com/interledger/web-monetization-tools/issues",
   "license": "Apache-2.0",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/interledger/web-monetization-tools"
@@ -16,14 +17,22 @@
     "clean:modules": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
     "format": "prettier . --write --cache --cache-location='node_modules/.cache/prettiercache' --log-level=warn",
     "format:check": "prettier . --check --cache --cache-location='node_modules/.cache/prettiercache'",
+    "lint": "eslint . --fix --cache --cache-location 'node_modules/.cache/eslintcache' --max-warnings 0",
+    "lint:check": "eslint . --cache --cache-location 'node_modules/.cache/eslintcache' --max-warnings 0",
     "localenv:install": "pnpm i && pnpm --filter ./backend install && pnpm --filter ./frontend install",
     "localenv:start": "docker compose -f ./docker/dev/docker-compose.yml build --no-cache && docker compose -f ./docker/dev/docker-compose.yml up -d",
-    "localenv:stop": "docker compose -f ./docker/dev/docker-compose.yml down"
+    "localenv:stop": "docker compose -f ./docker/dev/docker-compose.yml down",
+    "typecheck": "pnpm -r typecheck"
   },
   "devDependencies": {
+    "@eslint/js": "^9.13.0",
     "concurrently": "^8.2.2",
+    "eslint": "^8.57.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-react": "^7.33.2",
+    "globals": "^15.11.0",
     "prettier": "^3.3.3",
-    "typescript": "^5.5.4"
+    "typescript-eslint": "^8.12.2"
   },
   "resolutions": {
     "esbuild": "0.23.1"

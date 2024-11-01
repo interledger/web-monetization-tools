@@ -6,7 +6,7 @@ import {
   ElementErrors,
   SlideAnimationType,
   PositionType
-} from '~/lib/types'
+} from '~/lib/types.js'
 import {
   bgColors,
   controlOptions,
@@ -15,8 +15,8 @@ import {
   slideOptions,
   positionOptions,
   widgetControlOptions
-} from '~/lib/presets'
-import { Button, Input, Select, ColorPicker, Textarea } from './'
+} from '~/lib/presets.js'
+import { Button, Input, Select, ColorPicker, Textarea } from './index.js'
 
 type ToolConfigProps = {
   type?: string

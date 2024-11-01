@@ -1,6 +1,6 @@
 import { cva, cx, type VariantProps } from 'class-variance-authority'
 import { forwardRef } from 'react'
-import { ButtonOrLink, type ButtonOrLinkProps } from './ButtonOrLink'
+import { ButtonOrLink, type ButtonOrLinkProps } from './ButtonOrLink.js'
 
 const buttonStyles = cva(
   'inline-flex items-center justify-center w-fit rounded-md px-3 py-1 border border-wm-green m-auto focus:outline-none disabled:cursor-not-allowed disabled:bg-mercury disabled:text-gray-500',

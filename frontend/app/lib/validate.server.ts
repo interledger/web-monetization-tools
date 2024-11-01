@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { CornerType, PositionType, SlideAnimationType } from './types'
+import { CornerType, PositionType, SlideAnimationType } from './types.js'
 
 export const sharedSchema = z.object({
   walletAddress: z.string().min(1, { message: 'Wallet address is required' }),

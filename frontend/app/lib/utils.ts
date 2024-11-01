@@ -1,5 +1,5 @@
 import React from 'react'
-import { CornerType, ElementConfigType } from './types'
+import { CornerType, ElementConfigType } from './types.js'
 
 const getSelectedFont = (name: string) => {
   switch (name) {
@@ -222,7 +222,9 @@ export const isColorLight = (color: string) => {
   return hsp > 192 ? true : false
 }
 
-const rgbToHex = (r: number, g: number, b: number) => {
+// Unused at the moment.
+// @arpi: Can be removed?
+export const rgbToHex = (r: number, g: number, b: number) => {
   return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
 }
 

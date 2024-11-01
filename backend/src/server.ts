@@ -1,9 +1,8 @@
-import 'module-alias/register'
 import https from 'https'
-import http from 'https'
+import http from 'http'
 import fs from 'fs'
 import express, { Express } from 'express'
-import routes from './routes/index'
+import routes from './routes/index.js'
 
 const router: Express = express()
 

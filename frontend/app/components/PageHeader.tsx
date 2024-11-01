@@ -1,6 +1,6 @@
 import { useNavigate } from '@remix-run/react'
 import { cx } from 'class-variance-authority'
-import { Button } from './Button'
+import { Button } from './Button.js'
 
 export const PageHeader = ({
   title,

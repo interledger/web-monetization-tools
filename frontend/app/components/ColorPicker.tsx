@@ -3,8 +3,8 @@ import { forwardRef, useId, useState } from 'react'
 import { HexColorPicker } from 'react-colorful'
 import { cx } from 'class-variance-authority'
 import ClickAwayListener from 'react-click-away-listener'
-import { backgroundColorPresets, textColorPresets } from '~/lib/presets'
-import { isColorLight } from '~/lib/utils'
+import { backgroundColorPresets, textColorPresets } from '~/lib/presets.js'
+import { isColorLight } from '~/lib/utils.js'
 
 type ColorPickerProps = ComponentPropsWithoutRef<'div'> & {
   label?: string
@@ -16,10 +16,7 @@ type ColorPickerProps = ComponentPropsWithoutRef<'div'> & {
 }
 
 export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
-  (
-    { error, id, value, name, preset, className, updateColor, ...props },
-    ref
-  ) => {
+  ({ id, value, name, preset, className, updateColor, ...props }, ref) => {
     const [displayColorpicker, setDisplayColorpicker] = useState(false)
 
     const generatedId = useId()
@@ -34,8 +31,8 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
     const isCustomColor = colorPresets.indexOf(value.toLowerCase()) == -1
 
     return (
-      <div className={cx('flex relative', className)}>
-        <input type="hidden" name={name} value={value} />
+      <div className={cx('flex relative', className)} ref={ref} {...props}>
+        <input type="hidden" name={name} value={value} id={internalId} />
         <div className="flex p-3">
           {colorPresets.map((color) => (
             <div

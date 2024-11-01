@@ -1,13 +1,13 @@
 import { cx } from 'class-variance-authority'
-import { useEffect, useRef, useState } from 'react'
-import { bgColors } from '~/lib/presets'
-import { ElementConfigType, SlideAnimationType } from '~/lib/types'
+import { useEffect, useState } from 'react'
+import { bgColors } from '~/lib/presets.js'
+import { ElementConfigType, SlideAnimationType } from '~/lib/types.js'
 import {
   encodeAndCompressParameters,
   generateConfigCss,
   getWebMonetizationLink
-} from '~/lib/utils'
-import { WidgetFooter } from './WidgetFooter'
+} from '~/lib/utils.js'
+import { WidgetFooter } from './WidgetFooter.js'
 
 const ButtonConfig = ({ config }: { config: ElementConfigType }) => {
   return (
@@ -86,7 +86,7 @@ const WidgetConfig = ({
     <div className="flex flex-col items-end wm_widget">
       <div
         className={cx(
-          'content flex flex-col w-96 h-148 overflow-hidden border border-white-300 rounded transition-all ease-in-out duration-1000 rounded-md p-1 focus:outline-none',
+          'content flex flex-col w-96 h-148 overflow-hidden border border-white-300 transition-all ease-in-out duration-1000 rounded-md p-1 focus:outline-none',
           widgetOpen
             ? 'max-w-96 max-h-148 opacity-1'
             : 'max-w-0 max-h-0 opacity-0'

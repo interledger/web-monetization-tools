@@ -14,11 +14,11 @@ import {
   ScriptModal,
   ToolConfig,
   ToolPreview
-} from '~/components'
-import { ApiClient, ApiResponse } from '~/lib/apiClient'
-import { type Message, messageStorage } from '~/lib/message.server'
-import { ElementConfigType, ElementErrors } from '~/lib/types'
-import { encodeAndCompressParameters, getIlpayCss } from '~/lib/utils'
+} from '~/components/index.js'
+import { ApiClient, ApiResponse } from '~/lib/apiClient.js'
+import { type Message, messageStorage } from '~/lib/message.server.js'
+import { ElementConfigType, ElementErrors } from '~/lib/types.js'
+import { encodeAndCompressParameters, getIlpayCss } from '~/lib/utils.js'
 import {
   createBannerSchema,
   createButtonSchema,

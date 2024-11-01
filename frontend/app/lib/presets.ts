@@ -1,4 +1,4 @@
-import { CornerType, SlideAnimationType, PositionType } from './types'
+import { CornerType, SlideAnimationType, PositionType } from './types.js'
 
 export const textColorPresets = ['#ffffff', '#000000']
 export const backgroundColorPresets = [

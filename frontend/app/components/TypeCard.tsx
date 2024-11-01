@@ -1,5 +1,5 @@
-import { LinkProps } from '@remix-run/react'
-import { Button } from './Button'
+import type { LinkProps } from '@remix-run/react'
+import { Button } from './Button.js'
 import { cx } from 'class-variance-authority'
 
 export type TypeCardProps = {

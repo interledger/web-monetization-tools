@@ -1,10 +1,9 @@
 import type { ReactNode } from 'react'
 import { Fragment, useEffect, useId, useState } from 'react'
 import { Combobox, Transition } from '@headlessui/react'
-import { Input } from './Input'
-import { Check, Chevron } from './icons'
-import { Label } from './Label'
-import { FieldError } from './FieldError'
+import { Check, Chevron } from './icons.js'
+import { Label } from './Label.js'
+import { FieldError } from './FieldError.js'
 import { cx } from 'class-variance-authority'
 
 export type SelectOption = {
@@ -41,7 +40,6 @@ export const Select = ({
   },
   value,
   withBorder,
-  description,
   onChange
 }: SelectProps) => {
   const id = useId()

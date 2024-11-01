@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Dialog } from '@headlessui/react'
 import { Form } from '@remix-run/react'
-import { XIcon } from '~/components/icons'
-import { Button, CopyButton } from '~/components'
-import { removeItem } from '~/lib/utils'
+import { XIcon } from '~/components/icons.js'
+import { Button, CopyButton } from '~/components/index.js'
+import { removeItem } from '~/lib/utils.js'
 
 type ScriptModalProps = {
   title: string

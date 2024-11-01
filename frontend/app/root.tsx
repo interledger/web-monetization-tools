@@ -1,8 +1,4 @@
-import type {
-  LinksFunction,
-  MetaFunction,
-  LoaderFunctionArgs
-} from '@remix-run/node'
+import type { LinksFunction, MetaFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import {
   Links,
@@ -17,10 +13,10 @@ import {
 import type { ReactNode } from 'react'
 import { useEffect, useState } from 'react'
 import stylesheet from '~/tailwind.css?url'
-import { Button, Footer, Header, Snackbar } from './components'
-import { XCircle } from './components/icons'
+import { Button, Footer, Header, Snackbar } from './components/index.js'
+import { XCircle } from './components/icons.js'
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async () => {
   let message
 
   if (!message) {

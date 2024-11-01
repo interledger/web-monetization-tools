@@ -5,8 +5,8 @@ import {
   useState,
   useEffect
 } from 'react'
-import { Button } from './Button'
-import { ClipboardCheck, Clipboard } from './icons'
+import { Button } from './Button.js'
+import { ClipboardCheck, Clipboard } from './icons.js'
 
 function copyToClipboard(value: string) {
   navigator.clipboard.writeText(value)
@@ -34,6 +34,7 @@ export const CopyButton = forwardRef<HTMLButtonElement, CopyButtonProps>(
     return (
       <Button
         size="sm"
+        ref={ref}
         variant={variant}
         onClick={() => {
           copyToClipboard(value)

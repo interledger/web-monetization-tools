@@ -1,5 +1,9 @@
 import type { Router } from 'express'
-import { getDefault, getUserConfig, saveUserConfig } from '../controllers/tools'
+import {
+  getDefault,
+  getUserConfig,
+  saveUserConfig
+} from '../controllers/tools.js'
 
 const userRoutes = (router: Router) => {
   router.get('/tools/default', getDefault)

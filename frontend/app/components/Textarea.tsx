@@ -1,8 +1,8 @@
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 import { forwardRef, useId } from 'react'
 import { cx } from 'class-variance-authority'
-import { FieldError } from './FieldError'
-import { Label } from './Label'
+import { FieldError } from './FieldError.js'
+import { Label } from './Label.js'
 
 type TextareaProps = ComponentPropsWithoutRef<'textarea'> & {
   label?: string
@@ -28,10 +28,12 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         )}
         <div className="shadow-sm flex relative rounded-md">
           <textarea
+            ref={ref}
             id={internalId}
             rows={3}
             className={cx(
-              'block w-full p-2 rounded-md border border-tealish/50 transition-colors duration-150 placeholder:font-extralight focus:border-tealish focus:outline-none focus:ring-0 disabled:bg-mercury'
+              'block w-full p-2 rounded-md border border-tealish/50 transition-colors duration-150 placeholder:font-extralight focus:border-tealish focus:outline-none focus:ring-0 disabled:bg-mercury',
+              className
             )}
             {...props}
           />

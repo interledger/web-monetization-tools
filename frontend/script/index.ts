@@ -1,8 +1,13 @@
+/* eslint-disable no-case-declarations */
 const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL
 const API_URL = import.meta.env.VITE_API_URL
 const ILPAY_URL = import.meta.env.VITE_ILPAY_URL
 
 let paramTypes: string[] | undefined, paramWallet: string | undefined, urlWallet
+
+// TODO: Have a defined interface for the config
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Config = Record<string, any>
 
 const currentScript = document.getElementById(
   'wmt-init-script'
@@ -72,11 +77,11 @@ const getCSSFile = (url: string) => {
 const drawElement = (
   types: string[] | undefined,
   walletAddress: string,
-  config: any
+  config: Config
 ) => {
   const { shadowHost, shadowRoot } = createShadowDOM()
 
-  for (let key in types) {
+  for (const key in types) {
     const type = types[Number(key)]
     switch (type) {
       case 'widget': {
@@ -107,14 +112,14 @@ const drawElement = (
   }
 }
 
-const drawBanner = (config: any) => {
+const drawBanner = (config: Config) => {
   // check if user closed the banner
   const closedByUser = sessionStorage.getItem('_wm_tools_closed_by_user')
 
   // check if user / visitor has monetization
-  const monetizationLinks = document.querySelector(
+  const monetizationLinks = document.querySelector<HTMLLinkElement>(
     'link[rel=monetization]'
-  ) as any
+  )
   if (
     (monetizationLinks && monetizationLinks.relList.supports('monetization')) ||
     closedByUser
@@ -177,7 +182,7 @@ const drawBanner = (config: any) => {
   return element
 }
 
-const drawWidget = (walletAddress: string, config: any) => {
+const drawWidget = (walletAddress: string, config: Config) => {
   const vpHeight = window.innerHeight
   const vpWidth = window.innerWidth
   const element = document.createElement('div')

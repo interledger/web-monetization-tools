@@ -33,7 +33,7 @@ AnchorOrLink.displayName = 'AnchorOrLink'
 
 export type ButtonOrLinkProps = Omit<
   ComponentProps<'button'> & AnchorOrLinkProps,
-  'ref'
+  'ref' | 'onClick'
 > &
   (
     | { to: LinkProps['to']; href?: never }

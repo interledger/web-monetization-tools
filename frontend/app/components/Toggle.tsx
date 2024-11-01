@@ -1,6 +1,6 @@
 import { type ComponentProps, forwardRef, useId, useState } from 'react'
-import { Label } from './Label'
-import { SlideAnimationType } from '~/lib/types'
+import { Label } from './Label.js'
+import { SlideAnimationType } from '~/lib/types.js'
 import { cx } from 'class-variance-authority'
 
 type ToggleProps = Omit<ComponentProps<'div'>, 'children'> & {
@@ -12,14 +12,14 @@ type ToggleProps = Omit<ComponentProps<'div'>, 'children'> & {
 }
 
 export const Toggle = forwardRef<HTMLDivElement, ToggleProps>(
-  ({ label, error, id, name, value, ...props }, ref) => {
+  ({ label, id, name, value, ...props }, ref) => {
     const generatedId = useId()
     const internalId = id ?? generatedId
 
     const [isActive, setIsActive] = useState(value ?? false)
 
     return (
-      <div>
+      <div {...props}>
         {label && (
           <Label htmlFor={internalId} required={false}>
             {label}

@@ -1,4 +1,4 @@
-import { XCircle } from './icons'
+import { XCircle } from './icons.js'
 
 type ErrorPanelProps = {
   errors?: string[]
