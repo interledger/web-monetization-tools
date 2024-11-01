@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "@wm-tools/frontend",
   "private": true,
   "sideEffects": false,
   "type": "module",
