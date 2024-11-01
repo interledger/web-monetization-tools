@@ -14,15 +14,15 @@ export const ErrorPanel = ({ errors }: ErrorPanelProps) => {
   }
 
   return (
-    <div className='rounded-md bg-red-100 p-4 shadow-md'>
-      <div className='flex'>
-        <div className='flex-shrink-0'>
-          <XCircle className='h-8 w-w text-vermillion' />
+    <div className="rounded-md bg-red-100 p-4 shadow-md">
+      <div className="flex">
+        <div className="flex-shrink-0">
+          <XCircle className="h-8 w-w text-vermillion" />
         </div>
-        <div className='ml-3 mt-1 text-vermillion'>
-          <h3 className='font-medium'>{errorMessage}</h3>
-          <div className='mt-2 text-sm'>
-            <ul className='list-disc space-y-1 pl-5'>
+        <div className="ml-3 mt-1 text-vermillion">
+          <h3 className="font-medium">{errorMessage}</h3>
+          <div className="mt-2 text-sm">
+            <ul className="list-disc space-y-1 pl-5">
               {errors?.map((error) => <li key={error}>{error}</li>)}
             </ul>
           </div>

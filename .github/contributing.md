@@ -47,7 +47,6 @@ The team will review your pull request as soon as possible.
 
 The project is new and available documentation is a work in progress.
 
-
 ## Working in the Web monetization tools repository
 
 This project uses `pnpm`. A list of steps for setting up a [local development environment](https://github.com/interledger/web-monetization-tools#local-development-environment) can be found in the Readme.

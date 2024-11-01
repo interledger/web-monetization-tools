@@ -1,5 +1,5 @@
-import { Link } from "@remix-run/react";
-import { PoweredBy } from "./poweredBy";
+import { Link } from '@remix-run/react'
+import { PoweredBy } from './poweredBy'
 
 export const WidgetFooter = () => {
   return (
@@ -10,6 +10,6 @@ export const WidgetFooter = () => {
     >
       <PoweredBy className="h-10" />
     </Link>
-  );
-};
-WidgetFooter.displayName = "WidgetFooter";
+  )
+}
+WidgetFooter.displayName = 'WidgetFooter'

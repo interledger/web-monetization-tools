@@ -14,6 +14,9 @@ importers:
       concurrently:
         specifier: ^8.2.2
         version: 8.2.2
+      prettier:
+        specifier: ^3.3.3
+        version: 3.3.3
       typescript:
         specifier: ^5.5.4
         version: 5.6.3
@@ -26,24 +29,12 @@ importers:
       '@smithy/node-http-handler':
         specifier: ^3.2.3
         version: 3.2.5
-      '@types/underscore':
-        specifier: ^1.11.15
-        version: 1.13.0
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
       express:
         specifier: ^4.19.2
         version: 4.21.1
-      module-alias:
-        specifier: ^2.2.3
-        version: 2.2.3
-      tsc-alias:
-        specifier: ^1.8.10
-        version: 1.8.10
-      tsx:
-        specifier: ^4.19.0
-        version: 4.19.2
       underscore:
         specifier: ^1.13.7
         version: 1.13.7
@@ -54,12 +45,21 @@ importers:
       '@types/node':
         specifier: ^20.14.2
         version: 20.17.4
+      '@types/underscore':
+        specifier: ^1.11.15
+        version: 1.13.0
       nodemon:
         specifier: ^3.1.7
         version: 3.1.7
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@20.17.4)(typescript@5.6.3)
+      tsc-alias:
+        specifier: ^1.8.10
+        version: 1.8.10
+      tsx:
+        specifier: ^4.19.0
+        version: 4.19.2
       typescript:
         specifier: ^5.4.5
         version: 5.6.3
@@ -2917,9 +2917,6 @@ packages:
   modern-ahocorasick@1.0.1:
     resolution: {integrity: sha512-yoe+JbhTClckZ67b2itRtistFKf8yPYelHLc7e5xAwtNAXxM6wJTUx2C7QeVSJFDzKT7bCIFyBVybPMKvmB9AA==}
 
-  module-alias@2.2.3:
-    resolution: {integrity: sha512-23g5BFj4zdQL/b6tor7Ji+QY4pEfNH784BMslY9Qb0UnJWRAt+lQGLYmRaM0KDBwIG23ffEBELhZDP2rhi9f/Q==}
-
   morgan@1.10.0:
     resolution: {integrity: sha512-AbegBVI4sh6El+1gNwvD5YIck7nSA36weD7xvIxG4in80j/UoK8AEGaWnnz8v1GxonMCltmlNs5ZKbGvl9b1XQ==}
     engines: {node: '>= 0.8.0'}
@@ -3277,6 +3274,11 @@ packages:
   prettier@2.8.8:
     resolution: {integrity: sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==}
     engines: {node: '>=10.13.0'}
+    hasBin: true
+
+  prettier@3.3.3:
+    resolution: {integrity: sha512-i2tDNA0O5IrMO757lfrdQZCc2jPNDVntV0m/+4whiDfWaTKfMNgR7Qz0NAeGz/nRqF4m5/6CLzbP4/liHt12Ew==}
+    engines: {node: '>=14'}
     hasBin: true
 
   pretty-ms@7.0.1:
@@ -7847,8 +7849,6 @@ snapshots:
 
   modern-ahocorasick@1.0.1: {}
 
-  module-alias@2.2.3: {}
-
   morgan@1.10.0:
     dependencies:
       basic-auth: 2.0.1
@@ -8214,6 +8214,8 @@ snapshots:
   prelude-ls@1.2.1: {}
 
   prettier@2.8.8: {}
+
+  prettier@3.3.3: {}
 
   pretty-ms@7.0.1:
     dependencies:

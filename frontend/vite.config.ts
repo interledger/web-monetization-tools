@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => {
         : undefined,
       port: 5100,
       strictPort: true,
-      host: '0.0.0.0',
+      host: true,
       proxy: {}
     },
     plugins: [

@@ -17,7 +17,7 @@
   justify-content: space-between;
 }
 
-._wm_tools_banner_header span{
+._wm_tools_banner_header span {
   cursor: pointer;
 }
 
@@ -46,9 +46,10 @@
   animation: slideUp 3s ease-in-out 2s forwards;
 }
 
-._wm_link, ._wm_link a {
-    display: flex;
-    color: inherit;
+._wm_link,
+._wm_link a {
+  display: flex;
+  color: inherit;
 }
 
 ._wm_tools_hidden {

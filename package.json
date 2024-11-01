@@ -11,12 +11,17 @@
   "author": "Arpi <arpad.lengyel@breakpointit.eu>",
   "scripts": {
     "build": "pnpm -r build",
-    "localenv:install": "pnpm i && pnpm --filter ./backend install && pnpm --filter ./frontend install",
+    "clean": "pnpm clean:modules && pnpm clean:builds",
+    "clean:builds": "find . \\( -name \"dist\" -o -name \".next\" \\) -type d -prune -exec rm -rf '{}' +",
+    "clean:modules": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
+    "format": "prettier . --write --cache --cache-location='node_modules/.cache/prettiercache' --log-level=warn",
+    "format:check": "prettier . --check --cache --cache-location='node_modules/.cache/prettiercache'",
     "localenv:start": "docker compose -f ./docker/dev/docker-compose.yml build --no-cache && docker compose -f ./docker/dev/docker-compose.yml up -d",
     "localenv:stop": "docker compose -f ./docker/dev/docker-compose.yml down"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
+    "prettier": "^3.3.3",
     "typescript": "^5.5.4"
   },
   "resolutions": {
