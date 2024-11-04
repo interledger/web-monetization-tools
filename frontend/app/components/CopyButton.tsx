@@ -36,11 +36,11 @@ export const CopyButton = forwardRef<HTMLButtonElement, CopyButtonProps>(
         size="sm"
         ref={ref}
         variant={variant}
+        aria-label="copy"
         onClick={() => {
           copyToClipboard(value)
           setIsCopied(true)
         }}
-        {...props}
       >
         {' '}
         <div className="flex items-center justify-center">

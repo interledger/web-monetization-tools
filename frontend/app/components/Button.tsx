@@ -29,10 +29,11 @@ const buttonStyles = cva(
 type ButtonProps = VariantProps<typeof buttonStyles> &
   ButtonOrLinkProps & {
     ['aria-label']: string
+    variant?: string
   }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ intent, children, className, ...props }, ref) => {
+  ({ intent, children, className, variant, ...props }, ref) => {
     return (
       <ButtonOrLink
         ref={ref}
