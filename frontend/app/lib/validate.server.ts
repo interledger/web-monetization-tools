@@ -1,15 +1,15 @@
-import { z } from "zod"
-import { CornerType, PositionType, SlideAnimationType } from "./types"
+import { z } from 'zod'
+import { CornerType, PositionType, SlideAnimationType } from './types.js'
 
 export const sharedSchema = z.object({
-  walletAddress: z.string().min(1, { message: "Wallet address is required" }),
-  fontName: z.string().min(1, { message: "Choose a font" })
+  walletAddress: z.string().min(1, { message: 'Wallet address is required' }),
+  fontName: z.string().min(1, { message: 'Choose a font' })
 })
 
 export const createButtonSchema = z
   .object({
     elementType: z.literal('button'),
-    buttonText: z.string().min(1, { message: "Button label cannot be empty" }),
+    buttonText: z.string().min(1, { message: 'Button label cannot be empty' }),
     buttonBorder: z.nativeEnum(CornerType),
     buttonTextColor: z.string().min(6),
     buttonBackgroundColor: z.string().min(6)
@@ -22,7 +22,7 @@ export const createBannerSchema = z
     bannerTitleText: z.string().optional(),
     bannerDescriptionText: z
       .string()
-      .min(1, { message: "Banner text cannot be empty" }),
+      .min(1, { message: 'Banner text cannot be empty' }),
     bannerTextColor: z.string().min(6),
     bannerBackgroundColor: z.string().min(6),
     bannerSlideAnimation: z.nativeEnum(SlideAnimationType),
@@ -46,11 +46,11 @@ export const createWidgetSchema = z
 
 export const getElementSchema = (type: string) => {
   switch (type) {
-    case "banner":
+    case 'banner':
       return createBannerSchema
-    case "widget":
+    case 'widget':
       return createWidgetSchema
-    case "button":
+    case 'button':
     default:
       return createButtonSchema
   }

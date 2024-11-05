@@ -10,12 +10,12 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(
     return (
       <label
         htmlFor={htmlFor}
-        className='block font-medium text-sm'
+        className="block font-medium text-sm"
         {...props}
         ref={ref}
       >
         <span>{children}</span>{' '}
-        {required ? <span className='text-red-500'>*</span> : ''}
+        {required ? <span className="text-red-500">*</span> : ''}
       </label>
     )
   }

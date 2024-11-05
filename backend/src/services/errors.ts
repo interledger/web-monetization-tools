@@ -2,6 +2,6 @@
 export class S3FileNotFoundError extends Error {
   constructor(message: string) {
     super(message) // Call the parent Error class constructor
-    this.name = "NoSuchKey" // Set the error name
+    this.name = 'NoSuchKey' // Set the error name
   }
 }

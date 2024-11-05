@@ -1,12 +1,12 @@
-import React from "react"
-import { CornerType, ElementConfigType } from "./types"
+import React from 'react'
+import { CornerType, ElementConfigType } from './types.js'
 
 const getSelectedFont = (name: string) => {
   switch (name) {
-    case "Cookie":
-    case "Roboto":
-    case "Open Sans":
-    case "Titillium Web":
+    case 'Cookie':
+    case 'Roboto':
+    case 'Open Sans':
+    case 'Titillium Web':
       return name
     default:
       return `Arial`
@@ -16,11 +16,11 @@ const getSelectedFont = (name: string) => {
 export const getIlpayCss = (config: ElementConfigType) => {
   const selectedFont = getSelectedFont(config.fontName)
   const widgetButtonBorder =
-    config.widgetButtonBorder == "Light"
-      ? "0.375rem"
-      : config.widgetButtonBorder == "Pill"
-      ? "1rem"
-      : "0"
+    config.widgetButtonBorder == 'Light'
+      ? '0.375rem'
+      : config.widgetButtonBorder == 'Pill'
+        ? '1rem'
+        : '0'
 
   // use + to preserve spaces
   return `
@@ -60,9 +60,9 @@ export const getIlpayCss = (config: ElementConfigType) => {
       }
       `
     .trim()
-    .replaceAll(" ", "")
-    .replaceAll("\n", "")
-    .replaceAll("+", " ")
+    .replaceAll(' ', '')
+    .replaceAll('\n', '')
+    .replaceAll('+', ' ')
 }
 
 export const generateConfigCss = (
@@ -72,24 +72,24 @@ export const generateConfigCss = (
   const selectedFont = getSelectedFont(config.fontName)
   const buttonBorder =
     config.buttonBorder == CornerType.Light
-      ? "0.375rem"
+      ? '0.375rem'
       : config.buttonBorder == CornerType.Pill
-      ? "1rem"
-      : "0"
+        ? '1rem'
+        : '0'
 
   const bannerBorder =
     config.bannerBorder == CornerType.Light
-      ? "0.375rem"
+      ? '0.375rem'
       : config.bannerBorder == CornerType.Pill
-      ? "1rem"
-      : "0"
+        ? '1rem'
+        : '0'
 
   const widgetButtonBorder =
     config.widgetButtonBorder == CornerType.Light
-      ? "0.375rem"
+      ? '0.375rem'
       : config.widgetButtonBorder == CornerType.Pill
-      ? "1rem"
-      : "0"
+        ? '1rem'
+        : '0'
 
   const css = `       
         .wm_button {
@@ -180,7 +180,7 @@ export const generateConfigCss = (
     return css
   }
 
-  return React.createElement("style", {
+  return React.createElement('style', {
     dangerouslySetInnerHTML: { __html: css }
   })
 }
@@ -202,9 +202,9 @@ export const isColorLight = (color: string) => {
   } else {
     // If RGB --> Convert it to HEX: http://gist.github.com/983661
     if (color.length < 5) {
-      colorPart = +("0x" + color.slice(1).replace(/./g, "$&$&"))
+      colorPart = +('0x' + color.slice(1).replace(/./g, '$&$&'))
     } else {
-      colorPart = +("0x" + color.slice(1))
+      colorPart = +('0x' + color.slice(1))
     }
 
     r = colorPart >> 16
@@ -222,8 +222,10 @@ export const isColorLight = (color: string) => {
   return hsp > 192 ? true : false
 }
 
-const rgbToHex = (r: number, g: number, b: number) => {
-  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
+// Unused at the moment.
+// @arpi: Can be removed?
+export const rgbToHex = (r: number, g: number, b: number) => {
+  return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
 }
 
 export const removeItem = <T>(arr: Array<T>, value: T): Array<T> => {
@@ -236,10 +238,10 @@ export const removeItem = <T>(arr: Array<T>, value: T): Array<T> => {
 
 // Inspired from: https://github.com/sveltejs/svelte/blob/main/sites/svelte-5-preview/src/routes/gzip.js
 export const encodeAndCompressParameters = async (params: string) => {
-  let buffer = ""
+  let buffer = ''
   const reader = new Blob([params])
     .stream()
-    .pipeThrough(new CompressionStream("gzip"))
+    .pipeThrough(new CompressionStream('gzip'))
     .getReader()
 
   // eslint-disable-next-line no-constant-condition
@@ -256,18 +258,22 @@ export const encodeAndCompressParameters = async (params: string) => {
     }
   }
 
-  return btoa(buffer).replaceAll("+", "-").replaceAll("/", "_")
+  return btoa(buffer).replaceAll('+', '-').replaceAll('/', '_')
 }
 
 export const getWebMonetizationLink = () => {
-  const userAgent = typeof navigator !== "undefined" ? navigator.userAgent : ""
+  const userAgent = typeof navigator !== 'undefined' ? navigator.userAgent : ''
 
   // Detect browsers
-  if (userAgent.includes("Firefox")) {
+  if (userAgent.includes('Firefox')) {
     return `Get the&nbsp;<a rel="noindex nofollow" target="_blank" href="https://addons.mozilla.org/en-US/firefox/addon/web-monetization-extension/">extension</a>`
-  } else if (userAgent.includes("Chrome") && !userAgent.includes("Edg") && !userAgent.includes("OPR")) {
+  } else if (
+    userAgent.includes('Chrome') &&
+    !userAgent.includes('Edg') &&
+    !userAgent.includes('OPR')
+  ) {
     return `Get the&nbsp;<a rel="noindex nofollow" target="_blank" href="https://chromewebstore.google.com/detail/web-monetization-extensio/oiabcfomehhigdepbbclppomkhlknpii">extension</a>`
-  } else if (userAgent.includes("Edg")) {
+  } else if (userAgent.includes('Edg')) {
     return `Get the&nbsp;<a rel="noindex nofollow" target="_blank" href="https://microsoftedge.microsoft.com/addons/detail/web-monetization-extensio/imjgemgmeoioefpmfefmffbboogighjl">extension</a>`
     //   } else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
     //     return "Safari"

@@ -6,9 +6,9 @@ services:
       dockerfile: Dockerfile.dev
     command: pnpm nodemon --watch . --ext ts,js,mjs,cjs,json --exec "pnpm tsx src/server.ts"
     ports:
-      - "5101:5101"
+      - '5101:5101'
     expose:
-      - "5101"
+      - '5101'
     volumes:
       - ../../backend:/app
       - ../../certs:/certs # Ensure certificates are available
@@ -20,7 +20,7 @@ services:
       NODE_ENV: development
       SSL_CERT: /certs/cert.pem
       SSL_KEY: /certs/key.pem
-      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_USEPOLLING: 'true'
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_REGION: ${AWS_REGION}
@@ -33,15 +33,15 @@ services:
       context: ../../frontend
       dockerfile: Dockerfile.dev
     ports:
-      - "5100:5100"
+      - '5100:5100'
     expose:
-      - "5100"
+      - '5100'
     environment:
       PORT: 5100
       NODE_ENV: development
       SSL_CERT: /certs/cert.pem
       SSL_KEY: /certs/key.pem
-      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_USEPOLLING: 'true'
       VITE_INTERNAL_API_URL: ${INTERNAL_API_URL}
       VITE_API_URL: ${API_URL} # VITE_ prefix to accomodate VITE in FE
       VITE_FRONTEND_URL: ${FRONTEND_URL}
@@ -49,7 +49,7 @@ services:
     networks:
       - wm-tools
     command: pnpm run dev
-    depends_on: 
+    depends_on:
       - backend
     volumes:
       - ../../frontend:/app

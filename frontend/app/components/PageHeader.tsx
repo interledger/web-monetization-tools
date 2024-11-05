@@ -1,6 +1,6 @@
-import { useNavigate } from "@remix-run/react"
-import { cx } from "class-variance-authority"
-import { Button } from "./Button"
+import { useNavigate } from '@remix-run/react'
+import { cx } from 'class-variance-authority'
+import { Button } from './Button.js'
 
 export const PageHeader = ({
   title,
@@ -13,7 +13,7 @@ export const PageHeader = ({
   return (
     <div
       className={cx(
-        "flex py-4 rounded-md items-center justify-between space-x-5"
+        'flex py-4 rounded-md items-center justify-between space-x-5'
       )}
     >
       <div className="flex-1">

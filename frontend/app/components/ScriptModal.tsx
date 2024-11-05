@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react"
-import { Dialog } from "@headlessui/react"
-import { Form } from "@remix-run/react"
-import { XIcon } from "~/components/icons"
-import { Button, CopyButton } from "~/components"
-import { removeItem } from "~/lib/utils"
+import { useEffect, useState } from 'react'
+import { Dialog } from '@headlessui/react'
+import { Form } from '@remix-run/react'
+import { XIcon } from '~/components/icons.js'
+import { Button, CopyButton } from '~/components/index.js'
+import { removeItem } from '~/lib/utils.js'
 
 type ScriptModalProps = {
   title: string
@@ -13,7 +13,7 @@ type ScriptModalProps = {
   onClose: () => void
 }
 
-const selectableTypes = ["banner", "widget"]
+const selectableTypes = ['banner', 'widget']
 
 export const ScriptModal = ({
   title,
@@ -35,7 +35,7 @@ export const ScriptModal = ({
   }
 
   useEffect(() => {
-    const script = scriptForDisplay.replace("[elements]", types.join("|"))
+    const script = scriptForDisplay.replace('[elements]', types.join('|'))
     setProcessedScript(script)
   }, [types, scriptForDisplay])
 

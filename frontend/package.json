@@ -10,9 +10,8 @@
     "run:dev": "pnpm remix vite:dev",
     "watch:script": "pnpm run watch:init",
     "watch:init": "vite build --watch --config vite.script.config.ts",
-    "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "pnpm build:init && remix-serve ./build/server/index.js",
-    "typecheck": "tsc"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
@@ -40,15 +39,7 @@
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.7",
     "@types/uuid": "^9.0.8",
-    "@typescript-eslint/eslint-plugin": "^7.3.1",
-    "@typescript-eslint/parser": "^7.3.1",
     "eslint": "^8.57.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-import-resolver-typescript": "^3.6.1",
-    "eslint-plugin-import": "^2.28.1",
-    "eslint-plugin-jsx-a11y": "^6.7.1",
-    "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
     "npm-run-all": "^4.1.5",
     "typescript": "5.1.6",
     "vite-tsconfig-paths": "^4.2.1"

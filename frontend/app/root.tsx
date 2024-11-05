@@ -1,9 +1,5 @@
-import type {
-  LinksFunction,
-  MetaFunction,
-  LoaderFunctionArgs
-} from "@remix-run/node"
-import { json } from "@remix-run/node"
+import type { LinksFunction, MetaFunction } from '@remix-run/node'
+import { json } from '@remix-run/node'
 import {
   Links,
   Meta,
@@ -13,14 +9,14 @@ import {
   useLoaderData,
   useRouteError,
   isRouteErrorResponse
-} from "@remix-run/react"
-import type { ReactNode } from "react"
-import { useEffect, useState } from "react"
-import stylesheet from "~/tailwind.css?url"
-import { Button, Footer, Header, Snackbar } from "./components"
-import { XCircle } from "./components/icons"
+} from '@remix-run/react'
+import type { ReactNode } from 'react'
+import { useEffect, useState } from 'react'
+import stylesheet from '~/tailwind.css?url'
+import { Button, Footer, Header, Snackbar } from './components/index.js'
+import { XCircle } from './components/icons.js'
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async () => {
   let message
 
   if (!message) {
@@ -112,7 +108,7 @@ export function ErrorBoundary() {
     )
   }
 
-  let errorMessage = "Unknown error"
+  let errorMessage = 'Unknown error'
   if (error instanceof Error) {
     errorMessage = error.message
   }
@@ -138,17 +134,17 @@ export function ErrorBoundary() {
 }
 
 export const meta: MetaFunction = () => [
-  { title: "WebMonetization Tools" },
-  { charset: "utf-8" },
-  { name: "viewport", content: "width=device-width,initial-scale=1" }
+  { title: 'WebMonetization Tools' },
+  { charset: 'utf-8' },
+  { name: 'viewport', content: 'width=device-width,initial-scale=1' }
 ]
 
 export const links: LinksFunction = () => [
-  { rel: "preconnect", href: "https://fonts.googleapis.com" },
+  { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
   {
-    rel: "preconnect",
-    href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous"
+    rel: 'preconnect',
+    href: 'https://fonts.gstatic.com',
+    crossOrigin: 'anonymous'
   },
-  { rel: "stylesheet", href: stylesheet }
+  { rel: 'stylesheet', href: stylesheet }
 ]

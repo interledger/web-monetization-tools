@@ -1,24 +1,24 @@
-import type { z } from "zod"
+import type { z } from 'zod'
 import {
   createBannerSchema,
   createButtonSchema,
   createWidgetSchema
-} from "./validate.server"
+} from './validate.server.js'
 
 export enum CornerType {
-  None = "None",
-  Light = "Light",
-  Pill = "Pill"
+  None = 'None',
+  Light = 'Light',
+  Pill = 'Pill'
 }
 
 export enum SlideAnimationType {
-  None = "None",
-  Down = "Down"
+  None = 'None',
+  Down = 'Down'
 }
 
 export enum PositionType {
-  Top = "Top",
-  Bottom = "Bottom"
+  Top = 'Top',
+  Bottom = 'Bottom'
 }
 
 export interface ElementConfigType {

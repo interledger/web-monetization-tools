@@ -6,7 +6,7 @@ export const FieldError = ({ error }: FieldErrorProps) => {
   if (!error) return null
 
   return (
-    <div className='text-red-500 text-sm'>
+    <div className="text-red-500 text-sm">
       {Array.isArray(error) ? (
         <>
           {error.map((e) => (

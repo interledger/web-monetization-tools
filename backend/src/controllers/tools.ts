@@ -5,8 +5,8 @@ import {
   getDefaultData,
   getS3AndParams,
   streamToString
-} from '../services/utils'
-import { S3FileNotFoundError } from '../services/errors'
+} from '../services/utils.js'
+import { S3FileNotFoundError } from '../services/errors.js'
 
 export const getDefault = async (_: Request, res: Response) => {
   try {
