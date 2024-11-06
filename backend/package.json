@@ -18,14 +18,18 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.645.0",
+    "@interledger/open-payments": "^6.13.2",
     "@smithy/node-http-handler": "^3.2.3",
     "@types/underscore": "^1.11.15",
+    "cookie-parser": "^1.4.7",
+    "cookie-session": "^2.1.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "module-alias": "^2.2.3",
     "tsc-alias": "^1.8.10",
     "tsx": "^4.19.0",
-    "underscore": "^1.13.7"
+    "underscore": "^1.13.7",
+    "zod": "^3.23.8"
   },
   "_moduleAliases": {
     "@controllers": "./src/controllers",

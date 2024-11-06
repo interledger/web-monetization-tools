@@ -2,7 +2,9 @@ import 'module-alias/register'
 import https from 'https'
 import http from 'https'
 import fs from 'fs'
-import express, { Express } from 'express'
+import express, { Express, Request, Response  } from 'express'
+import cookieParser from 'cookie-parser';
+// import cookieSession from 'cookie-session';
 import routes from './routes/index'
 
 const router: Express = express()
@@ -19,6 +21,7 @@ if (isDevelopment) {
   credentials = { key: privateKey, cert: certificate }
 }
 
+router.use(cookieParser())
 router.use(express.urlencoded({ extended: true }))
 router.use(express.json())
 
