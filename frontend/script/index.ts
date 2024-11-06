@@ -1,7 +1,7 @@
 /* eslint-disable no-case-declarations */
-const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL
-const API_URL = import.meta.env.VITE_API_URL
-const ILPAY_URL = import.meta.env.VITE_ILPAY_URL
+const FRONTEND_URL = import.meta.env.VITE_SCRIPT_FRONTEND_URL
+const API_URL = import.meta.env.VITE_SCRIPT_API_URL
+const ILPAY_URL = import.meta.env.VITE_SCRIPT_ILPAY_URL
 
 let paramTypes: string[] | undefined, paramWallet: string | undefined, urlWallet
 

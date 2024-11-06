@@ -39,6 +39,16 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     --offline \
     --frozen-lockfile
 RUN pnpm --filter frontend build
+
+# Adding build time environment variables for script
+ARG VITE_SCRIPT_API_URL
+ARG VITE_SCRIPT_FRONTEND_URL
+ARG VITE_SCRIPT_ILPAY_URL
+
+ENV VITE_SCRIPT_API_URL=$VITE_SCRIPT_API_URL \
+    VITE_SCRIPT_FRONTEND_URL=$VITE_SCRIPT_FRONTEND_URL \
+    VITE_SCRIPT_ILPAY_URL=$VITE_SCRIPT_ILPAY_URL
+
 RUN pnpm --filter frontend build:init
 
 FROM node:20-alpine3.19 AS runner

@@ -11,16 +11,14 @@ export type ApiResponse<T = any> = {
 }
 
 const isProd = import.meta.env.PROD
-const apiUrl = isProd
-  ? import.meta.env.VITE_API_URL
-  : import.meta.env.VITE_INTERNAL_API_URL // internal because docker issues
+const apiUrl = process.env.API_URL!
 
 let httpsAgent: https.Agent | undefined
 
 if (!isProd) {
   try {
     // Load self-signed certificate
-    const backendCert = fs.readFileSync('/certs/cert.pem')
+    const backendCert = fs.readFileSync('/app/certs/cert.pem')
 
     // Create an HTTPS agent with the certificate
     httpsAgent = isProd

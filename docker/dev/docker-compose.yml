@@ -1,25 +1,27 @@
 name: wm-tools
 services:
   backend:
+    hostname: backend
     build:
-      context: ../../backend
-      dockerfile: Dockerfile.dev
+      context: ../..
+      dockerfile: backend/Dockerfile.dev
     command: pnpm nodemon --watch . --ext ts,js,mjs,cjs,json --exec "pnpm tsx src/server.ts"
     ports:
       - '5101:5101'
     expose:
       - '5101'
     volumes:
-      - ../../backend:/app
-      - ../../certs:/certs # Ensure certificates are available
-      - /app/node_modules
+      - ../../certs:/app/certs # Ensure certificates are available
+      - ../../backend:/app/backend
+      - ../../node_modules:/app/node_modules
+      - ../../backend/node_modules:/app/backend/node_modules
     networks:
       - wm-tools
     environment:
       PORT: 5101
       NODE_ENV: development
-      SSL_CERT: /certs/cert.pem
-      SSL_KEY: /certs/key.pem
+      SSL_CERT: /app/certs/cert.pem
+      SSL_KEY: /app/certs/key.pem
       CHOKIDAR_USEPOLLING: 'true'
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
@@ -29,9 +31,14 @@ services:
       AWS_RETRY_TIMEOUT: ${AWS_RETRY_TIMEOUT}
 
   frontend:
+    hostname: frontend
     build:
-      context: ../../frontend
-      dockerfile: Dockerfile.dev
+      context: ../..
+      dockerfile: frontend/Dockerfile.dev
+      args:
+        VITE_SCRIPT_API_URL: ${SCRIPT_API_URL}
+        VITE_SCRIPT_FRONTEND_URL: ${SCRIPT_FRONTEND_URL}
+        VITE_SCRIPT_ILPAY_URL: ${SCRIPT_ILPAY_URL}
     ports:
       - '5100:5100'
     expose:
@@ -39,22 +46,20 @@ services:
     environment:
       PORT: 5100
       NODE_ENV: development
-      SSL_CERT: /certs/cert.pem
-      SSL_KEY: /certs/key.pem
-      CHOKIDAR_USEPOLLING: 'true'
-      VITE_INTERNAL_API_URL: ${INTERNAL_API_URL}
-      VITE_API_URL: ${API_URL} # VITE_ prefix to accomodate VITE in FE
-      VITE_FRONTEND_URL: ${FRONTEND_URL}
-      VITE_ILPAY_URL: ${ILPAY_URL}
+      API_URL: ${API_URL}
+      ILPAY_URL: ${SCRIPT_ILPAY_URL}
+      FRONTEND_URL: ${SCRIPT_FRONTEND_URL}
     networks:
       - wm-tools
     command: pnpm run dev
     depends_on:
       - backend
     volumes:
-      - ../../frontend:/app
-      - ../../certs:/certs
-      - /app/node_modules
+      - ../../certs:/app/certs
+      - ../../frontend:/app/frontend
+      - ../../node_modules:/app/node_modules
+      - ../../frontend/node_modules:/app/frontend/node_modules
+
 networks:
   wm-tools:
     driver: bridge

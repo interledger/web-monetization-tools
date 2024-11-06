@@ -49,5 +49,6 @@ COPY --from=prod-deps /home/wm-tools/backend/node_modules ./backend/node_modules
 COPY --from=prod-deps /home/wm-tools/backend/package.json ./backend/package.json
 
 COPY --from=builder /home/wm-tools/backend/dist ./backend/dist
+COPY --from=builder /home/wm-tools/backend/src/data/default_config.json ./backend/dist/data/default_config.json
 
 CMD ["node", "/home/wm-tools/backend/dist/server.js"]

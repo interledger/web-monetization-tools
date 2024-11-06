@@ -1,5 +1,6 @@
 **/node_modules
 **/dist
+**/build
 **/tmp
 **/docs
 
@@ -25,3 +26,4 @@ bruno
 **/docker-compose.yml
 
 **/*.test.ts
+**/init.js

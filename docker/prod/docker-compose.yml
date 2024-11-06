@@ -1,6 +1,7 @@
 name: wm-tools
 services:
   backend:
+    hostname: backend
     build:
       context: ../..
       dockerfile: backend/Dockerfile
@@ -21,9 +22,14 @@ services:
       AWS_RETRY_TIMEOUT: ${AWS_RETRY_TIMEOUT}
 
   frontend:
+    hostname: frontend
     build:
       context: ../..
       dockerfile: frontend/Dockerfile
+      args:
+        VITE_SCRIPT_API_URL: ${SCRIPT_API_URL}
+        VITE_SCRIPT_FRONTEND_URL: ${SCRIPT_FRONTEND_URL}
+        VITE_SCRIPT_ILPAY_URL: ${SCRIPT_ILPAY_URL}
     ports:
       - '5100:5100'
     expose:
@@ -31,10 +37,9 @@ services:
     environment:
       PORT: 5100
       NODE_ENV: production
-      VITE_INTERNAL_API_URL: ${INTERNAL_API_URL}
-      VITE_API_URL: ${API_URL} # VITE_ prefix to accomodate VITE in FE
-      VITE_FRONTEND_URL: ${FRONTEND_URL}
-      VITE_ILPAY_URL: ${ILPAY_URL}
+      API_URL: ${API_URL}
+      ILPAY_URL: ${SCRIPT_ILPAY_URL}
+      FRONTEND_URL: ${SCRIPT_FRONTEND_URL}
     networks:
       - wm-tools
     depends_on:

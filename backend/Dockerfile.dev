@@ -8,24 +8,24 @@ RUN corepack enable
 RUN corepack prepare pnpm@9.12.1 --activate
 
 # Copy package.json and pnpm lock file
-COPY pnpm-lock.yaml package.json tsconfig.json tsconfig.build.json ./
-
-# Set NODE_ENV to development to install devDependencies
-ENV NODE_ENV=development
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json tsconfig.base.json ./
 
 # Install pnpm and dependencies
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm fetch \
     | grep -v "cross-device link not permitted\|Falling back to copying packages from store"
 
-COPY . ./
+COPY backend ./backend
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm i \
+    --recursive \
     --frozen-lockfile
 
 # Expose the backend port
 EXPOSE 5101
+
+WORKDIR /app/backend
 
 # Use Nodemon to watch for file changes and restart the server
 CMD ["pnpm", "nodemon", "--watch", ".", "--ext", "ts,js,mjs,cjs,json", "--exec", "pnpm", "tsx", "src/server.ts"]
