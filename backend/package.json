@@ -20,6 +20,7 @@
     "@aws-sdk/client-s3": "^3.645.0",
     "@interledger/open-payments": "^6.13.2",
     "@smithy/node-http-handler": "^3.2.3",
+    "@types/cookie-parser": "^1.4.7",
     "@types/underscore": "^1.11.15",
     "cookie-parser": "^1.4.7",
     "cookie-session": "^2.1.0",
