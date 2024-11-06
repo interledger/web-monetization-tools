@@ -7,6 +7,7 @@ import {
   useNavigation
 } from '@remix-run/react'
 import { useEffect, useState } from 'react'
+import { ImportModal } from '~/components/ImportModal'
 import {
   ErrorPanel,
   NotFoundConfig,
@@ -54,6 +55,7 @@ export default function Create() {
 
   const [toolConfig, setToolConfig] = useState<ElementConfigType>(defaultConfig)
   const [modalOpen, setModalOpen] = useState(false)
+  const [importModalOpen, setImportModalOpen] = useState(false)
 
   const wa = (toolConfig?.walletAddress || '')
     .replace('$', '')
@@ -69,7 +71,7 @@ export default function Create() {
 
   return (
     <div className="flex flex-col gap-6 min-w-128 max-w-prose mx-auto my-8">
-      <PageHeader title={`Create ${elementType}`} link="/" />
+      <PageHeader title={`Create ${elementType}`} link="/" setImportModalOpen={setImportModalOpen} />
       {validConfigTypes.includes(String(elementType)) ? (
         <div className="flex flex-col">
           <Form method="post" replace>
@@ -101,6 +103,12 @@ export default function Create() {
         scriptForDisplay={scriptToDisplay}
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
+      />
+      <ImportModal 
+        title="Import config from wallet address"
+        isOpen={importModalOpen}
+        onClose={() => setImportModalOpen(false)}
+        
       />
     </div>
   )

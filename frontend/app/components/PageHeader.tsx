@@ -1,13 +1,16 @@
 import { useNavigate } from '@remix-run/react'
 import { cx } from 'class-variance-authority'
 import { Button } from './Button.js'
+import { Chevron } from './icons.js'
 
 export const PageHeader = ({
   title,
-  link
+  link,
+  setImportModalOpen
 }: {
   title: string
   link: string
+  setImportModalOpen: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
   const navigate = useNavigate()
   return (
@@ -21,12 +24,16 @@ export const PageHeader = ({
       </div>
       <div className="ml-auto">
         <Button
+          className="mr-2"
           aria-label="back"
           onClick={() => {
             navigate(`${link}`)
           }}
         >
-          Back
+          <Chevron direction="left" className="w-3 h-3 mr-1 -ml-1" /> Back
+        </Button>
+        <Button aria-label="import" onClick={() => setImportModalOpen(true)}>
+          <Chevron direction="up" className="w-3 h-3 mr-1 -ml-1" /> Import
         </Button>
       </div>
     </div>

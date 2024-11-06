@@ -17,6 +17,7 @@ import {
   widgetControlOptions
 } from '~/lib/presets.js'
 import { Button, Input, Select, ColorPicker, Textarea } from './index.js'
+import { WalletAddress } from './WalletAddress.js'
 
 type ToolConfigProps = {
   type?: string
@@ -482,34 +483,6 @@ const renderElementConfig = ({
     default:
       return <NotFoundConfig />
   }
-}
-
-const WalletAddress = ({
-  errors,
-  config,
-  setToolConfig
-}: {
-  errors?: ElementErrors
-  config: ElementConfigType
-  setToolConfig: React.Dispatch<React.SetStateAction<ElementConfigType>>
-}) => {
-  return (
-    <div className="w-full my-4">
-      <Input
-        name="walletAddress"
-        label="Wallet address"
-        placeholder="https://ase-provider-url/jdoe"
-        error={errors?.fieldErrors.walletAddress}
-        onChange={(e) =>
-          setToolConfig({
-            ...config,
-            walletAddress: e.target.value ?? ''
-          })
-        }
-        withBorder
-      />
-    </div>
-  )
 }
 
 export const ToolConfig = ({
