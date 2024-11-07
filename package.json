@@ -21,6 +21,7 @@
     "lint:check": "eslint . --cache --cache-location 'node_modules/.cache/eslintcache' --max-warnings 0",
     "localenv:install": "pnpm i && pnpm --filter ./backend install && pnpm --filter ./frontend install",
     "localenv:start": "docker compose -f ./docker/dev/docker-compose.yml build --no-cache && docker compose -f ./docker/dev/docker-compose.yml up -d",
+    "localenv:up": "docker compose -f ./docker/dev/docker-compose.yml",
     "localenv:stop": "docker compose -f ./docker/dev/docker-compose.yml down",
     "typecheck": "pnpm -r typecheck"
   },

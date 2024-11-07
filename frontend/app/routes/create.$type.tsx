@@ -39,8 +39,8 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   const apiResponse: ApiResponse = await ApiClient.getDefaultConfig()
   const defaultConfig: ElementConfigType = apiResponse?.payload
 
-  const ilpayUrl = process.env.VITE_ILPAY_URL || ''
-  const toolsUrl = process.env.VITE_FRONTEND_URL || ''
+  const ilpayUrl = process.env.ILPAY_URL || ''
+  const toolsUrl = process.env.FRONTEND_URL || ''
 
   return { elementType, defaultConfig, message, ilpayUrl, toolsUrl }
 }

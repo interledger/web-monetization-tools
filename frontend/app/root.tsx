@@ -61,7 +61,7 @@ export default function App() {
           dismissAfter={2000}
         />
         <ScrollRestoration />
-        <Scripts />
+        <Scripts crossOrigin="" />
       </body>
     </html>
   )
