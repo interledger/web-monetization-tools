@@ -20,6 +20,7 @@ COPY backend ./backend
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm i \
     --recursive \
+    --prefer-offline \
     --frozen-lockfile
 
 # Expose the backend port
