@@ -33,7 +33,7 @@ type ButtonProps = VariantProps<typeof buttonStyles> &
   }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ intent, children, className, variant, ...props }, ref) => {
+  ({ intent, children, className, ...props }, ref) => {
     return (
       <ButtonOrLink
         ref={ref}
