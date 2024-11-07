@@ -39,8 +39,8 @@ jobs:
             path: backend
           - name: web-monetization-tools-frontend
             identifier: frontend
-            script_api_url: <tbd>
-            script_frontend_url: <tbd>
+            script_api_url: https://wmtools-backend.interledger-test.dev/
+            script_frontend_url: https://wmtools.interledger-test.dev/
             script_ilpay_url: https://interledgerpay.com/extension/
     steps:
       - name: Checkout code
