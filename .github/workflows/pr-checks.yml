@@ -1,0 +1,45 @@
+name: PR Checks
+
+on:
+  push:
+    branches:
+      - '!main'
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/workflows/setup
+      - run: pnpm typecheck
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Environment setup
+        uses: ./.github/workflows/setup
+      - name: Check lint
+        run: pnpm lint:check
+
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Environment setup
+        uses: ./.github/workflows/setup
+      - name: Check format
+        run: pnpm format:check
