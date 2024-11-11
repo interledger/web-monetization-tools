@@ -4,7 +4,8 @@ import _ from 'underscore'
 import { z, RefinementCtx } from "zod";
 import {
   fetchQuote,
-  getValidWalletAddress
+  getValidWalletAddress,
+  getOutgoingPaymentGrant
 } from '../services/open-payments.server'
 import { getSession } from "../services/session"
 
@@ -30,12 +31,13 @@ type schemaType = {
   action?: string,
   css?: string
 }
+
 export const getQuote = async (req: Request, res: Response) => {
   try {
-   
+   let sesData: {};
     const data ={
       walletAddress: req.body.walletAddress,
-      receiver: req.body.receiver,
+      receiver: "$".concat(req.body.receiver),
       amount: req.body.amount,
       note:  req.body.note
     }
@@ -53,11 +55,14 @@ export const getQuote = async (req: Request, res: Response) => {
       ...req.session,
       'fromExtension': true
     }
+    sesData = {
+      'fromExtension': true
+    }
     //session.fromExtension = true;
 
 
     console.log('session value:', session);
-    let walletAddress;
+    let walletAddress,receiverName,debitAmount;
     let receiver = {} as WalletAddress;
 
     const formData = data;//await request.formData();
@@ -78,13 +83,14 @@ export const getQuote = async (req: Request, res: Response) => {
         // });
         req.session = {
           ...req.session,
-          "wallet-address": {
-            walletAddress: walletAddress,
-          },
-          "receiver-wallet-address": receiver
+          "walletAddress": walletAddress,
+          "receiverWalletAddress": receiver
         }
-        //session.set("receiver-wallet-address", receiver);
-        
+        sesData = {
+          ...sesData,
+          "walletAddress": walletAddress,
+          "receiverWalletAddress": receiver
+        }
         return data;
       } catch (error) {
         console.log("super fine exception",error);
@@ -119,8 +125,19 @@ export const getQuote = async (req: Request, res: Response) => {
         "quote": quote,
         "submission": submission
       }
-      console.log(" req.session", req.session)
-      resp = submission;
+      sesData = {
+        ...sesData,
+        "quote": quote,
+        "submission": submission
+      }
+      console.log(" req.session", sesData)
+      
+      res.cookie("ilpay-session", JSON.stringify(quote), {
+        maxAge: 300 * 1000, // 300 seconds or 5 minutes
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Secure only in production
+        sameSite: "lax", // Ensures the cookie is sent in cross-site requests
+      });
     }
     res.status(200).send(req.session)
     } catch (error) {
@@ -129,8 +146,48 @@ export const getQuote = async (req: Request, res: Response) => {
     }
 
 }
+export const initializePayment = async (req: Request, res: Response) => {
+  try {
 
+    // const quote = req.body.quote;
+    // const walletAddress = req.body.walletAddress;
+    const { quote, walletAddress, redirectUrl }  = req.body
+    console.log("req.body ",req.body)
+    if (quote === undefined || walletAddress === undefined) {
+      throw new Error("Payment session expired.");
+    }
+    if (!quote) {
+      throw 'Wallet address is required'
+    }
+    if (!walletAddress) {
+      throw 'Wallet address is required'
+    }
 
+    const grant = await getOutgoingPaymentGrant({
+      walletAddress: walletAddress.id,
+      quote,
+      redirectUrl
+    });
+    console.log("grant: ",grant)
+    req.session = {
+      ...req.session,
+      paymentGrant: grant
+    }
+
+    // the cookie magic here 
+    // return redirect(grant.interact.redirect, {
+    //   headers: { "Set-Cookie": commitSession(req.session) },
+    // });
+
+    res.status(200).send(req.session)
+
+  } catch (error) {
+    console.log(error)
+    res.status(500).send('An error occurred when fetching data')
+  }
+
+}
 export default {
-  getQuote
+  getQuote,
+  initializePayment
 }

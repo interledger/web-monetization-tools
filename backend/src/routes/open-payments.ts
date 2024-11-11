@@ -1,9 +1,9 @@
 import type { Router } from "express"
-import { getQuote } from "../controllers/open-payments"
+import { getQuote, initializePayment } from "../controllers/open-payments"
 
 const opRoutes = (router: Router) => {
   router.post("/op/getQuote", getQuote)
-  //router.post("/op/payment", getPaymentETC)
+  router.post("/op/initializePayment", initializePayment)
   
   return router
 }

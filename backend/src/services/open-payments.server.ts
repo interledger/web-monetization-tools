@@ -1,5 +1,6 @@
 import {
   type AuthenticatedClient,
+  PendingGrant,
   //type PendingGrant,
   type Quote,
   type WalletAddress,
@@ -7,8 +8,8 @@ import {
   //isFinalizedGrant,
   isPendingGrant,
 } from "@interledger/open-payments";
-// import { createId } from "@paralleldrive/cuid2";
-// import { randomUUID } from "crypto";
+import { createId } from "@paralleldrive/cuid2";
+import { randomUUID } from "crypto";
 
 async function createClient() {
   return await createAuthenticatedClient({
@@ -217,4 +218,94 @@ async function getQuoteGrant({ authServer, opClient }: QuoteGrantParams) {
     .catch(() => {
       throw new Error("Could not retrieve quote grant.");
     });
+}
+
+export interface Amount {
+  value: string;
+  assetCode: string;
+  assetScale: number;
+}
+type CreateOutgoingPaymentParams = {
+  walletAddress: WalletAddress;
+  debitAmount?: Amount;
+  receiveAmount?: Amount;
+  nonce?: string;
+  paymentId: string;
+  opClient: AuthenticatedClient;
+  redirectUrl: string
+};
+
+async function createOutgoingPaymentGrant(
+  params: CreateOutgoingPaymentParams
+): Promise<PendingGrant> {
+  const {
+    walletAddress,
+    debitAmount,
+    receiveAmount,
+    nonce,
+    paymentId,
+    opClient,
+    redirectUrl
+  } = params;
+
+  const grant = await opClient.grant
+    .request(
+      {
+        url: walletAddress.authServer,
+      },
+      {
+        access_token: {
+          access: [
+            {
+              identifier: walletAddress.id,
+              type: "outgoing-payment",
+              actions: ["create", "read", "list"],
+              limits: {
+                debitAmount: debitAmount,
+                receiveAmount: receiveAmount,
+              },
+            },
+          ],
+        },
+        interact: {
+          start: ["redirect"],
+          finish: {
+            method: "redirect",
+            uri: `${redirectUrl}?paymentId=${paymentId}`,
+            nonce: nonce || "",
+          },
+        },
+      }
+    )
+    .catch(() => {
+      throw new Error("Could not retrieve outgoing payment grant.");
+    });
+
+  if (!isPendingGrant(grant)) {
+    throw new Error("Expected interactive outgoing payment grant.");
+  }
+
+  return grant;
+}
+
+export async function getOutgoingPaymentGrant(args: {
+  walletAddress: string;
+  quote: Quote;
+  redirectUrl: string
+}) {
+  const opClient = await createClient();
+  const walletAddress = await getWalletAddress(args.walletAddress, opClient);
+  const clientNonce = randomUUID();
+  const paymentId = createId();
+
+  const outgoingPaymentGrant = await createOutgoingPaymentGrant({
+    walletAddress: walletAddress,
+    debitAmount: args.quote.debitAmount,
+    receiveAmount: args.quote.receiveAmount,
+    nonce: clientNonce,
+    paymentId: paymentId,
+    opClient,
+    redirectUrl: args.redirectUrl
+  });
+  return outgoingPaymentGrant;
 }
