@@ -46,14 +46,14 @@
 }
 
 ._wm_tools_widget_iframe_wrapper {
-  display: flex;
-  overflow: hidden;
+  /* display: flex; */
+  /* overflow: hidden; */
   height: 100%;
 }
 
 ._wm_tools_widget_iframe {
   display: flex;
-  overflow: hidden;
+  /* overflow: hidden; */
   height: 100%;
   width: 100%;
   box-sizing: border-box;

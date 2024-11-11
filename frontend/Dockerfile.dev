@@ -8,7 +8,7 @@ RUN corepack enable
 RUN corepack prepare pnpm@9.12.1 --activate
 
 # Copy package.json and pnpm lock file
-COPY pnpm-lock.yaml package.json tsconfig.json vite.config.ts vite.script.config.ts postcss.config.js ./
+COPY pnpm-lock.yaml package.json tsconfig.json vite.config.ts vite.script.config.ts postcss.config.js tailwind.script.config.ts ./
 
 # Set NODE_ENV to development to install devDependencies
 ENV NODE_ENV=development

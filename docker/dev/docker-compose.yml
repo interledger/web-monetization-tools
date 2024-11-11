@@ -21,6 +21,9 @@ services:
       SSL_CERT: /certs/cert.pem
       SSL_KEY: /certs/key.pem
       CHOKIDAR_USEPOLLING: "true"
+      KEY_ID: ${KEY_ID}
+      PRIVATE_KEY: ${PRIVATE_KEY}
+      WALLET_ADDRESS: ${WALLET_ADDRESS}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_REGION: ${AWS_REGION}
@@ -42,10 +45,15 @@ services:
       SSL_CERT: /certs/cert.pem
       SSL_KEY: /certs/key.pem
       CHOKIDAR_USEPOLLING: "true"
+      VITE_KEY_ID: ${KEY_ID}
+      VITE_PRIVATE_KEY: ${PRIVATE_KEY}
+      VITE_WALLET_ADDRESS: ${WALLET_ADDRESS}
       VITE_INTERNAL_API_URL: ${INTERNAL_API_URL}
+      VITE_EXTERNAL_API_URL: ${EXTERNAL_API_URL}
       VITE_API_URL: ${API_URL} # VITE_ prefix to accomodate VITE in FE
       VITE_FRONTEND_URL: ${FRONTEND_URL}
       VITE_ILPAY_URL: ${ILPAY_URL}
+      REMIX_PUBLIC_NODE_ENV: development
     networks:
       - wm-tools
     command: pnpm run dev
