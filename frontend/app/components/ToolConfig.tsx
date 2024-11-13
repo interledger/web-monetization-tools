@@ -17,6 +17,7 @@ import {
   widgetControlOptions
 } from '~/lib/presets.js'
 import { Button, Input, Select, ColorPicker, Textarea } from './index.js'
+import { WalletAddress } from './WalletAddressInput.js'
 
 type ToolConfigProps = {
   type?: string
@@ -24,6 +25,7 @@ type ToolConfigProps = {
   defaultConfig: ElementConfigType
   setToolConfig: React.Dispatch<React.SetStateAction<ElementConfigType>>
   errors?: ElementErrors
+  isSubmiting?: boolean
 }
 
 type PartialToolConfigProps = Omit<ToolConfigProps, 'defaultConfig'>
@@ -484,39 +486,12 @@ const renderElementConfig = ({
   }
 }
 
-const WalletAddress = ({
-  errors,
-  config,
-  setToolConfig
-}: {
-  errors?: ElementErrors
-  config: ElementConfigType
-  setToolConfig: React.Dispatch<React.SetStateAction<ElementConfigType>>
-}) => {
-  return (
-    <div className="w-full my-4">
-      <Input
-        name="walletAddress"
-        label="Wallet address"
-        placeholder="https://ase-provider-url/jdoe"
-        error={errors?.fieldErrors.walletAddress}
-        onChange={(e) =>
-          setToolConfig({
-            ...config,
-            walletAddress: e.target.value ?? ''
-          })
-        }
-        withBorder
-      />
-    </div>
-  )
-}
-
 export const ToolConfig = ({
   type,
   toolConfig,
   defaultConfig,
   setToolConfig,
+  isSubmiting,
   errors
 }: ToolConfigProps) => {
   return (
@@ -535,13 +510,17 @@ export const ToolConfig = ({
             intent="reset"
             className="mr-2"
             aria-label="reset config"
+            disabled={isSubmiting}
             onClick={() => setToolConfig(defaultConfig)}
           >
             Reset
           </Button>
-          <Button aria-label="save config" type="submit">
+          <Button aria-label="save config" type="submit" disabled={isSubmiting}>
             <img
-              className={cx('flex max-h-24 mr-2')}
+              className={cx(
+                'flex max-h-24 mr-2',
+                isSubmiting ? 'animate-spin' : ''
+              )}
               src={`/images/refresh.svg`}
               alt="generate"
             />
