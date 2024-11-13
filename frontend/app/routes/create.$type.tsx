@@ -6,6 +6,7 @@ import {
   useNavigation
 } from '@remix-run/react'
 import { useEffect, useState } from 'react'
+import { json } from '@remix-run/node'
 import {
   ErrorPanel,
   NotFoundConfig,
@@ -133,7 +134,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   if (!result.success) {
     errors.fieldErrors = result.error.flatten().fieldErrors
-    return Response.json({ errors }, { status: 400 })
+    return json({ errors }, { status: 400 })
   }
 
   const payload = result.data
@@ -148,5 +149,5 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   const apiResponse: ApiResponse = await ApiClient.saveUserConfig(payload)
 
-  return Response.json({ errors, apiResponse }, { status: 200 })
+  return json({ errors, apiResponse }, { status: 200 })
 }

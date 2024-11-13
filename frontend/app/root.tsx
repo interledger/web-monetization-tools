@@ -9,6 +9,7 @@ import {
   useRouteError,
   isRouteErrorResponse
 } from '@remix-run/react'
+import { json } from '@remix-run/node'
 import type { ReactNode } from 'react'
 import { useEffect, useState } from 'react'
 import stylesheet from '~/tailwind.css?url'
@@ -19,10 +20,10 @@ export const loader = async () => {
   let message
 
   if (!message) {
-    return Response.json({ message: null })
+    return json({ message: null })
   }
 
-  return Response.json({ message })
+  return json({ message })
 }
 
 export default function App() {
