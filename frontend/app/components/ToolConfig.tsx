@@ -17,7 +17,7 @@ import {
   widgetControlOptions
 } from '~/lib/presets.js'
 import { Button, Input, Select, ColorPicker, Textarea } from './index.js'
-import { WalletAddress } from './WalletAddress.js'
+import { WalletAddress } from './WalletAddressInput.js'
 
 type ToolConfigProps = {
   type?: string
@@ -25,6 +25,7 @@ type ToolConfigProps = {
   defaultConfig: ElementConfigType
   setToolConfig: React.Dispatch<React.SetStateAction<ElementConfigType>>
   errors?: ElementErrors
+  isSubmiting?: boolean
 }
 
 type PartialToolConfigProps = Omit<ToolConfigProps, 'defaultConfig'>
@@ -490,6 +491,7 @@ export const ToolConfig = ({
   toolConfig,
   defaultConfig,
   setToolConfig,
+  isSubmiting,
   errors
 }: ToolConfigProps) => {
   return (
@@ -508,13 +510,17 @@ export const ToolConfig = ({
             intent="reset"
             className="mr-2"
             aria-label="reset config"
+            disabled={isSubmiting}
             onClick={() => setToolConfig(defaultConfig)}
           >
             Reset
           </Button>
-          <Button aria-label="save config" type="submit">
+          <Button aria-label="save config" type="submit" disabled={isSubmiting}>
             <img
-              className={cx('flex max-h-24 mr-2')}
+              className={cx(
+                'flex max-h-24 mr-2',
+                isSubmiting ? 'animate-spin' : ''
+              )}
               src={`/images/refresh.svg`}
               alt="generate"
             />

@@ -22,7 +22,7 @@ export interface CopyButtonProps
 }
 
 export const CopyButton = forwardRef<HTMLButtonElement, CopyButtonProps>(
-  ({ value, size, ctaText, afterCtaText, variant, ...props }, ref) => {
+  ({ value, size, ctaText, afterCtaText, variant }, ref) => {
     const [isCopied, setIsCopied] = useState(false)
 
     useEffect(() => {

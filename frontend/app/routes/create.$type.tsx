@@ -1,7 +1,6 @@
-import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node'
+import { ActionFunctionArgs, LoaderFunctionArgs, json } from '@remix-run/node'
 import {
   Form,
-  json,
   useActionData,
   useLoaderData,
   useNavigation
@@ -18,6 +17,7 @@ import {
 } from '~/components/index.js'
 import { ApiClient, ApiResponse } from '~/lib/apiClient.js'
 import { type Message, messageStorage } from '~/lib/message.server.js'
+import { validConfigTypes } from '~/lib/presets.js'
 import { ElementConfigType, ElementErrors } from '~/lib/types.js'
 import { encodeAndCompressParameters, getIlpayCss } from '~/lib/utils.js'
 import {
@@ -25,8 +25,6 @@ import {
   createButtonSchema,
   createWidgetSchema
 } from '~/lib/validate.server'
-
-const validConfigTypes = ['button', 'banner', 'widget']
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const elementType = params.type
@@ -40,8 +38,8 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   const apiResponse: ApiResponse = await ApiClient.getDefaultConfig()
   const defaultConfig: ElementConfigType = apiResponse?.payload
 
-  const ilpayUrl = process.env.VITE_ILPAY_URL || ''
-  const toolsUrl = process.env.VITE_FRONTEND_URL || ''
+  const ilpayUrl = process.env.ILPAY_URL || ''
+  const toolsUrl = process.env.FRONTEND_URL || ''
 
   return { elementType, defaultConfig, message, ilpayUrl, toolsUrl }
 }
@@ -71,7 +69,12 @@ export default function Create() {
 
   return (
     <div className="flex flex-col gap-6 min-w-128 max-w-prose mx-auto my-8">
-      <PageHeader title={`Create ${elementType}`} link="/" setImportModalOpen={setImportModalOpen} />
+      <PageHeader
+        title={`Create ${elementType}`}
+        elementType={elementType}
+        setImportModalOpen={setImportModalOpen}
+        link="/"
+      />
       {validConfigTypes.includes(String(elementType)) ? (
         <div className="flex flex-col">
           <Form method="post" replace>
@@ -86,6 +89,7 @@ export default function Create() {
                 toolConfig={toolConfig}
                 defaultConfig={defaultConfig}
                 setToolConfig={setToolConfig}
+                isSubmiting={isSubmitting}
                 errors={response?.errors}
               />
             </fieldset>
@@ -99,16 +103,20 @@ export default function Create() {
       )}
       <ScriptModal
         title="Your script"
+        tooltip="Copy your script, place it before the closing body tag in your website, or place it into a script type element in instances when you have a site management software (ex: wordpress, etc). 
+        <br />Check all options at the include section, that you want to display on your website."
         defaultType={elementType}
         scriptForDisplay={scriptToDisplay}
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
       />
-      <ImportModal 
+      <ImportModal
         title="Import config from wallet address"
         isOpen={importModalOpen}
         onClose={() => setImportModalOpen(false)}
-        
+        toolConfig={toolConfig}
+        setToolConfig={setToolConfig}
+        errors={response?.errors}
       />
     </div>
   )

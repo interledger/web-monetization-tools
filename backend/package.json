@@ -6,7 +6,7 @@
   "scripts": {
     "start": "build & node dist/server.js",
     "build": "pnpm tsc --build tsconfig.build.json && tsc-alias -p tsconfig.build.json",
-    "typecheck": "pnpm tsc --noEmit"
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [],
   "author": "Arpi <arpad.lengyel@breakpointit.eu>",

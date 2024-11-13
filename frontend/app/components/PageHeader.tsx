@@ -1,18 +1,27 @@
 import { useNavigate } from '@remix-run/react'
 import { cx } from 'class-variance-authority'
+import { availableTools } from '~/lib/presets.js'
 import { Button } from './Button.js'
 import { Chevron } from './icons.js'
+import { InfoIconWithTooltip } from './InfoIconWithTooltip.js'
 
 export const PageHeader = ({
+  elementType,
   title,
   link,
   setImportModalOpen
 }: {
+  elementType: string | undefined
   title: string
   link: string
   setImportModalOpen: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
   const navigate = useNavigate()
+
+  const currentElement = availableTools.find(
+    (element) => element.title.toLowerCase() == elementType
+  )
+
   return (
     <div
       className={cx(
@@ -20,7 +29,10 @@ export const PageHeader = ({
       )}
     >
       <div className="flex-1">
-        <h3 className="text-2xl">{title}</h3>
+        <h3 className="text-2xl flex">
+          <span>{title}</span>
+          <InfoIconWithTooltip tooltip={currentElement?.tooltip} />
+        </h3>
       </div>
       <div className="ml-auto">
         <Button

@@ -4,23 +4,16 @@ services:
     hostname: backend
     build:
       context: ../..
-      dockerfile: backend/Dockerfile.dev
-    command: pnpm nodemon --watch . --ext ts,js,mjs,cjs,json --exec "pnpm tsx src/server.ts"
+      dockerfile: backend/Dockerfile
     ports:
       - '5101:5101'
     expose:
       - '5101'
-    volumes:
-      - ../../certs:/app/certs # Ensure certificates are available
-      - ../../backend:/app/backend
     networks:
       - wm-tools
     environment:
       PORT: 5101
-      NODE_ENV: development
-      SSL_CERT: /app/certs/cert.pem
-      SSL_KEY: /app/certs/key.pem
-      CHOKIDAR_USEPOLLING: 'true'
+      NODE_ENV: production
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_REGION: ${AWS_REGION}
@@ -32,7 +25,7 @@ services:
     hostname: frontend
     build:
       context: ../..
-      dockerfile: frontend/Dockerfile.dev
+      dockerfile: frontend/Dockerfile
       args:
         VITE_SCRIPT_API_URL: ${SCRIPT_API_URL}
         VITE_SCRIPT_FRONTEND_URL: ${SCRIPT_FRONTEND_URL}
@@ -43,18 +36,14 @@ services:
       - '5100'
     environment:
       PORT: 5100
-      NODE_ENV: development
+      NODE_ENV: production
       API_URL: ${API_URL}
       ILPAY_URL: ${SCRIPT_ILPAY_URL}
       FRONTEND_URL: ${SCRIPT_FRONTEND_URL}
     networks:
       - wm-tools
-    command: pnpm run dev
     depends_on:
       - backend
-    volumes:
-      - ../../certs:/app/certs
-      - ../../frontend:/app/frontend
 
 networks:
   wm-tools:
