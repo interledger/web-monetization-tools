@@ -1,5 +1,4 @@
 import type { LinksFunction, MetaFunction } from '@remix-run/node'
-import { json } from '@remix-run/node'
 import {
   Links,
   Meta,
@@ -20,10 +19,10 @@ export const loader = async () => {
   let message
 
   if (!message) {
-    return json({ message: null })
+    return Response.json({ message: null })
   }
 
-  return json({ message })
+  return Response.json({ message })
 }
 
 export default function App() {
