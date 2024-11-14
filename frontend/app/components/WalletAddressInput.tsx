@@ -1,5 +1,6 @@
 import { ElementConfigType, ElementErrors } from '~/lib/types.js'
 import { Input } from './Input.js'
+import { tooltips } from '~/lib/tooltips.js'
 
 export const WalletAddress = ({
   errors,
@@ -15,9 +16,9 @@ export const WalletAddress = ({
       <Input
         name="walletAddress"
         label="Wallet address"
-        tooltip="Your wallet address is used for saving your configured component, to confirm you own the component you want to update, as well as being injected into the page you are dislaying the component in, enabling accepting funds through webmonetization."
-        placeholder="https://ase-provider-url/jdoe"
+        tooltip={tooltips.walletAddress}
         value={config.walletAddress || ''}
+        placeholder="https://ase-provider-url/jdoe"
         error={errors?.fieldErrors.walletAddress}
         onChange={(e) =>
           setToolConfig({

@@ -18,6 +18,7 @@ import {
 import { ApiClient, ApiResponse } from '~/lib/apiClient.js'
 import { type Message, messageStorage } from '~/lib/message.server.js'
 import { validConfigTypes } from '~/lib/presets.js'
+import { tooltips } from '~/lib/tooltips.js'
 import { ElementConfigType, ElementErrors } from '~/lib/types.js'
 import { encodeAndCompressParameters, getIlpayCss } from '~/lib/utils.js'
 import {
@@ -113,8 +114,7 @@ export default function Create() {
       )}
       <ScriptModal
         title="Your script"
-        tooltip="Copy your script, place it before the closing body tag in your website, or place it into a script type element in instances when you have a site management software (ex: wordpress, etc). 
-        <br />Check all options at the include section, that you want to display on your website."
+        tooltip={tooltips.scriptModal}
         defaultType={elementType}
         scriptForDisplay={scriptToDisplay}
         isOpen={modalOpen}

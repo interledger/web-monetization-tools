@@ -1,3 +1,4 @@
+import { tooltips } from './tooltips.js'
 import { CornerType, SlideAnimationType, PositionType } from './types.js'
 
 export const validConfigTypes = ['button', 'banner', 'widget']
@@ -101,10 +102,9 @@ export const availableTools = [
     image: 'banner_representation.svg',
     bgColor: 'from-wm-dark-green to-wm-dark-green-fade',
     link: 'create/banner',
-    tooltip:
-      "The embedded banner will be shown if webmonetization extension isn't active and until user closes it. You can set colors and displayed title and text. The link to the extension is browser type based and is automatically added.",
+    tooltip: tooltips.banner,
     description:
-      'A banner to display on your website for visitors who do not have WM extension active. A call-to-action with a link to the extension or description of the options. It will also add a paiment pointer to your website.'
+      "The banner informs visitors who don't have the Web Monetization extension active, with a call-to-action linking to the extension or providing details about the options available. It also adds a payment pointer to your site."
   },
   {
     enabled: true,
@@ -112,10 +112,9 @@ export const availableTools = [
     image: 'widget_representation.svg',
     bgColor: 'from-wm-red to-wm-red-fade',
     link: 'create/widget',
-    tooltip:
-      'The embedded widget is displayed on the lower right corner of the website, it opens an overlayed section with title, text and a payment solution. You can customize the colors and text. The preset values are fixed, but there is an option for custom values for the visitor.',
+    tooltip: tooltips.widget,
     description:
-      'A widget to display a small explanation or description of your choice and a solution for donations or a one-time payment, even for visitors who do not have the WM extension active.'
+      'You can add a widget to provide a brief explanation or description, along with a donation or one-time payment option, even for users without the Web Monetization extension.'
   },
   {
     enabled: false,
@@ -125,7 +124,7 @@ export const availableTools = [
     link: 'create/button',
     tooltip: '',
     description:
-      'Add a custom button to your website with a short tooltip, that triggers a payment option for donations or one-time payments in a full page overlay, for a convenient option for your visitors to support your work / content.'
+      'You can place a custom button with a short tooltip on your site that triggers a payment option in a full-page overlay, offering a convenient way for visitors to support your work or content.'
   },
   {
     enabled: false,
