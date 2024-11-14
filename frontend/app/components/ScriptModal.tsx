@@ -100,7 +100,7 @@ export const ScriptModal = ({
                 <Form method="post" replace preventScrollReset>
                   <div className="flex justify-end space-x-4">
                     <Button
-                      aria-label={`cancel adding liquidity`}
+                      aria-label="close modal"
                       type="reset"
                       onClick={onClose}
                     >

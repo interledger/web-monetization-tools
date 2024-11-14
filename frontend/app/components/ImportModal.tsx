@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react'
 import { Dialog } from '@headlessui/react'
 import { Form } from '@remix-run/react'
+import { ElementConfigType, ElementErrors } from '~/lib/types.js'
 import { XIcon } from '~/components/icons.js'
 import { Button } from '~/components/index.js'
-import { WalletAddress } from './WalletAddress'
-import { ElementConfigType, ElementErrors } from '~/lib/types'
+import { WalletAddress } from './WalletAddressInput.js'
 
 type ImportModalProps = {
   title: string
   isOpen: boolean
+  isSubmitting: boolean
   toolConfig: ElementConfigType
   setToolConfig: React.Dispatch<React.SetStateAction<ElementConfigType>>
-  errors: ElementErrors
+  errors?: ElementErrors
   onClose: () => void
 }
 
@@ -20,6 +20,7 @@ export const ImportModal = ({
   isOpen,
   onClose,
   errors,
+  isSubmitting,
   toolConfig,
   setToolConfig
 }: ImportModalProps) => {
@@ -48,22 +49,26 @@ export const ImportModal = ({
               </Dialog.Title>
               <div className="mt-2">
                 <Form method="post" replace preventScrollReset>
-                  <div className="flex w-full items-center">
-                    <WalletAddress
-                      errors={errors}
-                      config={toolConfig}
-                      setToolConfig={setToolConfig}
-                    />
-                  </div>
-                  <div className="flex justify-end space-x-4">
-                    <Button
-                      aria-label={`import config`}
-                      type="reset"
-                      onClick={onClose}
-                    >
-                      Import
-                    </Button>
-                  </div>
+                  <fieldset disabled={isSubmitting}>
+                    <div className="flex w-full items-center">
+                      <WalletAddress
+                        errors={errors}
+                        config={toolConfig}
+                        setToolConfig={setToolConfig}
+                      />
+                    </div>
+                    <div className="flex justify-end space-x-4">
+                      <Button
+                        aria-label={`import config`}
+                        disabled={isSubmitting}
+                        type="submit"
+                        value="import"
+                        name="intent"
+                      >
+                        Import
+                      </Button>
+                    </div>
+                  </fieldset>
                 </Form>
               </div>
             </div>

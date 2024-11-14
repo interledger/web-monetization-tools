@@ -1,10 +1,15 @@
 import { z } from 'zod'
 import { CornerType, PositionType, SlideAnimationType } from './types.js'
 
-export const sharedSchema = z.object({
-  walletAddress: z.string().min(1, { message: 'Wallet address is required' }),
-  fontName: z.string().min(1, { message: 'Choose a font' })
+export const walletSchema = z.object({
+  walletAddress: z.string().min(1, { message: 'Wallet address is required' })
 })
+
+export const sharedSchema = z
+  .object({
+    fontName: z.string().min(1, { message: 'Choose a font' })
+  })
+  .merge(walletSchema)
 
 export const createButtonSchema = z
   .object({

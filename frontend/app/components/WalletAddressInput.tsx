@@ -17,6 +17,7 @@ export const WalletAddress = ({
         label="Wallet address"
         tooltip="Your wallet address is used for saving your configured component, to confirm you own the component you want to update, as well as being injected into the page you are dislaying the component in, enabling accepting funds through webmonetization."
         placeholder="https://ase-provider-url/jdoe"
+        value={config.walletAddress || ''}
         error={errors?.fieldErrors.walletAddress}
         onChange={(e) =>
           setToolConfig({
