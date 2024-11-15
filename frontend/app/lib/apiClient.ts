@@ -31,9 +31,31 @@ if (!isProd) {
     console.error('Could not load certificate:', err)
   }
 }
+
 export class ApiClient {
   public static async getDefaultConfig(): Promise<ApiResponse> {
     const response = await axios.get(`${apiUrl}tools/default`, { httpsAgent })
+
+    if (response.status === 200) {
+      return {
+        isFailure: false,
+        payload: response.data
+      }
+    } else {
+      return {
+        errors: [`status ${response.status}: ${response.statusText}`],
+        isFailure: true
+      }
+    }
+  }
+
+  public static async getUserConfig(
+    walletAddress: string
+  ): Promise<ApiResponse> {
+    const wa = encodeURIComponent(
+      walletAddress.replace('$', '').replace('https://', '')
+    )
+    const response = await axios.get(`${apiUrl}tools/${wa}`, { httpsAgent })
 
     if (response.status === 200) {
       return {

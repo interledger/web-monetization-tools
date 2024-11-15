@@ -6,6 +6,7 @@ import {
   useNavigation
 } from '@remix-run/react'
 import { useEffect, useState } from 'react'
+import { ImportModal } from '~/components/ImportModal.js'
 import {
   ErrorPanel,
   NotFoundConfig,
@@ -23,7 +24,8 @@ import { encodeAndCompressParameters, getIlpayCss } from '~/lib/utils.js'
 import {
   createBannerSchema,
   createButtonSchema,
-  createWidgetSchema
+  createWidgetSchema,
+  walletSchema
 } from '~/lib/validate.server'
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
@@ -53,6 +55,7 @@ export default function Create() {
 
   const [toolConfig, setToolConfig] = useState<ElementConfigType>(defaultConfig)
   const [modalOpen, setModalOpen] = useState(false)
+  const [importModalOpen, setImportModalOpen] = useState(false)
 
   const wa = (toolConfig?.walletAddress || '')
     .replace('$', '')
@@ -61,7 +64,16 @@ export default function Create() {
 
   useEffect(() => {
     const errors = Object.keys(response?.errors?.fieldErrors || {})
-    if (response && !errors.length) {
+
+    if (
+      response &&
+      response.apiResponse &&
+      response.apiResponse.isFailure == false
+    ) {
+      const config = response.apiResponse.payload
+      setToolConfig(config)
+      setImportModalOpen(false)
+    } else if (response && !errors.length) {
       setModalOpen(true)
     }
   }, [response])
@@ -71,6 +83,7 @@ export default function Create() {
       <PageHeader
         title={`Create ${elementType}`}
         elementType={elementType}
+        setImportModalOpen={setImportModalOpen}
         link="/"
       />
       {validConfigTypes.includes(String(elementType)) ? (
@@ -107,6 +120,15 @@ export default function Create() {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
       />
+      <ImportModal
+        title="Import config from wallet address"
+        isOpen={importModalOpen}
+        isSubmitting={isSubmitting}
+        onClose={() => setImportModalOpen(false)}
+        toolConfig={toolConfig}
+        setToolConfig={setToolConfig}
+        errors={response?.errors}
+      />
     </div>
   )
 }
@@ -114,45 +136,61 @@ export default function Create() {
 export async function action({ request, params }: ActionFunctionArgs) {
   const elementType = params.type
   const formData = Object.fromEntries(await request.formData())
+  const intent = formData?.intent
 
-  let currentSchema
-
-  switch (elementType) {
-    case 'button':
-      currentSchema = createButtonSchema
-      break
-    case 'widget':
-      currentSchema = createWidgetSchema
-      break
-    case 'banner':
-    default:
-      currentSchema = createBannerSchema
-  }
-  const result = currentSchema.safeParse(
-    Object.assign(formData, { ...{ elementType } })
-  )
-
+  let apiResponse: ApiResponse = { isFailure: true }
   const errors: ElementErrors = {
     fieldErrors: {},
     message: []
   }
 
-  if (!result.success) {
-    errors.fieldErrors = result.error.flatten().fieldErrors
-    return json({ errors }, { status: 400 })
-  }
+  if (intent == 'import') {
+    const result = walletSchema.safeParse(formData)
 
-  const payload = result.data
+    if (!result.success) {
+      errors.fieldErrors = result.error.flatten().fieldErrors
+      return json({ errors, apiResponse }, { status: 400 })
+    }
 
-  if (payload.elementType == 'widget') {
-    const css = await encodeAndCompressParameters(
-      getIlpayCss(payload as unknown as ElementConfigType)
+    const payload = result.data
+    apiResponse = await ApiClient.getUserConfig(payload.walletAddress)
+
+    return json({ errors, apiResponse }, { status: 200 })
+  } else {
+    let currentSchema
+
+    switch (elementType) {
+      case 'button':
+        currentSchema = createButtonSchema
+        break
+      case 'widget':
+        currentSchema = createWidgetSchema
+        break
+      case 'banner':
+      default:
+        currentSchema = createBannerSchema
+    }
+    const result = currentSchema.safeParse(
+      Object.assign(formData, { ...{ elementType } })
     )
 
-    Object.assign(payload, { css })
+    if (!result.success) {
+      errors.fieldErrors = result.error.flatten().fieldErrors
+      return json({ errors, apiResponse }, { status: 400 })
+    }
+
+    const payload = result.data
+
+    if (payload.elementType == 'widget') {
+      const css = await encodeAndCompressParameters(
+        getIlpayCss(payload as unknown as ElementConfigType)
+      )
+
+      Object.assign(payload, { css })
+    }
+
+    apiResponse = await ApiClient.saveUserConfig(payload)
+
+    return json({ errors, apiResponse }, { status: 200 })
   }
-
-  const apiResponse: ApiResponse = await ApiClient.saveUserConfig(payload)
-
-  return json({ errors, apiResponse }, { status: 200 })
 }

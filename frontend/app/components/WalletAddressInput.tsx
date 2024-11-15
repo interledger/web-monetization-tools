@@ -17,6 +17,7 @@ export const WalletAddress = ({
         name="walletAddress"
         label="Wallet address"
         tooltip={tooltips.walletAddress}
+        value={config.walletAddress || ''}
         placeholder="https://ase-provider-url/jdoe"
         error={errors?.fieldErrors.walletAddress}
         onChange={(e) =>
