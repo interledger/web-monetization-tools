@@ -7,13 +7,24 @@ import { cx } from 'class-variance-authority'
 type InputProps = ComponentPropsWithoutRef<'input'> & {
   label?: string
   error?: string | string[]
+  tooltip?: string
   description?: ReactNode
   withBorder?: boolean
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
-    { description, label, type, error, id, withBorder, className, ...props },
+    {
+      description,
+      label,
+      type,
+      tooltip,
+      error,
+      id,
+      withBorder,
+      className,
+      ...props
+    },
     ref
   ) => {
     const generatedId = useId()
@@ -29,11 +40,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       <div className={cx('flex flex-col', className)}>
         {label && (
           <Label
-            className="w-full"
+            className="w-full flex"
             htmlFor={internalId}
             required={props.required ?? false}
+            tooltip={tooltip}
           >
-            {label}
+            <span>{label}</span>
           </Label>
         )}
         <div

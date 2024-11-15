@@ -4,9 +4,11 @@ import { Form } from '@remix-run/react'
 import { XIcon } from '~/components/icons.js'
 import { Button, CopyButton } from '~/components/index.js'
 import { removeItem } from '~/lib/utils.js'
+import { InfoIconWithTooltip } from './InfoIconWithTooltip.js'
 
 type ScriptModalProps = {
   title: string
+  tooltip?: string
   defaultType?: string
   scriptForDisplay: string
   isOpen: boolean
@@ -17,6 +19,7 @@ const selectableTypes = ['banner', 'widget']
 
 export const ScriptModal = ({
   title,
+  tooltip,
   defaultType,
   scriptForDisplay,
   isOpen,
@@ -58,9 +61,10 @@ export const ScriptModal = ({
             <div>
               <Dialog.Title
                 as="h3"
-                className="font-semibold leading-6 text-lg text-center"
+                className="flex font-semibold leading-6 text-lg text-center"
               >
-                {title}
+                <span>{title}</span>
+                <InfoIconWithTooltip tooltip={tooltip} />
               </Dialog.Title>
               <div className="mt-2">
                 <div className="flex items-center m-6 mb-0 p-2">

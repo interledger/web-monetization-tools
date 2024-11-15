@@ -1,10 +1,12 @@
 import type { LinkProps } from '@remix-run/react'
-import { Button } from './Button.js'
 import { cx } from 'class-variance-authority'
+import { Button } from './Button.js'
+import { InfoIconWithTooltip } from './InfoIconWithTooltip.js'
 
 export type TypeCardProps = {
   image: string
   title: string
+  tooltip: string
   description: string
   link: LinkProps['to'] | never
   bgColor: string
@@ -13,6 +15,7 @@ export type TypeCardProps = {
 export const TypeCard = ({
   image,
   title,
+  tooltip,
   description,
   link,
   bgColor
@@ -26,8 +29,11 @@ export const TypeCard = ({
           alt={title}
         />
       </div>
-      <span className="text-center font-bold text-2xl mt-4">{title}</span>
-      <p className="text-center text-sm p-4 mb-4">{description}</p>
+      <span className="text-center flex justify-center font-bold text-2xl mt-4">
+        <span>{title}</span>
+        <InfoIconWithTooltip tooltip={tooltip} />
+      </span>
+      <p className="text-center text-sm min-h-36 p-4 mb-4">{description}</p>
       <Button intent="default" aria-label={title} to={link}>
         Generate
       </Button>

@@ -1,4 +1,7 @@
+import { tooltips } from './tooltips.js'
 import { CornerType, SlideAnimationType, PositionType } from './types.js'
+
+export const validConfigTypes = ['button', 'banner', 'widget']
 
 export const textColorPresets = ['#ffffff', '#000000']
 export const backgroundColorPresets = [
@@ -91,3 +94,46 @@ export const cornerOptions = [
     label: 'Pill'
   }
 ]
+
+export const availableTools = [
+  {
+    enabled: true,
+    title: 'Banner',
+    image: 'banner_representation.svg',
+    bgColor: 'from-wm-dark-green to-wm-dark-green-fade',
+    link: 'create/banner',
+    tooltip: tooltips.banner,
+    description:
+      "The banner informs visitors who don't have the Web Monetization extension active, with a call-to-action linking to the extension or providing details about the options available. It also adds a payment pointer to your site."
+  },
+  {
+    enabled: true,
+    title: 'Widget',
+    image: 'widget_representation.svg',
+    bgColor: 'from-wm-red to-wm-red-fade',
+    link: 'create/widget',
+    tooltip: tooltips.widget,
+    description:
+      'You can add a widget to provide a brief explanation or description, along with a donation or one-time payment option, even for users without the Web Monetization extension.'
+  },
+  {
+    enabled: false,
+    title: 'Button',
+    image: 'button_representation.svg',
+    bgColor: 'from-wm-green to-wm-green-fade',
+    link: 'create/button',
+    tooltip: '',
+    description:
+      'You can place a custom button with a short tooltip on your site that triggers a payment option in a full-page overlay, offering a convenient way for visitors to support your work or content.'
+  },
+  {
+    enabled: false,
+    title: 'Exclusive content',
+    image: 'exclusive_representation.svg',
+    bgColor: 'from-wm-green to-wm-green-fade',
+    link: 'create/exclusive',
+    tooltip: '',
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam dictum felis eget dui ullamcorper, sit amet hendrerit ante sollicitudin. Donec eget metus lectus.'
+  }
+].filter((tool) => tool.enabled)
