@@ -22,6 +22,10 @@ export default defineConfig(({ mode }) => {
       watch: isDevelopment ? {} : null
     },
     server: {
+      cors: true,
+      headers: {
+        'Access-Control-Allow-Origin': '*' // Allow all origins, since we do not know in which sites the script will be included
+      },
       watch: {
         usePolling: true, // Ensures file polling for file changes
         ignored: ['node_modules/**', 'public/**'] // Ignore node_modules and output directory

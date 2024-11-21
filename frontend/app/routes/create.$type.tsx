@@ -65,7 +65,9 @@ export default function Create() {
   useEffect(() => {
     const errors = Object.keys(response?.errors?.fieldErrors || {})
 
-    if (
+    if (response && !errors.length && response.displayScript) {
+      setModalOpen(true)
+    } else if (
       response &&
       response.apiResponse &&
       response.apiResponse.isFailure == false
@@ -73,8 +75,6 @@ export default function Create() {
       const config = response.apiResponse.payload
       setToolConfig(config)
       setImportModalOpen(false)
-    } else if (response && !errors.length) {
-      setModalOpen(true)
     }
   }, [response])
 
@@ -139,6 +139,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const intent = formData?.intent
 
   let apiResponse: ApiResponse = { isFailure: true }
+  let displayScript: boolean = false
   const errors: ElementErrors = {
     fieldErrors: {},
     message: []
@@ -149,13 +150,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     if (!result.success) {
       errors.fieldErrors = result.error.flatten().fieldErrors
-      return json({ errors, apiResponse }, { status: 400 })
+      return json({ errors, apiResponse, displayScript }, { status: 400 })
     }
 
     const payload = result.data
     apiResponse = await ApiClient.getUserConfig(payload.walletAddress)
 
-    return json({ errors, apiResponse }, { status: 200 })
+    return json({ errors, apiResponse, displayScript }, { status: 200 })
   } else {
     let currentSchema
 
@@ -176,7 +177,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     if (!result.success) {
       errors.fieldErrors = result.error.flatten().fieldErrors
-      return json({ errors, apiResponse }, { status: 400 })
+      return json({ errors, apiResponse, displayScript }, { status: 400 })
     }
 
     const payload = result.data
@@ -190,7 +191,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }
 
     apiResponse = await ApiClient.saveUserConfig(payload)
+    displayScript = true
 
-    return json({ errors, apiResponse }, { status: 200 })
+    return json({ errors, apiResponse, displayScript }, { status: 200 })
   }
 }
