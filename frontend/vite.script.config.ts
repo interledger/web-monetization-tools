@@ -24,7 +24,7 @@ export default defineConfig(({ mode }) => {
     server: {
       cors: true,
       headers: {
-        'Access-Control-Allow-Origin': '*', // Allow all origins, since we do not know in which sites the script will be included
+        'Access-Control-Allow-Origin': '*' // Allow all origins, since we do not know in which sites the script will be included
       },
       watch: {
         usePolling: true, // Ensures file polling for file changes
