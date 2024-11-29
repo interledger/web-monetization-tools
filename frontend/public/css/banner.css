@@ -1,8 +1,10 @@
 ._wm_tools_banner {
   width: 100vw;
+  max-width: 1024px;
   box-sizing: border-box;
   position: fixed;
-  left: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
   padding: 10px 25px;
   padding-bottom: 30px;
   z-index: 99998; /* needs to be 1 lower then the widget, to handle overlap */

@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
   return {
     build: {
       lib: {
-        entry: './script/index.ts', // Entry point for the script file
+        entry: './script/index.tsx', // Entry point for the script file
         formats: ['iife'], // Use IIFE format (can change based on your needs)
         name: 'InitScript',
         fileName: () => 'init.js'
