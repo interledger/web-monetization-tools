@@ -143,7 +143,7 @@ const BannerConfig = ({
   const bgColor = bgColors.banner
 
   return (
-    <div className="w-full">
+    <div className="w-full font-sans text-sm">
       <div
         className={cx(
           'main_controls flex justify-between bg-gradient-to-r',
@@ -190,35 +190,7 @@ const BannerConfig = ({
         <div className="flex items-center max-w-36 w-32 shrink-0">
           <Select
             withBorder
-            name="fontName"
-            placeholder="Select Font"
-            options={fontOptions}
-            value={defaultFontValue}
-            onChange={(value) =>
-              setToolConfig({ ...config, fontName: value ?? '' })
-            }
-          />
-        </div>
-        <div className="flex w-full items-center">
-          <Input
-            withBorder
-            name="bannerTitleText"
-            value={config?.bannerTitleText || ''}
-            className="w-full"
-            onChange={(e) =>
-              setToolConfig({
-                ...config,
-                bannerTitleText: e.target.value ?? ''
-              })
-            }
-          />
-        </div>
-      </div>
-      <div className="flex items-start w-full gap-2 mt-4">
-        <div className="flex items-center max-w-36 w-32 shrink-0">
-          <Select
-            withBorder
-            label="Poisition"
+            label="Position"
             name="bannerPosition"
             placeholder="Select banner position"
             options={positionOptions}
@@ -267,6 +239,37 @@ const BannerConfig = ({
           />
         </div>
       </div>
+      <div className="flex items-start w-full gap-2 mt-4">
+        <div className="flex items-center max-w-36 w-32 shrink-0">
+          <Select
+            withBorder
+            name="fontName"
+            label="Font"
+            placeholder="Select Font"
+            options={fontOptions}
+            value={defaultFontValue}
+            onChange={(value) =>
+              setToolConfig({ ...config, fontName: value ?? '' })
+            }
+          />
+        </div>
+        <div className="flex w-full items-center">
+          <Input
+            withBorder
+            label="Title"
+            name="bannerTitleText"
+            value={config?.bannerTitleText || ''}
+            className="w-full"
+            onChange={(e) =>
+              setToolConfig({
+                ...config,
+                bannerTitleText: e.target.value ?? ''
+              })
+            }
+          />
+        </div>
+      </div>
+
       <div>
         <Textarea
           className="p-2"
@@ -299,7 +302,7 @@ const WidgetConfig = ({
   const bgColor = bgColors.widget
 
   return (
-    <div className="w-full">
+    <div className="w-full font-sans text-sm">
       <div
         className={cx(
           'main_controls flex justify-between bg-gradient-to-r',
@@ -369,6 +372,7 @@ const WidgetConfig = ({
         <div className="flex items-center max-w-36 w-32 shrink-0">
           <Select
             withBorder
+            label="Font"
             name="fontName"
             placeholder="Select Font"
             options={fontOptions}
@@ -381,6 +385,7 @@ const WidgetConfig = ({
         <div className="flex w-full items-center">
           <Input
             withBorder
+            label="Title"
             name="widgetTitleText"
             value={config?.widgetTitleText || ''}
             className="w-full"
@@ -412,7 +417,7 @@ const WidgetConfig = ({
         <div className="flex items-center max-w-36 w-32 shrink-0">
           <Select
             withBorder
-            label="Button"
+            label="Button rounding"
             name="widgetButtonBorder"
             placeholder="Select Rounding"
             options={cornerOptions}
@@ -430,9 +435,10 @@ const WidgetConfig = ({
         <div className="flex items-center w-full">
           <Input
             withBorder
+            label="Button title"
             name="widgetButtonText"
             value={config?.widgetButtonText || ''}
-            className="w-full mt-7"
+            className="w-full"
             onChange={(e) =>
               setToolConfig({
                 ...config,
