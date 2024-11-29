@@ -49,7 +49,12 @@ const BannerConfig = ({ config }: { config: ElementConfigType }) => {
       <div
         className={cx('wm_banner', animated && triggerAnimation && 'animate')}
       >
-        {config.bannerTitleText && <h5>{config.bannerTitleText}</h5>}
+        {config.bannerTitleText && (
+          <h5 className='flex flex-row flex-wrap justify-between'>
+            {config.bannerTitleText}
+            <span className="cursor-pointer text-sm">x</span>
+          </h5>
+        )}
         <span>{config.bannerDescriptionText}</span>
         <br />
         <span
