@@ -1,7 +1,11 @@
 import { cx } from 'class-variance-authority'
 import { useEffect, useState } from 'react'
 import { bgColors } from '~/lib/presets.js'
-import { ElementConfigType, SlideAnimationType } from '~/lib/types.js'
+import {
+  ElementConfigType,
+  PositionType,
+  SlideAnimationType
+} from '~/lib/types.js'
 import {
   encodeAndCompressParameters,
   generateConfigCss,
@@ -21,11 +25,13 @@ const BannerConfig = ({ config }: { config: ElementConfigType }) => {
   const [animated, setAnimated] = useState(
     config.bannerSlideAnimation != SlideAnimationType.None
   )
+  const [position, setPosition] = useState(PositionType.Bottom)
   const [triggerAnimation, setTriggerAnimation] = useState(false)
   const [extensionLink, setExtensionLink] = useState('')
 
   useEffect(() => {
     setAnimated(config.bannerSlideAnimation != SlideAnimationType.None)
+    setPosition(config.bannerPosition)
   }, [config])
 
   useEffect(() => {
@@ -34,7 +40,7 @@ const BannerConfig = ({ config }: { config: ElementConfigType }) => {
   }, [])
 
   return (
-    <div>
+    <div className="min-h-40">
       {animated && (
         <div className="flex justify-end -mt-5 mb-1">
           <img
@@ -47,20 +53,30 @@ const BannerConfig = ({ config }: { config: ElementConfigType }) => {
         </div>
       )}
       <div
-        className={cx('wm_banner', animated && triggerAnimation && 'animate')}
-      >
-        {config.bannerTitleText && (
-          <h5 className='flex flex-row flex-wrap justify-between'>
-            {config.bannerTitleText}
-            <span className="cursor-pointer text-sm">x</span>
-          </h5>
+        className={cx(
+          'flex min-h-40',
+          position == PositionType.Bottom && 'items-end'
         )}
-        <span>{config.bannerDescriptionText}</span>
-        <br />
-        <span
-          className="_wm_link underline cursor-pointer"
-          dangerouslySetInnerHTML={{ __html: extensionLink }}
-        ></span>
+      >
+        <div
+          className={cx(
+            'wm_banner',
+            position == PositionType.Bottom && 'bottom',
+            animated && triggerAnimation && 'animate'
+          )}
+        >
+          {config.bannerTitleText && (
+            <h5 className="flex flex-row flex-wrap justify-between">
+              {config.bannerTitleText}
+              <span className="cursor-pointer text-sm">x</span>
+            </h5>
+          )}
+          <span>{config.bannerDescriptionText}</span>
+          <span
+            className="_wm_link underline cursor-pointer"
+            dangerouslySetInnerHTML={{ __html: extensionLink }}
+          ></span>
+        </div>
       </div>
     </div>
   )
