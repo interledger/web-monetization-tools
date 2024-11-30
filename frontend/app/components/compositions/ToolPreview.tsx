@@ -11,7 +11,7 @@ import {
   generateConfigCss,
   getWebMonetizationLink
 } from '~/lib/utils.js'
-import { WidgetFooter } from './WidgetFooter.js'
+import { WidgetFooter } from '../WidgetFooter.js'
 
 const ButtonConfig = ({ config }: { config: ElementConfigType }) => {
   return (

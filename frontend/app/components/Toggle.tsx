@@ -1,5 +1,5 @@
 import { type ComponentProps, forwardRef, useId, useState } from 'react'
-import { Label } from './Label.js'
+import { Label } from './index.js'
 import { SlideAnimationType } from '~/lib/types.js'
 import { cx } from 'class-variance-authority'
 

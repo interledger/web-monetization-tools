@@ -16,8 +16,8 @@ import {
   positionOptions,
   widgetControlOptions
 } from '~/lib/presets.js'
-import { Button, Input, Select, ColorPicker, Textarea } from './index.js'
-import { WalletAddress } from './WalletAddressInput.js'
+import { Button, Input, Select, ColorPicker, Textarea } from '../index.js'
+import { WalletAddress } from '../WalletAddressInput.js'
 
 type ToolConfigProps = {
   type?: string

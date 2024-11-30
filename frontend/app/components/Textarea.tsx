@@ -1,8 +1,7 @@
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 import { forwardRef, useId } from 'react'
 import { cx } from 'class-variance-authority'
-import { FieldError } from './FieldError.js'
-import { Label } from './Label.js'
+import { FieldError, Label } from './index.js'
 
 type TextareaProps = ComponentPropsWithoutRef<'textarea'> & {
   label?: string

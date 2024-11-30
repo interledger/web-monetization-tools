@@ -1,9 +1,8 @@
 import { useNavigate } from '@remix-run/react'
 import { cx } from 'class-variance-authority'
 import { availableTools } from '~/lib/presets.js'
-import { Button } from './Button.js'
 import { Chevron } from './icons.js'
-import { InfoIconWithTooltip } from './InfoIconWithTooltip.js'
+import { InfoWithTooltip, Button } from './index.js'
 
 export const PageHeader = ({
   elementType,
@@ -31,7 +30,7 @@ export const PageHeader = ({
       <div className="flex-1">
         <h3 className="text-2xl flex">
           <span>{title}</span>
-          <InfoIconWithTooltip tooltip={currentElement?.tooltip} />
+          <InfoWithTooltip tooltip={currentElement?.tooltip} />
         </h3>
       </div>
       <div className="ml-auto">

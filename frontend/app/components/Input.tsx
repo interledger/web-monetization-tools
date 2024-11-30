@@ -1,8 +1,7 @@
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 import { forwardRef, useEffect, useId, useState } from 'react'
-import { FieldError } from './FieldError.js'
-import { Label } from './Label.js'
 import { cx } from 'class-variance-authority'
+import { FieldError, Label } from './index.js'
 
 type InputProps = ComponentPropsWithoutRef<'input'> & {
   label?: string

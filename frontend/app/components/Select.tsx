@@ -1,10 +1,9 @@
 import type { ReactNode } from 'react'
 import { Fragment, useEffect, useId, useState } from 'react'
 import { Combobox, Transition } from '@headlessui/react'
-import { Check, Chevron } from './icons.js'
-import { Label } from './Label.js'
-import { FieldError } from './FieldError.js'
 import { cx } from 'class-variance-authority'
+import { Check, Chevron } from './icons.js'
+import { Label, FieldError } from './index.js'
 
 export type SelectOption = {
   label: string

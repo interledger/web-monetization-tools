@@ -3,7 +3,7 @@ import { Form } from '@remix-run/react'
 import { ElementConfigType, ElementErrors } from '~/lib/types.js'
 import { XIcon } from '~/components/icons.js'
 import { Button } from '~/components/index.js'
-import { WalletAddress } from './WalletAddressInput.js'
+import { WalletAddress } from '../WalletAddressInput.js'
 
 type ImportModalProps = {
   title: string
