@@ -53,6 +53,7 @@ export default function Create() {
   const { state } = useNavigation()
   const isSubmitting = state === 'submitting'
 
+  const [openWidget, setOpenWidget] = useState(false)
   const [toolConfig, setToolConfig] = useState<ElementConfigType>(defaultConfig)
   const [modalOpen, setModalOpen] = useState(false)
   const [importModalOpen, setImportModalOpen] = useState(false)
@@ -93,6 +94,8 @@ export default function Create() {
               <ToolPreview
                 type={elementType}
                 toolConfig={toolConfig}
+                openWidget={openWidget}
+                setOpenWidget={setOpenWidget}
                 ilpayUrl={ilpayUrl}
               />
               <ToolConfig
@@ -102,6 +105,7 @@ export default function Create() {
                 setToolConfig={setToolConfig}
                 isSubmiting={isSubmitting}
                 errors={response?.errors}
+                setOpenWidget={setOpenWidget}
               />
             </fieldset>
             <div className="px-6 pt-5">

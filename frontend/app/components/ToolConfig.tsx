@@ -1,5 +1,5 @@
 import { cx } from 'class-variance-authority'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   CornerType,
   ElementConfigType,
@@ -26,6 +26,8 @@ type ToolConfigProps = {
   setToolConfig: React.Dispatch<React.SetStateAction<ElementConfigType>>
   errors?: ElementErrors
   isSubmiting?: boolean
+  openWidget?: boolean
+  setOpenWidget?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 type PartialToolConfigProps = Omit<ToolConfigProps, 'defaultConfig'>
@@ -292,7 +294,8 @@ const BannerConfig = ({
 const WidgetConfig = ({
   toolConfig: config,
   setToolConfig,
-  errors
+  errors,
+  setOpenWidget
 }: Omit<PartialToolConfigProps, 'type'>) => {
   const [displayedControl, setDisplayedControl] = useState('background')
   const defaultFontValue = fontOptions.find(
@@ -300,6 +303,15 @@ const WidgetConfig = ({
   )
 
   const bgColor = bgColors.widget
+
+  useEffect(() => {
+    if (
+      setOpenWidget &&
+      ['buttonbackground', 'buttontext'].indexOf(displayedControl) != -1
+    ) {
+      setOpenWidget(true)
+    }
+  }, [displayedControl])
 
   return (
     <div className="w-full font-sans text-sm">
@@ -424,12 +436,15 @@ const WidgetConfig = ({
             value={cornerOptions.find(
               (opt) => opt.value == config?.widgetButtonBorder
             )}
-            onChange={(value) =>
+            onChange={(value) => {
               setToolConfig({
                 ...config,
                 widgetButtonBorder: value as CornerType
               })
-            }
+              if (setOpenWidget) {
+                setOpenWidget(true)
+              }
+            }}
           />
         </div>
         <div className="flex items-center w-full">
@@ -439,12 +454,15 @@ const WidgetConfig = ({
             name="widgetButtonText"
             value={config?.widgetButtonText || ''}
             className="w-full"
-            onChange={(e) =>
+            onChange={(e) => {
               setToolConfig({
                 ...config,
                 widgetButtonText: e.target.value ?? ''
               })
-            }
+              if (setOpenWidget) {
+                setOpenWidget(true)
+              }
+            }}
           />
         </div>
       </div>
@@ -456,10 +474,11 @@ export const NotFoundConfig = () => {
   return <span>This element type is not supported, please try again</span>
 }
 
-const renderElementConfig = ({
+const RenderElementConfig = ({
   type,
   toolConfig,
   setToolConfig,
+  setOpenWidget,
   errors
 }: PartialToolConfigProps) => {
   switch (type) {
@@ -484,6 +503,7 @@ const renderElementConfig = ({
         <WidgetConfig
           toolConfig={toolConfig}
           setToolConfig={setToolConfig}
+          setOpenWidget={setOpenWidget}
           errors={errors}
         />
       )
@@ -498,11 +518,18 @@ export const ToolConfig = ({
   defaultConfig,
   setToolConfig,
   isSubmiting,
+  setOpenWidget,
   errors
 }: ToolConfigProps) => {
   return (
     <div className="flex flex-col">
-      {renderElementConfig({ type, toolConfig, setToolConfig, errors })}
+      <RenderElementConfig
+        type={type}
+        toolConfig={toolConfig}
+        setToolConfig={setToolConfig}
+        errors={errors}
+        setOpenWidget={setOpenWidget}
+      />
       <div className="flex w-full items-center">
         <WalletAddress
           errors={errors}

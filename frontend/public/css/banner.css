@@ -48,6 +48,9 @@
   animation: slideUp 3s ease-in-out 2s forwards;
 }
 
+._wm_link {
+  margin-top: 8px;
+}
 ._wm_link,
 ._wm_link a {
   display: flex;

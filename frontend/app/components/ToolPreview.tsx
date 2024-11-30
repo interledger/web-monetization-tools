@@ -71,7 +71,7 @@ const BannerConfig = ({ config }: { config: ElementConfigType }) => {
               <span className="cursor-pointer text-sm">x</span>
             </h5>
           )}
-          <span>{config.bannerDescriptionText}</span>
+          <span className="w-full my-2">{config.bannerDescriptionText}</span>
           <span
             className="_wm_link underline cursor-pointer"
             dangerouslySetInnerHTML={{ __html: extensionLink }}
@@ -84,9 +84,13 @@ const BannerConfig = ({ config }: { config: ElementConfigType }) => {
 
 const WidgetConfig = ({
   config,
+  openWidget,
+  setOpenWidget,
   ilpayUrl
 }: {
   config: ElementConfigType
+  openWidget: boolean
+  setOpenWidget: React.Dispatch<React.SetStateAction<boolean>>
   ilpayUrl: string
 }) => {
   const [widgetOpen, setWidgetOpen] = useState(false)
@@ -96,12 +100,24 @@ const WidgetConfig = ({
     ;(async () => {
       const configCss = generateConfigCss(config, true)
       const css = await encodeAndCompressParameters(String(configCss))
-      const iframeSrc = `${ilpayUrl}?action=${encodeURI(
+      const iframeSrc = `${ilpayUrl}?amount=1&action=${encodeURI(
         config.widgetButtonText
       )}&receiver=${encodeURI(config.walletAddress || '')}&css=${css}`
       setIframeUrl(iframeSrc)
     })()
   }, [config])
+
+  useEffect(() => {
+    if (openWidget) {
+      setWidgetOpen(true)
+    }
+  }, [openWidget, widgetOpen])
+
+  useEffect(() => {
+    if (!widgetOpen) {
+      setOpenWidget(false)
+    }
+  }, [widgetOpen])
 
   return (
     <div className="flex flex-col items-end wm_widget">
@@ -144,18 +160,33 @@ const NotFoundConfig = () => {
   return <div>This is not a valid option</div>
 }
 
-const renderElementConfig = (
-  type: string,
-  toolConfig: ElementConfigType,
+const RenderElementConfig = ({
+  type,
+  toolConfig,
+  openWidget,
+  setOpenWidget,
+  ilpayUrl
+}: {
+  type: string
+  toolConfig: ElementConfigType
+  openWidget: boolean
+  setOpenWidget: React.Dispatch<React.SetStateAction<boolean>>
   ilpayUrl: string
-) => {
+}) => {
   switch (type) {
     case 'button':
       return <ButtonConfig config={toolConfig} />
     case 'banner':
       return <BannerConfig config={toolConfig} />
     case 'widget':
-      return <WidgetConfig config={toolConfig} ilpayUrl={ilpayUrl} />
+      return (
+        <WidgetConfig
+          config={toolConfig}
+          ilpayUrl={ilpayUrl}
+          openWidget={openWidget}
+          setOpenWidget={setOpenWidget}
+        />
+      )
     default:
       return <NotFoundConfig />
   }
@@ -164,12 +195,16 @@ const renderElementConfig = (
 type ToolPreviewProps = {
   type?: string
   toolConfig: ElementConfigType
+  openWidget?: boolean
+  setOpenWidget: React.Dispatch<React.SetStateAction<boolean>>
   ilpayUrl: string
 }
 
 export const ToolPreview = ({
   type,
   toolConfig,
+  openWidget,
+  setOpenWidget,
   ilpayUrl
 }: ToolPreviewProps) => {
   const bgColor = bgColors[type as keyof typeof bgColors] ?? bgColors.button
@@ -182,7 +217,13 @@ export const ToolPreview = ({
       )}
     >
       {generateConfigCss(toolConfig)}
-      {renderElementConfig(type ?? '', toolConfig, ilpayUrl)}
+      <RenderElementConfig
+        type={type ?? ''}
+        toolConfig={toolConfig}
+        openWidget={openWidget ?? false}
+        setOpenWidget={setOpenWidget}
+        ilpayUrl={ilpayUrl}
+      />
     </div>
   )
 }
