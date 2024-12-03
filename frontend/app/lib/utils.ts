@@ -14,7 +14,7 @@ const getSelectedFont = (name: string) => {
 }
 
 export const getIlpayCss = (config: ElementConfigType) => {
-  const selectedFont = getSelectedFont(config.fontName)
+  const selectedFont = getSelectedFont(config.widgetFontName)
   const widgetButtonBorder =
     config.widgetButtonBorder == 'Light'
       ? '0.375rem'
@@ -69,7 +69,9 @@ export const generateConfigCss = (
   config: ElementConfigType,
   returnRaw = false
 ) => {
-  const selectedFont = getSelectedFont(config.fontName)
+  // const selectedButtonFont = getSelectedFont(config.buttonFontName)
+  const selectedBannerFont = getSelectedFont(config.bannerFontName)
+  const selectedWidgetFont = getSelectedFont(config.widgetFontName)
   const buttonBorder =
     config.buttonBorder == CornerType.Light
       ? '0.375rem'
@@ -93,7 +95,7 @@ export const generateConfigCss = (
 
   const css = `       
         .wm_button {
-            font-family: ${selectedFont}, system-ui, sans-serif !important;
+            font-family: ${selectedWidgetFont}, system-ui, sans-serif !important;
             font-size: 16px;
             padding: 8px 20px;
             border: 1px solid transparent;
@@ -103,7 +105,7 @@ export const generateConfigCss = (
             transition: all 0.5s ease;
         }       
         .wm_banner {
-            font-family: ${selectedFont}, system-ui, sans-serif !important;
+            font-family: ${selectedBannerFont}, system-ui, sans-serif !important;
             font-size: 16px;
             padding: 12px 20px;
             border: 1px solid transparent;
@@ -118,7 +120,7 @@ export const generateConfigCss = (
         }
 
         .wm_widget .content {
-            font-family: ${selectedFont}, system-ui, sans-serif !important;
+            font-family: ${selectedWidgetFont}, system-ui, sans-serif !important;
             font-size: 14px;
             padding: 12px 20px;
             color: ${config.widgetTextColor};
@@ -132,7 +134,7 @@ export const generateConfigCss = (
         }
 
         .ilpay_body {
-          font-family: ${selectedFont}, system-ui, sans-serif !important;
+          font-family: ${selectedWidgetFont}, system-ui, sans-serif !important;
           color: ${config.widgetTextColor};
         }
 
