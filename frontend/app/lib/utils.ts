@@ -105,7 +105,7 @@ export const generateConfigCss = (
         .wm_banner {
             font-family: ${selectedFont}, system-ui, sans-serif !important;
             font-size: 16px;
-            padding: 12px 20px;
+            padding: 0 20px;
             border: 1px solid transparent;
             border-radius: ${bannerBorder};
             color: ${config.bannerTextColor};
@@ -113,8 +113,18 @@ export const generateConfigCss = (
             transition: all 0.5s ease;
             overflow: hidden;
         }
+        .wm_banner.bottom {
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+        }
         .wm_banner h5 {
             font-size: 18px;
+            margin-top: 12px;
+        }
+        .wm_banner ._wm_link {
+          display: block;
+          margin-bottom: 12px;
         }
 
         .wm_widget .content {

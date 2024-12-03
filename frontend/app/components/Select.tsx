@@ -22,6 +22,7 @@ type SelectProps = {
   defaultValue?: SelectOption
   description?: ReactNode
   withBorder?: boolean
+  searchable?: boolean
   onChange?: (value: string) => void
 }
 
@@ -39,6 +40,7 @@ export const Select = ({
   },
   value,
   withBorder,
+  searchable = false,
   onChange
 }: SelectProps) => {
   const id = useId()
@@ -75,22 +77,28 @@ export const Select = ({
       {name ? (
         <input type="hidden" name={name} value={internalValue.value} />
       ) : null}
-      <div className={cx('relative', label && 'mt-1')}>
-        {label && <Label className="w-full">{label}</Label>}
+      <div className={cx('flex flex-col relative w-full', label && 'mt-1')}>
+        {label && <Label className="w-full mb-px">{label}</Label>}
         <div
           className={cx(
-            'relative w-full cursor-default overflow-hidden bg-white text-left outline-0 focus:outline-none sm:text-sm',
+            'relative w-full cursor-default overflow-hidden bg-white text-left outline-0 focus:outline-none sm:text-sm h-9',
             withBorder && 'border rounded-lg'
           )}
         >
-          <Combobox.Input
-            className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 outline-none"
-            id={id}
-            required={required}
-            displayValue={(option: SelectOption) => option.label}
-            onChange={(event) => setSearchTerm(event.target.value)}
-            placeholder={placeholder}
-          />
+          {searchable ? (
+            <Combobox.Input
+              className="w-full border-none py-2 pl-3 pr-10 text-sm text-gray-900 outline-none"
+              id={id}
+              required={required}
+              displayValue={(option: SelectOption) => option.label}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder={placeholder}
+            />
+          ) : (
+            <Combobox.Button className="w-full max-h-8 h-8 border-none py-2 pl-3 pr-10 text-sm text-left text-gray-900 outline-none overflow-y-hidden">
+              <>{internalValue ? internalValue.label : placeholder}</>
+            </Combobox.Button>
+          )}
           <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
             {({ open }) => (
               <Chevron
@@ -110,7 +118,12 @@ export const Select = ({
           leaveTo="opacity-0"
           afterLeave={() => setSearchTerm('')}
         >
-          <Combobox.Options className="absolute max-h-60 w-full overflow-auto rounded-md bg-white py-1 z-10 text-base shadow-lg outline-0 focus:outline-none sm:text-sm">
+          <Combobox.Options
+            className={cx(
+              'absolute max-h-60 w-full overflow-auto rounded-b-md bg-white py-1 z-10 text-base shadow-lg outline-0 focus:outline-none sm:text-sm',
+              label ? 'mt-14' : 'mt-8'
+            )}
+          >
             {filteredOptions.length === 0 && searchTerm !== '' ? (
               <div className="relative cursor-default select-none px-4 py-2 text-gray-700">
                 Nothing found.

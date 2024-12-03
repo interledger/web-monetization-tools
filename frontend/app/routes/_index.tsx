@@ -1,5 +1,5 @@
 import type { MetaFunction } from '@remix-run/node'
-import { TypeCard } from '~/components/TypeCard.js'
+import { TypeCard } from '~/components/index.js'
 import { availableTools } from '~/lib/presets.js'
 
 export const meta: MetaFunction = () => {

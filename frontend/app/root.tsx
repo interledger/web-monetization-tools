@@ -140,6 +140,28 @@ export const meta: MetaFunction = () => [
 ]
 
 export const links: LinksFunction = () => [
+  {
+    rel: 'apple-touch-icon',
+    sizes: '180x180',
+    href: '/images/favicon.png'
+  },
+  {
+    rel: 'icon',
+    type: 'image/png',
+    sizes: '32x32',
+    href: '/images/favicon.png'
+  },
+  {
+    rel: 'icon',
+    type: 'image/png',
+    sizes: '16x16',
+    href: '/images/favicon.png'
+  },
+  {
+    rel: 'icon',
+    href: '/favicon.ico',
+    type: 'image/x-icon'
+  },
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
   {
     rel: 'preconnect',
