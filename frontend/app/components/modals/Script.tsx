@@ -2,9 +2,8 @@ import { useEffect, useState } from 'react'
 import { Dialog } from '@headlessui/react'
 import { Form } from '@remix-run/react'
 import { XIcon } from '~/components/icons.js'
-import { Button, CopyButton } from '~/components/index.js'
+import { Button, CopyButton, InfoWithTooltip } from '~/components/index.js'
 import { removeItem } from '~/lib/utils.js'
-import { InfoIconWithTooltip } from './InfoIconWithTooltip.js'
 
 type ScriptModalProps = {
   title: string
@@ -64,7 +63,7 @@ export const ScriptModal = ({
                 className="flex font-semibold leading-6 text-lg text-center"
               >
                 <span>{title}</span>
-                <InfoIconWithTooltip tooltip={tooltip} />
+                <InfoWithTooltip tooltip={tooltip} />
               </Dialog.Title>
               <div className="mt-2">
                 <div className="flex items-center m-6 mb-0 p-2">

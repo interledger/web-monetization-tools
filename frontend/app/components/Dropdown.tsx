@@ -1,8 +1,7 @@
 import { Listbox, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
-import { FieldError } from './FieldError.js'
+import { FieldError, Label } from './index.js'
 import { Check, Chevron } from './icons.js'
-import { Label } from './Label.js'
 
 export type DropdownOption = {
   label: string

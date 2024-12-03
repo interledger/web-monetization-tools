@@ -21,7 +21,7 @@ const InfoIcon = forwardRef(
 
 InfoIcon.displayName = 'InfoIcon'
 
-export const InfoIconWithTooltip = ({
+export const InfoWithTooltip = ({
   tooltip
 }: {
   tooltip: string | undefined
@@ -46,4 +46,4 @@ export const InfoIconWithTooltip = ({
   )
 }
 
-InfoIconWithTooltip.displayName = 'InfoIconWithTooltip'
+InfoWithTooltip.displayName = 'InfoWithTooltip'

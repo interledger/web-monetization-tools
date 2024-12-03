@@ -1,5 +1,5 @@
 import { Link } from '@remix-run/react'
-import { PoweredBy } from './poweredBy.js'
+import { PoweredBy } from './index.js'
 
 export const WidgetFooter = () => {
   return (

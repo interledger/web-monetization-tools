@@ -5,7 +5,7 @@ import {
   useState,
   useEffect
 } from 'react'
-import { Button } from './Button.js'
+import { Button } from './index.js'
 import { ClipboardCheck, Clipboard } from './icons.js'
 
 function copyToClipboard(value: string) {

@@ -1,7 +1,6 @@
 import type { LinkProps } from '@remix-run/react'
 import { cx } from 'class-variance-authority'
-import { Button } from './Button.js'
-import { InfoIconWithTooltip } from './InfoIconWithTooltip.js'
+import { Button, InfoWithTooltip } from './index.js'
 
 export type TypeCardProps = {
   image: string
@@ -31,7 +30,7 @@ export const TypeCard = ({
       </div>
       <span className="text-center flex justify-center font-bold text-2xl mt-4">
         <span>{title}</span>
-        <InfoIconWithTooltip tooltip={tooltip} />
+        <InfoWithTooltip tooltip={tooltip} />
       </span>
       <p className="text-center text-sm min-h-36 p-4 mb-4">{description}</p>
       <Button intent="default" aria-label={title} to={link}>
