@@ -1,5 +1,5 @@
 import { type ComponentProps, forwardRef, type ReactNode } from 'react'
-import { InfoIconWithTooltip } from './InfoIconWithTooltip.js'
+import { InfoWithTooltip } from './index.js'
 
 type LabelProps = Omit<ComponentProps<'label'>, 'children'> & {
   children: ReactNode
@@ -18,7 +18,7 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(
       >
         <span>{children}</span>{' '}
         {required ? <span className="text-red-500">*</span> : ''}
-        <InfoIconWithTooltip tooltip={tooltip} />
+        <InfoWithTooltip tooltip={tooltip} />
       </label>
     )
   }

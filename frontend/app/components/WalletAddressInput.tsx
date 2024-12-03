@@ -1,5 +1,5 @@
 import { ElementConfigType, ElementErrors } from '~/lib/types.js'
-import { Input } from './Input.js'
+import { Input } from './index.js'
 import { tooltips } from '~/lib/tooltips.js'
 
 export const WalletAddress = ({

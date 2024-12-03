@@ -1,9 +1,8 @@
 import { useNavigate } from '@remix-run/react'
 import { cx } from 'class-variance-authority'
 import { availableTools } from '~/lib/presets.js'
-import { Button } from './Button.js'
+import { Button, InfoWithTooltip } from './index.js'
 import { Chevron } from './icons.js'
-import { InfoIconWithTooltip } from './InfoIconWithTooltip.js'
 
 export const PageHeader = ({
   elementType,
@@ -31,7 +30,7 @@ export const PageHeader = ({
       <div className="flex-1">
         <h3 className="text-2xl flex">
           <span>{title}</span>
-          <InfoIconWithTooltip tooltip={currentElement?.tooltip} />
+          <InfoWithTooltip tooltip={currentElement?.tooltip} />
         </h3>
       </div>
       <div className="ml-auto">
@@ -39,7 +38,7 @@ export const PageHeader = ({
           className="mr-2"
           aria-label="back"
           onClick={() => {
-            navigate(`${link}`)
+            navigate(link)
           }}
         >
           <Chevron direction="left" className="w-3 h-3 mr-1 -ml-1" /> Back

@@ -1,8 +1,7 @@
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 import { forwardRef, useEffect, useId, useState } from 'react'
-import { FieldError } from './FieldError.js'
-import { Label } from './Label.js'
 import { cx } from 'class-variance-authority'
+import { FieldError, Label } from './index.js'
 
 type InputProps = ComponentPropsWithoutRef<'input'> & {
   label?: string
@@ -37,20 +36,20 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     }, [error])
 
     return (
-      <div className={cx('flex flex-col', className)}>
+      <div className={cx('flex flex-col', label && 'mt-1', className)}>
         {label && (
           <Label
-            className="w-full flex"
+            className={cx('w-full mb-px', tooltip && 'flex')}
             htmlFor={internalId}
             required={props.required ?? false}
             tooltip={tooltip}
           >
-            <span>{label}</span>
+            {label}
           </Label>
         )}
         <div
           className={cx(
-            'flex relative w-full p-2',
+            'flex relative w-full p-2 h-9',
             withBorder && 'border rounded-lg'
           )}
         >

@@ -6,12 +6,11 @@ import {
   useNavigation
 } from '@remix-run/react'
 import { useEffect, useState } from 'react'
-import { ImportModal } from '~/components/ImportModal.js'
+import { ImportModal, ScriptModal } from '~/components/modals/index.js'
 import {
   ErrorPanel,
   NotFoundConfig,
   PageHeader,
-  ScriptModal,
   ToolConfig,
   ToolPreview
 } from '~/components/index.js'
