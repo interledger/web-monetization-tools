@@ -11,7 +11,7 @@ import {
   generateConfigCss,
   getWebMonetizationLink
 } from '~/lib/utils.js'
-import { WidgetFooter } from '../WidgetFooter.js'
+import { WidgetFooter, NotFoundConfig } from '../index.js'
 
 const ButtonConfig = ({ config }: { config: ElementConfigType }) => {
   return (
@@ -154,10 +154,6 @@ const WidgetConfig = ({
       </div>
     </div>
   )
-}
-
-const NotFoundConfig = () => {
-  return <div>This is not a valid option</div>
 }
 
 const RenderElementConfig = ({

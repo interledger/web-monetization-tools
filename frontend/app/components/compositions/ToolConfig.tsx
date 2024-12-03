@@ -16,8 +16,15 @@ import {
   positionOptions,
   widgetControlOptions
 } from '~/lib/presets.js'
-import { Button, Input, Select, ColorPicker, Textarea } from '../index.js'
-import { WalletAddress } from '../WalletAddressInput.js'
+import {
+  Button,
+  Input,
+  Select,
+  ColorPicker,
+  Textarea,
+  NotFoundConfig,
+  WalletAddress
+} from '../index.js'
 
 type ToolConfigProps = {
   type?: string
@@ -468,10 +475,6 @@ const WidgetConfig = ({
       </div>
     </div>
   )
-}
-
-export const NotFoundConfig = () => {
-  return <span>This element type is not supported, please try again</span>
 }
 
 const RenderElementConfig = ({

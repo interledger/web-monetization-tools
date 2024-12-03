@@ -1,8 +1,8 @@
 import { useNavigate } from '@remix-run/react'
 import { cx } from 'class-variance-authority'
 import { availableTools } from '~/lib/presets.js'
+import { Button, InfoWithTooltip } from './index.js'
 import { Chevron } from './icons.js'
-import { InfoWithTooltip, Button } from './index.js'
 
 export const PageHeader = ({
   elementType,
@@ -38,7 +38,7 @@ export const PageHeader = ({
           className="mr-2"
           aria-label="back"
           onClick={() => {
-            navigate(`${link}`)
+            navigate(link)
           }}
         >
           <Chevron direction="left" className="w-3 h-3 mr-1 -ml-1" /> Back

@@ -1,7 +1,6 @@
 import type { LinkProps } from '@remix-run/react'
 import { cx } from 'class-variance-authority'
-import { Button } from './Button.js'
-import { InfoWithTooltip } from './index.js'
+import { Button, InfoWithTooltip } from './index.js'
 
 export type TypeCardProps = {
   image: string
