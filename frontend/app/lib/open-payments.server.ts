@@ -363,7 +363,7 @@ export async function checkOutgoingPayment(
       url: url,
       accessToken: accessToken
     })
-    .then((op: { sentAmount: { value: number } }) => {
+    .then((op: { sentAmount: { value: string } }) => {
       let paymentResult: PaymentResultType
       if (Number(op.sentAmount.value) > 0) {
         paymentResult = {
