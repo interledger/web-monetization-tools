@@ -37,7 +37,7 @@ const resizeImage = (img: HTMLImageElement, maxSize: number = 100): string => {
 
 export const UploadControl = ({ setImage }: UploadControlProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const defaultColor = triggerColorPresets[triggerColorPresets.length - 1]
+  const defaultColor = triggerColorPresets[0]
 
   const onButtonClick = () => {
     if (fileInputRef.current) {
