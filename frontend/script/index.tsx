@@ -64,6 +64,13 @@ const createShadowDOM = () => {
   return { shadowHost, shadowRoot }
 }
 
+const appendPaymentPointer = (walletAddress: string) => {
+  const monetizationElement = document.createElement('link')
+  monetizationElement.rel = 'monetization'
+  monetizationElement.href = `https://${walletAddress}`
+  document.head.appendChild(monetizationElement)
+}
+
 const getCSSFile = (url: string) => {
   const link = document.createElement('link')
 
@@ -74,6 +81,43 @@ const getCSSFile = (url: string) => {
   return link
 }
 
+const allowedFonts = ['Cookie', 'Roboto', 'Open Sans', 'Titillium Web', `Arial`]
+const getFontFamily = (family: string, forElement: string = 'banner') => {
+  // if exists remove it
+  const currentFontFamily = document.getElementById(
+    `wmt-font-family-${forElement}`
+  ) as HTMLLinkElement
+  if (currentFontFamily) {
+    currentFontFamily.remove()
+  }
+
+  let selectedFont = 'Arial'
+  if (allowedFonts.indexOf(family) != -1) {
+    selectedFont = family
+  }
+
+  const styleObj = document.createElement('link') as HTMLLinkElement
+  styleObj.id = `wmt-font-family-${forElement}`
+  styleObj.rel = 'stylesheet'
+  styleObj.type = 'text/css'
+
+  switch (selectedFont) {
+    case 'Open Sans':
+      styleObj.href = `https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap`
+      break
+    case 'Cookie':
+      styleObj.href = `https://fonts.googleapis.com/css2?family=Cookie&display=swap`
+      break
+    case 'Roboto':
+      styleObj.href = `https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap`
+      break
+    default:
+      styleObj.href = `https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap`
+  }
+
+  return { fontFamily: styleObj, selectedFont }
+}
+
 const drawElement = (
   types: string[] | undefined,
   walletAddress: string,
@@ -81,32 +125,37 @@ const drawElement = (
 ) => {
   const { shadowHost, shadowRoot } = createShadowDOM()
 
+  // add payment pointer / wallet address to target website first
+  // so we have something to check against when displaying the banner
+  appendPaymentPointer(walletAddress)
+
   for (const key in types) {
     const type = types[Number(key)]
     switch (type) {
       case 'widget': {
+        const font = getFontFamily(config.widgetFontName, 'widget')
+        shadowHost.style.setProperty('--wmt-widget-font', font.selectedFont)
         const css = getCSSFile('css/widget.css')
         const element = drawWidget(walletAddress, config)
         shadowRoot.appendChild(css)
         shadowRoot.appendChild(element)
+        // font family needs to be outside of the shadow DOM
+        document.body.appendChild(font.fontFamily)
         document.body.appendChild(shadowHost)
         break
       }
       case 'banner':
       default:
-        // add the monetization link first,
-        // so we have something to check against when displaying the banner
-        const monetizationElement = document.createElement('link')
-        monetizationElement.rel = 'monetization'
-        monetizationElement.href = `https://${walletAddress}`
-        document.body.appendChild(monetizationElement)
-
+        const font = getFontFamily(config.bannerFontName, 'banner')
+        shadowHost.style.setProperty('--wmt-banner-font', font.selectedFont)
         const css = getCSSFile('css/banner.css')
         const element = drawBanner(config)
         if (element) {
           shadowRoot.appendChild(css)
           shadowRoot.appendChild(element)
         }
+        // font family needs to be outside of the shadow DOM
+        document.body.appendChild(font.fontFamily)
         document.body.appendChild(shadowHost)
     }
   }

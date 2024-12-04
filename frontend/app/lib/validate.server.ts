@@ -5,25 +5,21 @@ export const walletSchema = z.object({
   walletAddress: z.string().min(1, { message: 'Wallet address is required' })
 })
 
-export const sharedSchema = z
-  .object({
-    fontName: z.string().min(1, { message: 'Choose a font' })
-  })
-  .merge(walletSchema)
-
 export const createButtonSchema = z
   .object({
     elementType: z.literal('button'),
+    buttonFontName: z.string().min(1, { message: 'Choose a font' }),
     buttonText: z.string().min(1, { message: 'Button label cannot be empty' }),
     buttonBorder: z.nativeEnum(CornerType),
     buttonTextColor: z.string().min(6),
     buttonBackgroundColor: z.string().min(6)
   })
-  .merge(sharedSchema)
+  .merge(walletSchema)
 
 export const createBannerSchema = z
   .object({
     elementType: z.literal('banner'),
+    bannerFontName: z.string().min(1, { message: 'Choose a font' }),
     bannerTitleText: z.string().optional(),
     bannerDescriptionText: z
       .string()
@@ -34,11 +30,12 @@ export const createBannerSchema = z
     bannerPosition: z.nativeEnum(PositionType),
     bannerBorder: z.nativeEnum(CornerType)
   })
-  .merge(sharedSchema)
+  .merge(walletSchema)
 
 export const createWidgetSchema = z
   .object({
     elementType: z.literal('widget'),
+    widgetFontName: z.string().min(1, { message: 'Choose a font' }),
     widgetButtonText: z.string().min(1),
     widgetDescriptionText: z.string().min(1),
     widgetButtonBorder: z.nativeEnum(CornerType),
@@ -47,7 +44,7 @@ export const createWidgetSchema = z
     widgetTextColor: z.string().min(1),
     widgetBackgroundColor: z.string().min(1)
   })
-  .merge(sharedSchema)
+  .merge(walletSchema)
 
 export const getElementSchema = (type: string) => {
   switch (type) {

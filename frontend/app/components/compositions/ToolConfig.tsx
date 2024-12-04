@@ -44,7 +44,7 @@ const ButtonConfig = ({
 }: Omit<PartialToolConfigProps, 'type'>) => {
   const [displayedControl, setDisplayedControl] = useState('background')
   const defaultFontValue = fontOptions.find(
-    (option) => option.value == config?.fontName
+    (option) => option.value == config?.buttonFontName
   )
 
   const bgColor = bgColors.button
@@ -97,12 +97,12 @@ const ButtonConfig = ({
         <div className="flex items-center max-w-36 w-32 shrink-0">
           <Select
             withBorder
-            name="fontName"
+            name="buttonFontName"
             placeholder="Select Font"
             options={fontOptions}
             value={defaultFontValue}
             onChange={(value) =>
-              setToolConfig({ ...config, fontName: value ?? '' })
+              setToolConfig({ ...config, buttonFontName: value ?? '' })
             }
           />
         </div>
@@ -144,7 +144,7 @@ const BannerConfig = ({
 }: Omit<PartialToolConfigProps, 'type'>) => {
   const [displayedControl, setDisplayedControl] = useState('background')
   const defaultFontValue = fontOptions.find(
-    (option) => option.value == config?.fontName
+    (option) => option.value == config?.bannerFontName
   )
 
   const bgColor = bgColors.banner
@@ -197,12 +197,12 @@ const BannerConfig = ({
         <div className="flex items-center max-w-36 w-32 shrink-0">
           <Select
             withBorder
-            name="fontName"
+            name="bannerFontName"
             placeholder="Select Font"
             options={fontOptions}
             value={defaultFontValue}
             onChange={(value) =>
-              setToolConfig({ ...config, fontName: value ?? '' })
+              setToolConfig({ ...config, bannerFontName: value ?? '' })
             }
           />
         </div>
@@ -300,7 +300,7 @@ const WidgetConfig = ({
 }: Omit<PartialToolConfigProps, 'type'>) => {
   const [displayedControl, setDisplayedControl] = useState('background')
   const defaultFontValue = fontOptions.find(
-    (option) => option.value == config?.fontName
+    (option) => option.value == config?.widgetFontName
   )
 
   const bgColor = bgColors.widget
@@ -376,12 +376,12 @@ const WidgetConfig = ({
         <div className="flex items-center max-w-36 w-32 shrink-0">
           <Select
             withBorder
-            name="fontName"
+            name="widgetFontName"
             placeholder="Select Font"
             options={fontOptions}
             value={defaultFontValue}
             onChange={(value) =>
-              setToolConfig({ ...config, fontName: value ?? '' })
+              setToolConfig({ ...config, widgetFontName: value ?? '' })
             }
           />
         </div>
