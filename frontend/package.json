@@ -15,6 +15,8 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.19",
+    "@interledger/open-payments": "^6.13.2",
+    "@paralleldrive/cuid2": "^2.2.2",
     "@remix-run/node": "^2.14.0",
     "@remix-run/react": "^2.14.0",
     "@remix-run/serve": "^2.14.0",
