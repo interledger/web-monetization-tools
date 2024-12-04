@@ -23,7 +23,8 @@ import {
   ColorPicker,
   Textarea,
   NotFoundConfig,
-  WalletAddress
+  WalletAddress,
+  UploadControl
 } from '../index.js'
 
 type ToolConfigProps = {
@@ -313,7 +314,7 @@ const WidgetConfig = ({
           bgColor
         )}
       >
-        <div className="flex">
+        <div className="flex w-full">
           <ColorPicker
             label="Background color"
             name="widgetBackgroundColor"
@@ -360,8 +361,39 @@ const WidgetConfig = ({
             }}
             className={cx(displayedControl != 'buttontext' && 'hidden')}
           />
+          <div
+            className={cx(
+              'flex items-center justify-between w-full flex-row',
+              displayedControl != 'trigger' && 'hidden'
+            )}
+          >
+            <ColorPicker
+              label="Trigger Background color"
+              name="widgetTriggerBackgroundColor"
+              preset="trigger"
+              allowCustomColors={!!config?.widgetTriggerIcon}
+              value={config?.widgetTriggerBackgroundColor}
+              updateColor={(value) => {
+                setToolConfig({
+                  ...config,
+                  widgetTriggerBackgroundColor: value
+                })
+              }}
+            />
+            <UploadControl
+              setImage={(value, color) => {
+                setToolConfig({
+                  ...config,
+                  widgetTriggerIcon: value,
+                  widgetTriggerBackgroundColor: color
+                    ? color
+                    : config.widgetTriggerBackgroundColor
+                })
+              }}
+            />
+          </div>
         </div>
-        <div className="flex items-center max-w-36 w-32 mr-3">
+        <div className="flex items-center max-w-36 w-44 mr-3">
           <Select
             placeholder="Background"
             options={widgetControlOptions}

@@ -50,6 +50,8 @@ export interface ElementConfigType {
   widgetBackgroundColor: string
   widgetButtonTextColor: string
   widgetButtonBackgroundColor: string
+  widgetTriggerBackgroundColor: string
+  widgetTriggerIcon: string
 }
 
 export type JSONError<T extends z.ZodTypeAny> = {
