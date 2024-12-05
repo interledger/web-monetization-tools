@@ -274,12 +274,16 @@ const drawWidget = (walletAddress: string, config: Config) => {
 
   element.appendChild(content)
 
+  const triggerIcon = config?.widgetTriggerIcon
+    ? config?.widgetTriggerIcon
+    : `${FRONTEND_URL}images/wm_logo_animated.svg`
+
   const trigger = document.createElement('div')
   trigger.className = '_wm_tools_widget_trigger'
-  trigger.style.backgroundColor = config.widgetBackgroundColor
+  trigger.style.backgroundColor = config.widgetTriggerBackgroundColor
   trigger.innerHTML = `
         <img
-          src="${FRONTEND_URL}images/wm_logo_animated.svg"
+          src="${triggerIcon}"
           alt="widget trigger"
         />`
   trigger.addEventListener('click', () => {

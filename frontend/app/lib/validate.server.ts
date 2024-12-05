@@ -42,7 +42,9 @@ export const createWidgetSchema = z
     widgetButtonBackgroundColor: z.string().min(1),
     widgetButtonTextColor: z.string().min(1),
     widgetTextColor: z.string().min(1),
-    widgetBackgroundColor: z.string().min(1)
+    widgetBackgroundColor: z.string().min(1),
+    widgetTriggerBackgroundColor: z.string().min(1),
+    widgetTriggerIcon: z.string().optional()
   })
   .merge(walletSchema)
 

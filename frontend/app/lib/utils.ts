@@ -127,7 +127,7 @@ export const generateConfigCss = (
             background-color: ${config.widgetBackgroundColor};
         }
         .wm_widget .trigger {
-          background-color: ${config.widgetBackgroundColor};
+          background-color: ${config.widgetTriggerBackgroundColor};
         }
         .wm_widget .content h5 {
           font-size: 16px;
@@ -261,6 +261,27 @@ export const encodeAndCompressParameters = async (params: string) => {
   }
 
   return btoa(buffer).replaceAll('+', '-').replaceAll('/', '_')
+}
+
+export const processSVG = async (
+  file: File,
+  maxSize: number = 100
+): Promise<string> => {
+  const text = await file.text() // Read SVG content as text
+  const parser = new DOMParser()
+  const svgDoc = parser.parseFromString(text, 'image/svg+xml')
+  const svgElement = svgDoc.documentElement
+
+  // Set new width and height
+  svgElement.setAttribute('width', String(maxSize))
+  svgElement.setAttribute('height', String(maxSize))
+
+  // Convert the modified SVG back to a string
+  const serializer = new XMLSerializer()
+  const resizedSVG = serializer.serializeToString(svgElement)
+
+  // Encode the SVG string as Base64
+  return `data:image/svg+xml;base64,${btoa(resizedSVG)}`
 }
 
 export const getWebMonetizationLink = () => {

@@ -4,6 +4,7 @@ import { CornerType, SlideAnimationType, PositionType } from './types.js'
 export const validConfigTypes = ['button', 'banner', 'widget']
 
 export const textColorPresets = ['#ffffff', '#000000']
+export const triggerColorPresets = ['#ffffff', '#000000', '#096b63']
 export const backgroundColorPresets = [
   '#ff808c',
   '#4ec6c0',
@@ -55,6 +56,10 @@ export const widgetControlOptions = [
   {
     value: 'buttontext',
     label: 'Btn Text'
+  },
+  {
+    value: 'trigger',
+    label: 'Trigger & Icon'
   }
 ]
 

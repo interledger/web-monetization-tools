@@ -12,7 +12,8 @@ const buttonStyles = cva(
         reset:
           'text-sm hover:from-wm-purple hover:to-[#7f7fff] hover:text-white hover:bg-gradient-to-r',
         danger:
-          'disabled:bg-red-200 bg-red-500 hover:bg-red-600 shadow-md text-white'
+          'disabled:bg-red-200 bg-red-500 hover:bg-red-600 shadow-md text-white',
+        invisible: 'px-1 border-none text-white'
       },
       size: {
         sm: 'px-2 py-1 ',
