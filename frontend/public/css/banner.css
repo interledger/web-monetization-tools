@@ -10,6 +10,7 @@
   z-index: 99998; /* needs to be 1 lower then the widget, to handle overlap */
   text-align: justify;
   overflow: hidden;
+  font-family: var(--wmt-banner-font), sans-serif;
 }
 
 ._wm_tools_banner_header {

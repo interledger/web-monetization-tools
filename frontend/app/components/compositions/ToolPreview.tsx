@@ -118,6 +118,10 @@ const WidgetConfig = ({
       setOpenWidget(false)
     }
   }, [widgetOpen])
+  
+  const triggerIcon = config?.widgetTriggerIcon
+    ? config?.widgetTriggerIcon
+    : `/images/wm_logo_animated.svg`
 
   return (
     <div className="flex flex-col items-end wm_widget">
@@ -146,11 +150,7 @@ const WidgetConfig = ({
         onClick={() => setWidgetOpen(!widgetOpen)}
         className="trigger cursor-pointer w-14 h-14 flex items-center justify-center mt-4 border-transparent rounded-full"
       >
-        <img
-          className="w-8"
-          src={`/images/wm_logo_animated.svg`}
-          alt="widget trigger"
-        />
+        <img className="w-8" src={triggerIcon} alt="widget trigger" />
       </div>
     </div>
   )

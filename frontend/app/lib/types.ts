@@ -22,16 +22,17 @@ export enum PositionType {
 }
 
 export interface ElementConfigType {
-  fontName: string
   walletAddress?: string
 
   // button specific
+  buttonFontName: string
   buttonText: string
   buttonBorder: CornerType
   buttonTextColor: string
   buttonBackgroundColor: string
 
   // banner specific
+  bannerFontName: string
   bannerTitleText: string
   bannerDescriptionText: string
   bannerSlideAnimation: SlideAnimationType
@@ -41,6 +42,7 @@ export interface ElementConfigType {
   bannerBackgroundColor: string
 
   // widget specific
+  widgetFontName: string
   widgetTitleText: string
   widgetDescriptionText: string
   // widgetDonateAmount: number // not posibble currently
@@ -50,6 +52,8 @@ export interface ElementConfigType {
   widgetBackgroundColor: string
   widgetButtonTextColor: string
   widgetButtonBackgroundColor: string
+  widgetTriggerBackgroundColor: string
+  widgetTriggerIcon: string
 }
 
 export type JSONError<T extends z.ZodTypeAny> = {

@@ -14,7 +14,7 @@ const getSelectedFont = (name: string) => {
 }
 
 export const getIlpayCss = (config: ElementConfigType) => {
-  const selectedFont = getSelectedFont(config.fontName)
+  const selectedFont = getSelectedFont(config.widgetFontName)
   const widgetButtonBorder =
     config.widgetButtonBorder == 'Light'
       ? '0.375rem'
@@ -69,7 +69,9 @@ export const generateConfigCss = (
   config: ElementConfigType,
   returnRaw = false
 ) => {
-  const selectedFont = getSelectedFont(config.fontName)
+  // const selectedButtonFont = getSelectedFont(config.buttonFontName)
+  const selectedBannerFont = getSelectedFont(config.bannerFontName)
+  const selectedWidgetFont = getSelectedFont(config.widgetFontName)
   const buttonBorder =
     config.buttonBorder == CornerType.Light
       ? '0.375rem'
@@ -93,7 +95,7 @@ export const generateConfigCss = (
 
   const css = `       
         .wm_button {
-            font-family: ${selectedFont}, system-ui, sans-serif !important;
+            font-family: ${selectedWidgetFont}, system-ui, sans-serif !important;
             font-size: 16px;
             padding: 8px 20px;
             border: 1px solid transparent;
@@ -103,7 +105,7 @@ export const generateConfigCss = (
             transition: all 0.5s ease;
         }       
         .wm_banner {
-            font-family: ${selectedFont}, system-ui, sans-serif !important;
+            font-family: ${selectedBannerFont}, system-ui, sans-serif !important;
             font-size: 16px;
             padding: 0 20px;
             border: 1px solid transparent;
@@ -128,21 +130,21 @@ export const generateConfigCss = (
         }
 
         .wm_widget .content {
-            font-family: ${selectedFont}, system-ui, sans-serif !important;
+            font-family: ${selectedWidgetFont}, system-ui, sans-serif !important;
             font-size: 14px;
             padding: 12px 20px;
             color: ${config.widgetTextColor};
             background-color: ${config.widgetBackgroundColor};
         }
         .wm_widget .trigger {
-          background-color: ${config.widgetBackgroundColor};
+          background-color: ${config.widgetTriggerBackgroundColor};
         }
         .wm_widget .content h5 {
           font-size: 16px;
         }
 
         .ilpay_body {
-          font-family: ${selectedFont}, system-ui, sans-serif !important;
+          font-family: ${selectedWidgetFont}, system-ui, sans-serif !important;
           color: ${config.widgetTextColor};
         }
 
@@ -269,6 +271,27 @@ export const encodeAndCompressParameters = async (params: string) => {
   }
 
   return btoa(buffer).replaceAll('+', '-').replaceAll('/', '_')
+}
+
+export const processSVG = async (
+  file: File,
+  maxSize: number = 100
+): Promise<string> => {
+  const text = await file.text() // Read SVG content as text
+  const parser = new DOMParser()
+  const svgDoc = parser.parseFromString(text, 'image/svg+xml')
+  const svgElement = svgDoc.documentElement
+
+  // Set new width and height
+  svgElement.setAttribute('width', String(maxSize))
+  svgElement.setAttribute('height', String(maxSize))
+
+  // Convert the modified SVG back to a string
+  const serializer = new XMLSerializer()
+  const resizedSVG = serializer.serializeToString(svgElement)
+
+  // Encode the SVG string as Base64
+  return `data:image/svg+xml;base64,${btoa(resizedSVG)}`
 }
 
 export const getWebMonetizationLink = () => {

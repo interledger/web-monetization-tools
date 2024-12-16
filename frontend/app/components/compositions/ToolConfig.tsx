@@ -23,7 +23,8 @@ import {
   ColorPicker,
   Textarea,
   NotFoundConfig,
-  WalletAddress
+  WalletAddress,
+  UploadControl
 } from '../index.js'
 
 type ToolConfigProps = {
@@ -46,7 +47,7 @@ const ButtonConfig = ({
 }: Omit<PartialToolConfigProps, 'type'>) => {
   const [displayedControl, setDisplayedControl] = useState('background')
   const defaultFontValue = fontOptions.find(
-    (option) => option.value == config?.fontName
+    (option) => option.value == config?.buttonFontName
   )
 
   const bgColor = bgColors.button
@@ -99,12 +100,12 @@ const ButtonConfig = ({
         <div className="flex items-center max-w-36 w-32 shrink-0">
           <Select
             withBorder
-            name="fontName"
+            name="buttonFontName"
             placeholder="Select Font"
             options={fontOptions}
             value={defaultFontValue}
             onChange={(value) =>
-              setToolConfig({ ...config, fontName: value ?? '' })
+              setToolConfig({ ...config, buttonFontName: value ?? '' })
             }
           />
         </div>
@@ -146,7 +147,7 @@ const BannerConfig = ({
 }: Omit<PartialToolConfigProps, 'type'>) => {
   const [displayedControl, setDisplayedControl] = useState('background')
   const defaultFontValue = fontOptions.find(
-    (option) => option.value == config?.fontName
+    (option) => option.value == config?.bannerFontName
   )
 
   const bgColor = bgColors.banner
@@ -199,7 +200,35 @@ const BannerConfig = ({
         <div className="flex items-center max-w-36 w-32 shrink-0">
           <Select
             withBorder
-            label="Position"
+            name="bannerFontName"
+            placeholder="Select Font"
+            options={fontOptions}
+            value={defaultFontValue}
+            onChange={(value) =>
+              setToolConfig({ ...config, bannerFontName: value ?? '' })
+            }
+          />
+        </div>
+        <div className="flex w-full items-center">
+          <Input
+            withBorder
+            name="bannerTitleText"
+            value={config?.bannerTitleText || ''}
+            className="w-full"
+            onChange={(e) =>
+              setToolConfig({
+                ...config,
+                bannerTitleText: e.target.value ?? ''
+              })
+            }
+          />
+        </div>
+      </div>
+      <div className="flex items-start w-full gap-2 mt-4">
+        <div className="flex items-center max-w-36 w-32 shrink-0">
+          <Select
+            withBorder
+            label="Poisition"
             name="bannerPosition"
             placeholder="Select banner position"
             options={positionOptions}
@@ -306,7 +335,7 @@ const WidgetConfig = ({
 }: Omit<PartialToolConfigProps, 'type'>) => {
   const [displayedControl, setDisplayedControl] = useState('background')
   const defaultFontValue = fontOptions.find(
-    (option) => option.value == config?.fontName
+    (option) => option.value == config?.widgetFontName
   )
 
   const bgColor = bgColors.widget
@@ -328,7 +357,7 @@ const WidgetConfig = ({
           bgColor
         )}
       >
-        <div className="flex">
+        <div className="flex w-full">
           <ColorPicker
             label="Background color"
             name="widgetBackgroundColor"
@@ -375,8 +404,39 @@ const WidgetConfig = ({
             }}
             className={cx(displayedControl != 'buttontext' && 'hidden')}
           />
+          <div
+            className={cx(
+              'flex items-center justify-between w-full flex-row',
+              displayedControl != 'trigger' && 'hidden'
+            )}
+          >
+            <ColorPicker
+              label="Trigger Background color"
+              name="widgetTriggerBackgroundColor"
+              preset="trigger"
+              allowCustomColors={!!config?.widgetTriggerIcon}
+              value={config?.widgetTriggerBackgroundColor}
+              updateColor={(value) => {
+                setToolConfig({
+                  ...config,
+                  widgetTriggerBackgroundColor: value
+                })
+              }}
+            />
+            <UploadControl
+              setImage={(value, color) => {
+                setToolConfig({
+                  ...config,
+                  widgetTriggerIcon: value,
+                  widgetTriggerBackgroundColor: color
+                    ? color
+                    : config.widgetTriggerBackgroundColor
+                })
+              }}
+            />
+          </div>
         </div>
-        <div className="flex items-center max-w-36 w-32 mr-3">
+        <div className="flex items-center max-w-36 w-44 mr-3">
           <Select
             placeholder="Background"
             options={widgetControlOptions}
@@ -391,13 +451,12 @@ const WidgetConfig = ({
         <div className="flex items-center max-w-36 w-32 shrink-0">
           <Select
             withBorder
-            label="Font"
-            name="fontName"
+            name="widgetFontName"
             placeholder="Select Font"
             options={fontOptions}
             value={defaultFontValue}
             onChange={(value) =>
-              setToolConfig({ ...config, fontName: value ?? '' })
+              setToolConfig({ ...config, widgetFontName: value ?? '' })
             }
           />
         </div>
