@@ -6,7 +6,7 @@ import {
   getS3AndParams,
   streamToString
 } from '../services/utils.js'
-import { S3FileNotFoundError } from '../services/errors.js'
+import { MissingGrantError, S3FileNotFoundError } from '../services/errors.js'
 
 export const getDefault = async (_: Request, res: Response) => {
   try {
@@ -36,6 +36,12 @@ export const saveUserConfig = async (req: Request, res: Response) => {
     try {
       // existing config
       const s3data = await s3.send(new GetObjectCommand(params))
+
+      // if file exists, we need to verify ownership
+      if (!data.variableHoldingSomeConfirmation) {
+        throw new MissingGrantError('Grant confirmation is required')
+      }
+
       // Convert the file stream to a string
       fileContentString = await streamToString(
         s3data.Body as NodeJS.ReadableStream
@@ -44,9 +50,18 @@ export const saveUserConfig = async (req: Request, res: Response) => {
       const err = error as Error
       if (err.name === 'NoSuchKey') {
         // file / config not found, continue with defaults
+      } else if (err.name === 'MissingGrant') {
+        res
+          .status(200)
+          .send({
+            grantRequired: true,
+            message: 'Grant confirmation is required'
+          })
+          return
       } else {
         console.log(error)
         res.status(500).send('An error occurred while fetching data')
+        return
       }
     }
 

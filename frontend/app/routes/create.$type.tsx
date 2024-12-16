@@ -64,7 +64,14 @@ export default function Create() {
   useEffect(() => {
     const errors = Object.keys(response?.errors?.fieldErrors || {})
 
-    if (response && !errors.length && response.displayScript) {
+    if (
+      response &&
+      response.apiResponse &&
+      response.apiResponse.payload &&
+      response.apiResponse.payload.grantRequired
+    ) {
+      /// code comes here
+    } else if (response && !errors.length && response.displayScript) {
       setModalOpen(true)
     } else if (
       response &&
