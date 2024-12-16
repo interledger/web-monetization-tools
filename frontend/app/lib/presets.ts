@@ -5,12 +5,10 @@ export const validConfigTypes = ['button', 'banner', 'widget']
 
 export const textColorPresets = ['#ffffff', '#000000']
 export const backgroundColorPresets = [
-  '#ff808c',
+  '#ffffff',
   '#4ec6c0',
-  '#a2bddb',
   '#f8c6db',
   '#f69656',
-  '#93e5d6',
   '#7f76b2'
 ]
 export const FontsType = ['Arial', 'Open Sans', 'Cookie', 'Titillium Web']
