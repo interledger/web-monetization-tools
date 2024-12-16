@@ -51,13 +51,11 @@ export const saveUserConfig = async (req: Request, res: Response) => {
       if (err.name === 'NoSuchKey') {
         // file / config not found, continue with defaults
       } else if (err.name === 'MissingGrant') {
-        res
-          .status(200)
-          .send({
-            grantRequired: true,
-            message: 'Grant confirmation is required'
-          })
-          return
+        res.status(200).send({
+          grantRequired: true,
+          message: 'Grant confirmation is required'
+        })
+        return
       } else {
         console.log(error)
         res.status(500).send('An error occurred while fetching data')

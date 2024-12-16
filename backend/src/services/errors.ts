@@ -8,7 +8,7 @@ export class S3FileNotFoundError extends Error {
 
 export class MissingGrantError extends Error {
   constructor(message: string) {
-    super(message) 
+    super(message)
     this.name = 'MissingGrant'
   }
 }
