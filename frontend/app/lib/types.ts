@@ -33,6 +33,7 @@ export interface ElementConfigType {
 
   // banner specific
   bannerFontName: string
+  bannerFontSize: number
   bannerTitleText: string
   bannerDescriptionText: string
   bannerSlideAnimation: SlideAnimationType
@@ -43,6 +44,7 @@ export interface ElementConfigType {
 
   // widget specific
   widgetFontName: string
+  widgetFontSize: number
   widgetTitleText: string
   widgetDescriptionText: string
   // widgetDonateAmount: number // not posibble currently

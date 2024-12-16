@@ -1,6 +1,8 @@
 import { z } from 'zod'
 import { CornerType, PositionType, SlideAnimationType } from './types.js'
 
+const rangeError = { message: 'Value has to be between 16 and 24' }
+
 export const walletSchema = z.object({
   walletAddress: z.string().min(1, { message: 'Wallet address is required' })
 })
@@ -20,6 +22,7 @@ export const createBannerSchema = z
   .object({
     elementType: z.literal('banner'),
     bannerFontName: z.string().min(1, { message: 'Choose a font' }),
+    bannerFontSize: z.coerce.number().min(16, rangeError).max(24, rangeError),
     bannerTitleText: z.string().optional(),
     bannerDescriptionText: z
       .string()
@@ -36,6 +39,7 @@ export const createWidgetSchema = z
   .object({
     elementType: z.literal('widget'),
     widgetFontName: z.string().min(1, { message: 'Choose a font' }),
+    widgetFontSize: z.coerce.number().min(16, rangeError).max(24, rangeError),
     widgetButtonText: z.string().min(1),
     widgetDescriptionText: z.string().min(1),
     widgetButtonBorder: z.nativeEnum(CornerType),

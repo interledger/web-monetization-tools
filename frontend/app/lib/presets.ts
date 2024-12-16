@@ -107,7 +107,7 @@ export const availableTools = [
     link: 'create/banner',
     tooltip: tooltips.banner,
     description:
-      "The banner informs visitors who don't have the Web Monetization extension active, with a call-to-action linking to the extension or providing details about the options available. It also adds a payment pointer to your site."
+      "The banner informs visitors who don't have the Web Monetization extension active, with a call-to-action linking to the extension or providing details about the options available. It also adds your wallet address for your site to be monetized."
   },
   {
     enabled: true,

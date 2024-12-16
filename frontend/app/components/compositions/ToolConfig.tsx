@@ -24,7 +24,8 @@ import {
   Textarea,
   NotFoundConfig,
   WalletAddress,
-  UploadControl
+  UploadControl,
+  FontSize
 } from '../index.js'
 
 type ToolConfigProps = {
@@ -200,35 +201,7 @@ const BannerConfig = ({
         <div className="flex items-center max-w-36 w-32 shrink-0">
           <Select
             withBorder
-            name="bannerFontName"
-            placeholder="Select Font"
-            options={fontOptions}
-            value={defaultFontValue}
-            onChange={(value) =>
-              setToolConfig({ ...config, bannerFontName: value ?? '' })
-            }
-          />
-        </div>
-        <div className="flex w-full items-center">
-          <Input
-            withBorder
-            name="bannerTitleText"
-            value={config?.bannerTitleText || ''}
-            className="w-full"
-            onChange={(e) =>
-              setToolConfig({
-                ...config,
-                bannerTitleText: e.target.value ?? ''
-              })
-            }
-          />
-        </div>
-      </div>
-      <div className="flex items-start w-full gap-2 mt-4">
-        <div className="flex items-center max-w-36 w-32 shrink-0">
-          <Select
-            withBorder
-            label="Poisition"
+            label="Position"
             name="bannerPosition"
             placeholder="Select banner position"
             options={positionOptions}
@@ -281,13 +254,23 @@ const BannerConfig = ({
         <div className="flex items-center max-w-36 w-32 shrink-0">
           <Select
             withBorder
-            name="fontName"
+            name="bannerFontName"
             label="Font"
             placeholder="Select Font"
             options={fontOptions}
             value={defaultFontValue}
             onChange={(value) =>
-              setToolConfig({ ...config, fontName: value ?? '' })
+              setToolConfig({ ...config, bannerFontName: value ?? '' })
+            }
+          />
+        </div>
+        <div className="flex items-center max-w-20 w-18 shrink-0">
+          <FontSize
+            name="bannerFontSize"
+            label="Size"
+            value={config?.bannerFontSize}
+            updateSize={(value) =>
+              setToolConfig({ ...config, bannerFontSize: Number(value ?? 16) })
             }
           />
         </div>
@@ -451,12 +434,23 @@ const WidgetConfig = ({
         <div className="flex items-center max-w-36 w-32 shrink-0">
           <Select
             withBorder
+            label="Font"
             name="widgetFontName"
             placeholder="Select Font"
             options={fontOptions}
             value={defaultFontValue}
             onChange={(value) =>
               setToolConfig({ ...config, widgetFontName: value ?? '' })
+            }
+          />
+        </div>
+        <div className="flex items-center max-w-20 w-18 shrink-0">
+          <FontSize
+            name="widgetFontSize"
+            label="Size"
+            value={config?.widgetFontSize}
+            updateSize={(value) =>
+              setToolConfig({ ...config, widgetFontSize: Number(value ?? 16) })
             }
           />
         </div>

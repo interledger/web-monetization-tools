@@ -118,7 +118,7 @@ const WidgetConfig = ({
       setOpenWidget(false)
     }
   }, [widgetOpen])
-  
+
   const triggerIcon = config?.widgetTriggerIcon
     ? config?.widgetTriggerIcon
     : `/images/wm_logo_animated.svg`
@@ -135,7 +135,9 @@ const WidgetConfig = ({
       >
         <div className="flex flex-col h-auto w-full">
           <h5>{config?.widgetTitleText}</h5>
-          <p>{config?.widgetDescriptionText}</p>
+          <p className="max-h-32 overflow-hidden">
+            {config?.widgetDescriptionText}
+          </p>
         </div>
         <div className="flex h-full overflow-hidden">
           <iframe

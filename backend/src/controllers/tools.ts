@@ -47,6 +47,7 @@ export const saveUserConfig = async (req: Request, res: Response) => {
       } else {
         console.log(error)
         res.status(500).send('An error occurred while fetching data')
+        return
       }
     }
 

@@ -11,6 +11,7 @@
   text-align: justify;
   overflow: hidden;
   font-family: var(--wmt-banner-font), sans-serif;
+  font-size: calc(var(--wmt-banner-font-size)* 1px);
 }
 
 ._wm_tools_banner_header {
@@ -25,8 +26,12 @@
 }
 
 ._wm_tools_banner h5 {
-  font-size: 1rem;
+  font-size: calc((var(--wmt-banner-font-size) + 2)*1px);
   margin: 15px 0;
+}
+
+._wm_tools_banner h5 span {
+  font-size: calc((var(--wmt-banner-font-size) + 2)*1px);
 }
 
 ._wm_tools_banner_top {

@@ -135,6 +135,10 @@ const drawElement = (
       case 'widget': {
         const font = getFontFamily(config.widgetFontName, 'widget')
         shadowHost.style.setProperty('--wmt-widget-font', font.selectedFont)
+        shadowHost.style.setProperty(
+          '--wmt-widget-font-size',
+          config.widgetFontSize
+        )
         const css = getCSSFile('css/widget.css')
         const element = drawWidget(walletAddress, config)
         shadowRoot.appendChild(css)
@@ -148,6 +152,10 @@ const drawElement = (
       default:
         const font = getFontFamily(config.bannerFontName, 'banner')
         shadowHost.style.setProperty('--wmt-banner-font', font.selectedFont)
+        shadowHost.style.setProperty(
+          '--wmt-banner-font-size',
+          config.bannerFontSize
+        )
         const css = getCSSFile('css/banner.css')
         const element = drawBanner(config)
         if (element) {
