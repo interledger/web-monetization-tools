@@ -69,7 +69,7 @@ export const generateConfigCss = (
   config: ElementConfigType,
   returnRaw = false
 ) => {
-  // const selectedButtonFont = getSelectedFont(config.buttonFontName)
+  const selectedButtonFont = getSelectedFont(config.buttonFontName)
   const selectedBannerFont = getSelectedFont(config.bannerFontName)
   const selectedWidgetFont = getSelectedFont(config.widgetFontName)
   const buttonBorder =
@@ -148,8 +148,10 @@ export const generateConfigCss = (
         }
 
         .button-tippy-wrapper {
-          font-family: ${selectedFont}, system-ui, sans-serif !important;
+          font-family: ${selectedButtonFont}, system-ui, sans-serif !important;
           color: ${config.buttonTooltipTextColor};
+          background-color: transparent;
+          margin-bottom: 5px;
         }
         .button-tippy-wrapper .tippy-content {
           padding: 4px 10px;
@@ -160,8 +162,8 @@ export const generateConfigCss = (
         .button-tippy-wrapper .tippy-arrow,
         .button-tippy-wrapper .tippy-arrow::before {
           position: absolute;
-          width: 8px;
-          height: 8px;
+          width: 14px;
+          height: 14px;
           margin-top: -2px;
           background-color: ${config.buttonTooltipBackgroundColor};
         }

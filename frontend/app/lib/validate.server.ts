@@ -11,7 +11,7 @@ export const createButtonSchema = z
   .object({
     elementType: z.literal('button'),
     buttonFontName: z.string().min(1, { message: 'Choose a font' }),
-    buttonText: z.string().min(1, { message: "Button label cannot be empty" }),
+    buttonText: z.string().min(1, { message: 'Button label cannot be empty' }),
     buttonDescriptionText: z.string().optional(),
     buttonTooltip: z.string().optional(),
     buttonBorder: z.nativeEnum(CornerType),
