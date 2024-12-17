@@ -55,6 +55,12 @@ const ButtonConfig = ({
 
   const bgColor = bgColors.button
 
+  useEffect(() => {
+    if (['tooltiptext', 'tooltipbackground'].indexOf(displayedControl) != -1) {
+      setToolConfig({ ...config, buttonTooltip: '1' })
+    }
+  }, [displayedControl])
+
   return (
     <div className="w-full">
       <div
