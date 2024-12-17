@@ -127,6 +127,7 @@ const ButtonConfig = ({
         <div className="flex items-center max-w-36 w-32 shrink-0">
           <Select
             withBorder
+            label="Font"
             name="buttonFontName"
             placeholder="Select Font"
             options={fontOptions}
@@ -139,6 +140,7 @@ const ButtonConfig = ({
         <div className="flex w-full items-center">
           <Input
             withBorder
+            label="Title"
             name="buttonText"
             value={config?.buttonText || ''}
             className="w-full"
@@ -151,6 +153,7 @@ const ButtonConfig = ({
         <div className="flex items-center max-w-36 w-32 shrink-0">
           <Select
             withBorder
+            label="Border"
             name="buttonBorder"
             placeholder="Select Rounding"
             options={cornerOptions}
