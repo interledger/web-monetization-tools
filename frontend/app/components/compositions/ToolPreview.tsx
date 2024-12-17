@@ -38,21 +38,15 @@ const ButtonConfig = ({ config }: { config: ElementConfigType }) => {
               : config.buttonTooltip != '0' &&
                 !!config.buttonDescriptionText.length
           }
-          className='button-tippy-wrapper'
+          className="button-tippy-wrapper"
           content={<span>{config.buttonDescriptionText}</span>}
         >
-          <button
-            type='button'
-            className='wm_button'
-          >
+          <button type="button" className="wm_button">
             {config.buttonText || '?'}
           </button>
         </Tippy>
       ) : (
-        <button
-          type='button'
-          className='wm_button'
-        >
+        <button type="button" className="wm_button">
           {config.buttonText || '?'}
         </button>
       )}
