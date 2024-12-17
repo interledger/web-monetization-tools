@@ -22,7 +22,6 @@ export const messageStorage = createCookieSessionStorage<
     path: '/',
     httpOnly: true,
     sameSite: 'none',
-    partitioned: true,
     maxAge: ONE_MINUTE_IN_S,
     secrets: ['MY_SUPER_SECRET_TOKEN'],
     secure: process.env.ENABLE_INSECURE_MESSAGE_COOKIE
