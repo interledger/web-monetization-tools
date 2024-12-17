@@ -1,12 +1,12 @@
-import React from "react"
-import { CornerType, ElementConfigType } from "./types"
+import React from 'react'
+import { CornerType, ElementConfigType } from './types.js'
 
 const getSelectedFont = (name: string) => {
   switch (name) {
-    case "Cookie":
-    case "Roboto":
-    case "Open Sans":
-    case "Titillium Web":
+    case 'Cookie':
+    case 'Roboto':
+    case 'Open Sans':
+    case 'Titillium Web':
       return name
     default:
       return `Arial`
@@ -14,13 +14,13 @@ const getSelectedFont = (name: string) => {
 }
 
 export const getIlpayCss = (config: ElementConfigType) => {
-  const selectedFont = getSelectedFont(config.fontName)
+  const selectedFont = getSelectedFont(config.widgetFontName)
   const widgetButtonBorder =
-    config.widgetButtonBorder == "Light"
-      ? "0.375rem"
-      : config.widgetButtonBorder == "Pill"
-      ? "1rem"
-      : "0"
+    config.widgetButtonBorder == 'Light'
+      ? '0.375rem'
+      : config.widgetButtonBorder == 'Pill'
+        ? '1rem'
+        : '0'
 
   // use + to preserve spaces
   return `
@@ -60,40 +60,42 @@ export const getIlpayCss = (config: ElementConfigType) => {
       }
       `
     .trim()
-    .replaceAll(" ", "")
-    .replaceAll("\n", "")
-    .replaceAll("+", " ")
+    .replaceAll(' ', '')
+    .replaceAll('\n', '')
+    .replaceAll('+', ' ')
 }
 
 export const generateConfigCss = (
   config: ElementConfigType,
   returnRaw = false
 ) => {
-  const selectedFont = getSelectedFont(config.fontName)
+  // const selectedButtonFont = getSelectedFont(config.buttonFontName)
+  const selectedBannerFont = getSelectedFont(config.bannerFontName)
+  const selectedWidgetFont = getSelectedFont(config.widgetFontName)
   const buttonBorder =
     config.buttonBorder == CornerType.Light
-      ? "0.375rem"
+      ? '0.375rem'
       : config.buttonBorder == CornerType.Pill
-      ? "1rem"
-      : "0"
+        ? '1rem'
+        : '0'
 
   const bannerBorder =
     config.bannerBorder == CornerType.Light
-      ? "0.375rem"
+      ? '0.375rem'
       : config.bannerBorder == CornerType.Pill
-      ? "1rem"
-      : "0"
+        ? '1rem'
+        : '0'
 
   const widgetButtonBorder =
     config.widgetButtonBorder == CornerType.Light
-      ? "0.375rem"
+      ? '0.375rem'
       : config.widgetButtonBorder == CornerType.Pill
-      ? "1rem"
-      : "0"
+        ? '1rem'
+        : '0'
 
   const css = `       
         .wm_button {
-            font-family: ${selectedFont}, system-ui, sans-serif !important;
+            font-family: ${selectedWidgetFont}, system-ui, sans-serif !important;
             font-size: 16px;
             padding: 8px 20px;
             border: 1px solid transparent;
@@ -104,9 +106,9 @@ export const generateConfigCss = (
             margin-top: 20px;
         }       
         .wm_banner {
-            font-family: ${selectedFont}, system-ui, sans-serif !important;
-            font-size: 16px;
-            padding: 12px 20px;
+            font-family: ${selectedBannerFont}, system-ui, sans-serif !important;
+            font-size: ${config.bannerFontSize}px;
+            padding: 0 20px;
             border: 1px solid transparent;
             border-radius: ${bannerBorder};
             color: ${config.bannerTextColor};
@@ -114,22 +116,35 @@ export const generateConfigCss = (
             transition: all 0.5s ease;
             overflow: hidden;
         }
+        .wm_banner.bottom {
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+        }
         .wm_banner h5 {
-            font-size: 18px;
+            font-size: ${(config.bannerFontSize ?? 16) + 2}px;
+            margin-top: 12px;
+        }
+        .wm_banner h5 span {
+            font-size: ${(config.bannerFontSize ?? 16) + 2}px;
+        }
+        .wm_banner ._wm_link {
+          display: block;
+          margin-bottom: 12px;
         }
 
         .wm_widget .content {
-            font-family: ${selectedFont}, system-ui, sans-serif !important;
-            font-size: 14px;
+            font-family: ${selectedWidgetFont}, system-ui, sans-serif !important;
+            font-size: ${(config.widgetFontSize ?? 16) - 2}px;
             padding: 12px 20px;
             color: ${config.widgetTextColor};
             background-color: ${config.widgetBackgroundColor};
         }
         .wm_widget .trigger {
-          background-color: ${config.widgetBackgroundColor};
+          background-color: ${config.widgetTriggerBackgroundColor};
         }
         .wm_widget .content h5 {
-          font-size: 16px;
+          font-size: ${config.widgetFontSize}px;
         }
 
         .button-tippy-wrapper {
@@ -162,7 +177,7 @@ export const generateConfigCss = (
         }
 
         .ilpay_body {
-          font-family: ${selectedFont}, system-ui, sans-serif !important;
+          font-family: ${selectedWidgetFont}, system-ui, sans-serif !important;
           color: ${config.widgetTextColor};
         }
 
@@ -210,7 +225,7 @@ export const generateConfigCss = (
     return css
   }
 
-  return React.createElement("style", {
+  return React.createElement('style', {
     dangerouslySetInnerHTML: { __html: css }
   })
 }
@@ -232,9 +247,9 @@ export const isColorLight = (color: string) => {
   } else {
     // If RGB --> Convert it to HEX: http://gist.github.com/983661
     if (color.length < 5) {
-      colorPart = +("0x" + color.slice(1).replace(/./g, "$&$&"))
+      colorPart = +('0x' + color.slice(1).replace(/./g, '$&$&'))
     } else {
-      colorPart = +("0x" + color.slice(1))
+      colorPart = +('0x' + color.slice(1))
     }
 
     r = colorPart >> 16
@@ -252,8 +267,10 @@ export const isColorLight = (color: string) => {
   return hsp > 192 ? true : false
 }
 
-const rgbToHex = (r: number, g: number, b: number) => {
-  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
+// Unused at the moment.
+// @arpi: Can be removed?
+export const rgbToHex = (r: number, g: number, b: number) => {
+  return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
 }
 
 export const removeItem = <T>(arr: Array<T>, value: T): Array<T> => {
@@ -266,10 +283,10 @@ export const removeItem = <T>(arr: Array<T>, value: T): Array<T> => {
 
 // Inspired from: https://github.com/sveltejs/svelte/blob/main/sites/svelte-5-preview/src/routes/gzip.js
 export const encodeAndCompressParameters = async (params: string) => {
-  let buffer = ""
+  let buffer = ''
   const reader = new Blob([params])
     .stream()
-    .pipeThrough(new CompressionStream("gzip"))
+    .pipeThrough(new CompressionStream('gzip'))
     .getReader()
 
   // eslint-disable-next-line no-constant-condition
@@ -286,18 +303,43 @@ export const encodeAndCompressParameters = async (params: string) => {
     }
   }
 
-  return btoa(buffer).replaceAll("+", "-").replaceAll("/", "_")
+  return btoa(buffer).replaceAll('+', '-').replaceAll('/', '_')
+}
+
+export const processSVG = async (
+  file: File,
+  maxSize: number = 100
+): Promise<string> => {
+  const text = await file.text() // Read SVG content as text
+  const parser = new DOMParser()
+  const svgDoc = parser.parseFromString(text, 'image/svg+xml')
+  const svgElement = svgDoc.documentElement
+
+  // Set new width and height
+  svgElement.setAttribute('width', String(maxSize))
+  svgElement.setAttribute('height', String(maxSize))
+
+  // Convert the modified SVG back to a string
+  const serializer = new XMLSerializer()
+  const resizedSVG = serializer.serializeToString(svgElement)
+
+  // Encode the SVG string as Base64
+  return `data:image/svg+xml;base64,${btoa(resizedSVG)}`
 }
 
 export const getWebMonetizationLink = () => {
-  const userAgent = typeof navigator !== "undefined" ? navigator.userAgent : ""
+  const userAgent = typeof navigator !== 'undefined' ? navigator.userAgent : ''
 
   // Detect browsers
-  if (userAgent.includes("Firefox")) {
+  if (userAgent.includes('Firefox')) {
     return `Get the&nbsp;<a rel="noindex nofollow" target="_blank" href="https://addons.mozilla.org/en-US/firefox/addon/web-monetization-extension/">extension</a>`
-  } else if (userAgent.includes("Chrome") && !userAgent.includes("Edg") && !userAgent.includes("OPR")) {
+  } else if (
+    userAgent.includes('Chrome') &&
+    !userAgent.includes('Edg') &&
+    !userAgent.includes('OPR')
+  ) {
     return `Get the&nbsp;<a rel="noindex nofollow" target="_blank" href="https://chromewebstore.google.com/detail/web-monetization-extensio/oiabcfomehhigdepbbclppomkhlknpii">extension</a>`
-  } else if (userAgent.includes("Edg")) {
+  } else if (userAgent.includes('Edg')) {
     return `Get the&nbsp;<a rel="noindex nofollow" target="_blank" href="https://microsoftedge.microsoft.com/addons/detail/web-monetization-extensio/imjgemgmeoioefpmfefmffbboogighjl">extension</a>`
     //   } else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
     //     return "Safari"

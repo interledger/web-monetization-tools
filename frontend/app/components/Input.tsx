@@ -1,19 +1,29 @@
-import type { ComponentPropsWithoutRef, ReactNode } from "react"
-import { forwardRef, useEffect, useId, useState } from "react"
-import { FieldError } from "./FieldError"
-import { Label } from "./Label"
-import { cx } from "class-variance-authority"
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+import { forwardRef, useEffect, useId, useState } from 'react'
+import { cx } from 'class-variance-authority'
+import { FieldError, Label } from './index.js'
 
-type InputProps = ComponentPropsWithoutRef<"input"> & {
+type InputProps = ComponentPropsWithoutRef<'input'> & {
   label?: string
   error?: string | string[]
+  tooltip?: string
   description?: ReactNode
   withBorder?: boolean
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
-    { description, label, type, error, id, withBorder, className, ...props },
+    {
+      description,
+      label,
+      type,
+      tooltip,
+      error,
+      id,
+      withBorder,
+      className,
+      ...props
+    },
     ref
   ) => {
     const generatedId = useId()
@@ -26,31 +36,32 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     }, [error])
 
     return (
-      <div className={cx("flex flex-col", className)}>
+      <div className={cx('flex flex-col', label && 'mt-1', className)}>
         {label && (
           <Label
-            className="w-full"
+            className={cx('w-full mb-px', tooltip && 'flex')}
             htmlFor={internalId}
             required={props.required ?? false}
+            tooltip={tooltip}
           >
             {label}
           </Label>
         )}
         <div
           className={cx(
-            "flex relative w-full p-2",
-            withBorder && "border rounded-lg"
+            'flex relative w-full p-2 h-9',
+            withBorder && 'border rounded-lg'
           )}
         >
           <input
             id={internalId}
             ref={ref}
-            type={type ?? "text"}
+            type={type ?? 'text'}
             className={cx(
-              "block w-full h-full text-sm transition-colors duration-150 placeholder:font-extralight focus:border-tealish focus:outline-none focus:ring-0 disabled:bg-mercury"
+              'block w-full h-full text-sm transition-colors duration-150 placeholder:font-extralight focus:border-tealish focus:outline-none focus:ring-0 disabled:bg-mercury'
             )}
             {...props}
-            onKeyDown={() => setLocalError("")}
+            onKeyDown={() => setLocalError('')}
           />
         </div>
         {description ? (
@@ -62,4 +73,4 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   }
 )
 
-Input.displayName = "Input"
+Input.displayName = 'Input'

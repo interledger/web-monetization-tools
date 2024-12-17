@@ -1,34 +1,36 @@
-import { cva, cx, type VariantProps } from "class-variance-authority"
-import { forwardRef } from "react"
-import { ButtonOrLink, type ButtonOrLinkProps } from "./ButtonOrLink"
+import { cva, cx, type VariantProps } from 'class-variance-authority'
+import { forwardRef } from 'react'
+import { ButtonOrLink, type ButtonOrLinkProps } from './ButtonOrLink.js'
 
 const buttonStyles = cva(
-  "inline-flex items-center justify-center w-fit rounded-md px-3 py-1 border border-wm-green m-auto focus:outline-none disabled:cursor-not-allowed disabled:bg-mercury disabled:text-gray-500",
+  'inline-flex items-center justify-center w-fit rounded-md px-3 py-1 border border-wm-green m-auto focus:outline-none disabled:cursor-not-allowed disabled:bg-mercury disabled:text-gray-500',
   {
     variants: {
       intent: {
         default:
-          "text-sm hover:bg-gradient-to-r hover:from-wm-green hover:to-wm-green-fade",
+          'text-sm hover:bg-gradient-to-r hover:from-wm-green hover:to-wm-green-fade',
         reset:
-          "text-sm hover:from-wm-purple hover:to-[#7f7fff] hover:text-white hover:bg-gradient-to-r",
+          'text-sm hover:from-wm-purple hover:to-[#7f7fff] hover:text-white hover:bg-gradient-to-r',
         danger:
-          "disabled:bg-red-200 bg-red-500 hover:bg-red-600 shadow-md text-white"
+          'disabled:bg-red-200 bg-red-500 hover:bg-red-600 shadow-md text-white',
+        invisible: 'px-1 border-none text-white'
       },
       size: {
-        sm: "px-2 py-1 ",
-        md: ""
+        sm: 'px-2 py-1 ',
+        md: ''
       }
     },
     defaultVariants: {
-      intent: "default",
-      size: "md"
+      intent: 'default',
+      size: 'md'
     }
   }
 )
 
 type ButtonProps = VariantProps<typeof buttonStyles> &
   ButtonOrLinkProps & {
-    ["aria-label"]: string
+    ['aria-label']: string
+    variant?: string
   }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -45,4 +47,4 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   }
 )
 
-Button.displayName = "Button"
+Button.displayName = 'Button'

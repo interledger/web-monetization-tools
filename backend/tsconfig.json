@@ -1,22 +1,14 @@
 {
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "forceConsistentCasingInFileNames": true,
-    "esModuleInterop": true,
-    "outDir": "dist",
-    "rootDir": "./",
-    "module": "ESNext",
-    "target": "ESNext",
-    "skipLibCheck": true,
-    "strict": true,
+    "lib": ["ESNext"],
     "sourceMap": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
-      "@controllers/*": ["src/controllers/*"],
-      "@routes/*": ["src/routes/*"],
-      "@data/*": ["src/data/*"]
+      "@/*": ["./src/*"],
+      "@/tests/*": ["./tests/*"]
     }
   },
-  "exclude": ["node_modules"]
+  "include": ["src/**/*", "tests/**/*"],
+  "exclude": ["node_modules", "**/node_modules/*"]
 }

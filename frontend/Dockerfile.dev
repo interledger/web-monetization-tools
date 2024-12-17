@@ -8,10 +8,7 @@ RUN corepack enable
 RUN corepack prepare pnpm@9.12.1 --activate
 
 # Copy package.json and pnpm lock file
-COPY pnpm-lock.yaml package.json tsconfig.json vite.config.ts vite.script.config.ts postcss.config.js ./
-
-# Set NODE_ENV to development to install devDependencies
-ENV NODE_ENV=development
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json tsconfig.base.json ./
 
 # Install pnpm and dependencies
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
@@ -19,14 +16,27 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     | grep -v "cross-device link not permitted\|Falling back to copying packages from store"
 
 # Copy the rest of the application code
-COPY . .
+COPY frontend ./frontend
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm i \
+    --recursive \
+    --prefer-offline \
     --frozen-lockfile
 
 # Expose the frontend port
 EXPOSE 5100
+
+# Adding build time environment variables for script
+ARG VITE_SCRIPT_API_URL
+ARG VITE_SCRIPT_FRONTEND_URL
+ARG VITE_SCRIPT_ILPAY_URL
+
+ENV VITE_SCRIPT_API_URL=$VITE_SCRIPT_API_URL \
+    VITE_SCRIPT_FRONTEND_URL=$VITE_SCRIPT_FRONTEND_URL \
+    VITE_SCRIPT_ILPAY_URL=$VITE_SCRIPT_ILPAY_URL
+
+WORKDIR /app/frontend
 
 # Command to run the Remix app with Vite
 CMD ["pnpm", "run", "dev"]

@@ -1,11 +1,12 @@
 {
-  "name": "webmonetization_tools_backend",
+  "name": "@wm-tools/backend",
   "version": "1.0.0",
   "type": "module",
   "description": "Small utility (REST API) that reads and writes configs for the WM Tools to AWS S3",
   "scripts": {
     "start": "build & node dist/server.js",
-    "build": "pnpm tsc --build tsconfig.build.json && tsc-alias -p tsconfig.build.json"
+    "build": "pnpm tsc --build tsconfig.build.json && tsc-alias -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [],
   "author": "Arpi <arpad.lengyel@breakpointit.eu>",

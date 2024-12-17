@@ -1,12 +1,12 @@
 import { cx } from 'class-variance-authority'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   CornerType,
   ElementConfigType,
   ElementErrors,
   SlideAnimationType,
   PositionType
-} from '~/lib/types'
+} from '~/lib/types.js'
 import {
   bgColors,
   controlOptions,
@@ -17,8 +17,18 @@ import {
   widgetControlOptions,
   buttonControlOptions,
   buttonTooltipOptions
-} from '~/lib/presets'
-import { Button, Input, Select, ColorPicker, Textarea } from './'
+} from '~/lib/presets.js'
+import {
+  Button,
+  Input,
+  Select,
+  ColorPicker,
+  Textarea,
+  NotFoundConfig,
+  WalletAddress,
+  UploadControl,
+  FontSize
+} from '../index.js'
 
 type ToolConfigProps = {
   type?: string
@@ -26,6 +36,9 @@ type ToolConfigProps = {
   defaultConfig: ElementConfigType
   setToolConfig: React.Dispatch<React.SetStateAction<ElementConfigType>>
   errors?: ElementErrors
+  isSubmiting?: boolean
+  openWidget?: boolean
+  setOpenWidget?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 type PartialToolConfigProps = Omit<ToolConfigProps, 'defaultConfig'>
@@ -37,7 +50,7 @@ const ButtonConfig = ({
 }: Omit<PartialToolConfigProps, 'type'>) => {
   const [displayedControl, setDisplayedControl] = useState('background')
   const defaultFontValue = fontOptions.find(
-    (option) => option.value == config?.fontName
+    (option) => option.value == config?.buttonFontName
   )
 
   const bgColor = bgColors.button
@@ -101,9 +114,9 @@ const ButtonConfig = ({
         </div>
         <div className='flex items-center max-w-36 w-32 mr-3'>
           <Select
-            placeholder='Background'
-            options={buttonControlOptions}
-            defaultValue={buttonControlOptions.find(
+            placeholder="Background"
+            options={controlOptions}
+            defaultValue={controlOptions.find(
               (opt) => opt.value == 'background'
             )}
             onChange={(value) => setDisplayedControl(value)}
@@ -114,21 +127,21 @@ const ButtonConfig = ({
         <div className='flex items-center max-w-36 w-32 shrink-0'>
           <Select
             withBorder
-            name='fontName'
-            placeholder='Select Font'
+            name="buttonFontName"
+            placeholder="Select Font"
             options={fontOptions}
             value={defaultFontValue}
             onChange={(value) =>
-              setToolConfig({ ...config, fontName: value ?? '' })
+              setToolConfig({ ...config, buttonFontName: value ?? '' })
             }
           />
         </div>
         <div className='flex w-full items-center'>
           <Input
             withBorder
-            name='buttonText'
+            name="buttonText"
             value={config?.buttonText || ''}
-            className='w-full'
+            className="w-full"
             error={errors?.fieldErrors.buttonText}
             onChange={(e) =>
               setToolConfig({ ...config, buttonText: e.target.value ?? '' })
@@ -195,13 +208,13 @@ const BannerConfig = ({
 }: Omit<PartialToolConfigProps, 'type'>) => {
   const [displayedControl, setDisplayedControl] = useState('background')
   const defaultFontValue = fontOptions.find(
-    (option) => option.value == config?.fontName
+    (option) => option.value == config?.bannerFontName
   )
 
   const bgColor = bgColors.banner
 
   return (
-    <div className='w-full'>
+    <div className="w-full font-sans text-sm">
       <div
         className={cx(
           'main_controls flex justify-between bg-gradient-to-r',
@@ -248,37 +261,9 @@ const BannerConfig = ({
         <div className='flex items-center max-w-36 w-32 shrink-0'>
           <Select
             withBorder
-            name='fontName'
-            placeholder='Select Font'
-            options={fontOptions}
-            value={defaultFontValue}
-            onChange={(value) =>
-              setToolConfig({ ...config, fontName: value ?? '' })
-            }
-          />
-        </div>
-        <div className='flex w-full items-center'>
-          <Input
-            withBorder
-            name='bannerTitleText'
-            value={config?.bannerTitleText || ''}
-            className='w-full'
-            onChange={(e) =>
-              setToolConfig({
-                ...config,
-                bannerTitleText: e.target.value ?? ''
-              })
-            }
-          />
-        </div>
-      </div>
-      <div className='flex items-start w-full gap-2 mt-4'>
-        <div className='flex items-center max-w-36 w-32 shrink-0'>
-          <Select
-            withBorder
-            label='Poisition'
-            name='bannerPosition'
-            placeholder='Select banner position'
+            label="Position"
+            name="bannerPosition"
+            placeholder="Select banner position"
             options={positionOptions}
             value={positionOptions.find(
               (opt) => opt.value == config?.bannerPosition
@@ -325,11 +310,52 @@ const BannerConfig = ({
           />
         </div>
       </div>
+      <div className="flex items-start w-full gap-2 mt-4">
+        <div className="flex items-center max-w-36 w-32 shrink-0">
+          <Select
+            withBorder
+            name="bannerFontName"
+            label="Font"
+            placeholder="Select Font"
+            options={fontOptions}
+            value={defaultFontValue}
+            onChange={(value) =>
+              setToolConfig({ ...config, bannerFontName: value ?? '' })
+            }
+          />
+        </div>
+        <div className="flex items-center max-w-20 w-18 shrink-0">
+          <FontSize
+            name="bannerFontSize"
+            label="Size"
+            value={config?.bannerFontSize}
+            updateSize={(value) =>
+              setToolConfig({ ...config, bannerFontSize: Number(value ?? 16) })
+            }
+          />
+        </div>
+        <div className="flex w-full items-center">
+          <Input
+            withBorder
+            label="Title"
+            name="bannerTitleText"
+            value={config?.bannerTitleText || ''}
+            className="w-full"
+            onChange={(e) =>
+              setToolConfig({
+                ...config,
+                bannerTitleText: e.target.value ?? ''
+              })
+            }
+          />
+        </div>
+      </div>
+
       <div>
         <Textarea
-          className='p-2'
-          label='Text'
-          name='bannerDescriptionText'
+          className="p-2"
+          label="Text"
+          name="bannerDescriptionText"
           value={config?.bannerDescriptionText || ''}
           onChange={(e) =>
             setToolConfig({
@@ -347,24 +373,34 @@ const BannerConfig = ({
 const WidgetConfig = ({
   toolConfig: config,
   setToolConfig,
-  errors
+  errors,
+  setOpenWidget
 }: Omit<PartialToolConfigProps, 'type'>) => {
   const [displayedControl, setDisplayedControl] = useState('background')
   const defaultFontValue = fontOptions.find(
-    (option) => option.value == config?.fontName
+    (option) => option.value == config?.widgetFontName
   )
 
   const bgColor = bgColors.widget
 
+  useEffect(() => {
+    if (
+      setOpenWidget &&
+      ['buttonbackground', 'buttontext'].indexOf(displayedControl) != -1
+    ) {
+      setOpenWidget(true)
+    }
+  }, [displayedControl])
+
   return (
-    <div className='w-full'>
+    <div className="w-full font-sans text-sm">
       <div
         className={cx(
           'main_controls flex justify-between bg-gradient-to-r',
           bgColor
         )}
       >
-        <div className='flex'>
+        <div className="flex w-full">
           <ColorPicker
             label='Background color'
             name='widgetBackgroundColor'
@@ -411,8 +447,39 @@ const WidgetConfig = ({
             }}
             className={cx(displayedControl != 'buttontext' && 'hidden')}
           />
+          <div
+            className={cx(
+              'flex items-center justify-between w-full flex-row',
+              displayedControl != 'trigger' && 'hidden'
+            )}
+          >
+            <ColorPicker
+              label="Trigger Background color"
+              name="widgetTriggerBackgroundColor"
+              preset="trigger"
+              allowCustomColors={!!config?.widgetTriggerIcon}
+              value={config?.widgetTriggerBackgroundColor}
+              updateColor={(value) => {
+                setToolConfig({
+                  ...config,
+                  widgetTriggerBackgroundColor: value
+                })
+              }}
+            />
+            <UploadControl
+              setImage={(value, color) => {
+                setToolConfig({
+                  ...config,
+                  widgetTriggerIcon: value,
+                  widgetTriggerBackgroundColor: color
+                    ? color
+                    : config.widgetTriggerBackgroundColor
+                })
+              }}
+            />
+          </div>
         </div>
-        <div className='flex items-center max-w-36 w-32 mr-3'>
+        <div className="flex items-center max-w-36 w-44 mr-3">
           <Select
             placeholder='Background'
             options={widgetControlOptions}
@@ -427,21 +494,33 @@ const WidgetConfig = ({
         <div className='flex items-center max-w-36 w-32 shrink-0'>
           <Select
             withBorder
-            name='fontName'
-            placeholder='Select Font'
+            label="Font"
+            name="widgetFontName"
+            placeholder="Select Font"
             options={fontOptions}
             value={defaultFontValue}
             onChange={(value) =>
-              setToolConfig({ ...config, fontName: value ?? '' })
+              setToolConfig({ ...config, widgetFontName: value ?? '' })
+            }
+          />
+        </div>
+        <div className="flex items-center max-w-20 w-18 shrink-0">
+          <FontSize
+            name="widgetFontSize"
+            label="Size"
+            value={config?.widgetFontSize}
+            updateSize={(value) =>
+              setToolConfig({ ...config, widgetFontSize: Number(value ?? 16) })
             }
           />
         </div>
         <div className='flex w-full items-center'>
           <Input
             withBorder
-            name='widgetTitleText'
+            label="Title"
+            name="widgetTitleText"
             value={config?.widgetTitleText || ''}
-            className='w-full'
+            className="w-full"
             onChange={(e) =>
               setToolConfig({
                 ...config,
@@ -453,9 +532,9 @@ const WidgetConfig = ({
       </div>
       <div>
         <Textarea
-          className='p-2'
-          label='Text'
-          name='widgetDescriptionText'
+          className="p-2"
+          label="Text"
+          name="widgetDescriptionText"
           value={config?.widgetDescriptionText || ''}
           onChange={(e) =>
             setToolConfig({
@@ -470,33 +549,40 @@ const WidgetConfig = ({
         <div className='flex items-center max-w-36 w-32 shrink-0'>
           <Select
             withBorder
-            label='Button'
-            name='widgetButtonBorder'
-            placeholder='Select Rounding'
+            label="Button rounding"
+            name="widgetButtonBorder"
+            placeholder="Select Rounding"
             options={cornerOptions}
             value={cornerOptions.find(
               (opt) => opt.value == config?.widgetButtonBorder
             )}
-            onChange={(value) =>
+            onChange={(value) => {
               setToolConfig({
                 ...config,
                 widgetButtonBorder: value as CornerType
               })
-            }
+              if (setOpenWidget) {
+                setOpenWidget(true)
+              }
+            }}
           />
         </div>
         <div className='flex items-center w-full'>
           <Input
             withBorder
-            name='widgetButtonText'
+            label="Button title"
+            name="widgetButtonText"
             value={config?.widgetButtonText || ''}
-            className='w-full mt-7'
-            onChange={(e) =>
+            className="w-full"
+            onChange={(e) => {
               setToolConfig({
                 ...config,
                 widgetButtonText: e.target.value ?? ''
               })
-            }
+              if (setOpenWidget) {
+                setOpenWidget(true)
+              }
+            }}
           />
         </div>
       </div>
@@ -504,14 +590,11 @@ const WidgetConfig = ({
   )
 }
 
-export const NotFoundConfig = () => {
-  return <span>This element type is not supported, please try again</span>
-}
-
-const renderElementConfig = ({
+const RenderElementConfig = ({
   type,
   toolConfig,
   setToolConfig,
+  setOpenWidget,
   errors
 }: PartialToolConfigProps) => {
   switch (type) {
@@ -536,6 +619,7 @@ const renderElementConfig = ({
         <WidgetConfig
           toolConfig={toolConfig}
           setToolConfig={setToolConfig}
+          setOpenWidget={setOpenWidget}
           errors={errors}
         />
       )
@@ -544,45 +628,25 @@ const renderElementConfig = ({
   }
 }
 
-const WalletAddress = ({
-  errors,
-  config,
-  setToolConfig
-}: {
-  errors?: ElementErrors
-  config: ElementConfigType
-  setToolConfig: React.Dispatch<React.SetStateAction<ElementConfigType>>
-}) => {
-  return (
-    <div className='w-full my-4'>
-      <Input
-        name='walletAddress'
-        label='Wallet address'
-        placeholder='https://ase-provider-url/jdoe'
-        error={errors?.fieldErrors.walletAddress}
-        onChange={(e) =>
-          setToolConfig({
-            ...config,
-            walletAddress: e.target.value ?? ''
-          })
-        }
-        withBorder
-      />
-    </div>
-  )
-}
-
 export const ToolConfig = ({
   type,
   toolConfig,
   defaultConfig,
   setToolConfig,
+  isSubmiting,
+  setOpenWidget,
   errors
 }: ToolConfigProps) => {
   return (
-    <div className='flex flex-col'>
-      {renderElementConfig({ type, toolConfig, setToolConfig, errors })}
-      <div className='flex w-full items-center'>
+    <div className="flex flex-col">
+      <RenderElementConfig
+        type={type}
+        toolConfig={toolConfig}
+        setToolConfig={setToolConfig}
+        errors={errors}
+        setOpenWidget={setOpenWidget}
+      />
+      <div className="flex w-full items-center">
         <WalletAddress
           errors={errors}
           config={toolConfig}
@@ -592,19 +656,20 @@ export const ToolConfig = ({
       <div className='flex justify-end items-end'>
         <div className='flex'>
           <Button
-            intent='reset'
-            className='mr-2'
-            aria-label='reset config'
+            intent="reset"
+            className="mr-2"
+            aria-label="reset config"
+            disabled={isSubmiting}
             onClick={() => setToolConfig(defaultConfig)}
           >
             Reset
           </Button>
-          <Button
-            aria-label='save config'
-            type='submit'
-          >
+          <Button aria-label="save config" type="submit" disabled={isSubmiting}>
             <img
-              className={cx('flex max-h-24 mr-2')}
+              className={cx(
+                'flex max-h-24 mr-2',
+                isSubmiting ? 'animate-spin' : ''
+              )}
               src={`/images/refresh.svg`}
               alt='generate'
             />

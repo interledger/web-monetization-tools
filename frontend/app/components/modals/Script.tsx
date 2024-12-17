@@ -1,22 +1,24 @@
-import { useEffect, useState } from "react"
-import { Dialog } from "@headlessui/react"
-import { Form } from "@remix-run/react"
-import { XIcon } from "~/components/icons"
-import { Button, CopyButton } from "~/components"
-import { removeItem } from "~/lib/utils"
+import { useEffect, useState } from 'react'
+import { Dialog } from '@headlessui/react'
+import { Form } from '@remix-run/react'
+import { XIcon } from '~/components/icons.js'
+import { Button, CopyButton, InfoWithTooltip } from '~/components/index.js'
+import { removeItem } from '~/lib/utils.js'
 
 type ScriptModalProps = {
   title: string
+  tooltip?: string
   defaultType?: string
   scriptForDisplay: string
   isOpen: boolean
   onClose: () => void
 }
 
-const selectableTypes = ["banner", "widget"]
+const selectableTypes = ['banner', 'widget']
 
 export const ScriptModal = ({
   title,
+  tooltip,
   defaultType,
   scriptForDisplay,
   isOpen,
@@ -35,7 +37,7 @@ export const ScriptModal = ({
   }
 
   useEffect(() => {
-    const script = scriptForDisplay.replace("[elements]", types.join("|"))
+    const script = scriptForDisplay.replace('[elements]', types.join('|'))
     setProcessedScript(script)
   }, [types, scriptForDisplay])
 
@@ -58,9 +60,10 @@ export const ScriptModal = ({
             <div>
               <Dialog.Title
                 as="h3"
-                className="font-semibold leading-6 text-lg text-center"
+                className="flex font-semibold leading-6 text-lg text-center"
               >
-                {title}
+                <span>{title}</span>
+                <InfoWithTooltip tooltip={tooltip} />
               </Dialog.Title>
               <div className="mt-2">
                 <div className="flex items-center m-6 mb-0 p-2">
@@ -96,7 +99,7 @@ export const ScriptModal = ({
                 <Form method="post" replace preventScrollReset>
                   <div className="flex justify-end space-x-4">
                     <Button
-                      aria-label={`cancel adding liquidity`}
+                      aria-label="close modal"
                       type="reset"
                       onClick={onClose}
                     >

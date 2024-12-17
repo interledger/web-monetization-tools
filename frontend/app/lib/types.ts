@@ -1,31 +1,31 @@
-import type { z } from "zod"
+import type { z } from 'zod'
 import {
   createBannerSchema,
   createButtonSchema,
   createWidgetSchema
-} from "./validate.server"
+} from './validate.server.js'
 
 export enum CornerType {
-  None = "None",
-  Light = "Light",
-  Pill = "Pill"
+  None = 'None',
+  Light = 'Light',
+  Pill = 'Pill'
 }
 
 export enum SlideAnimationType {
-  None = "None",
-  Down = "Down"
+  None = 'None',
+  Down = 'Down'
 }
 
 export enum PositionType {
-  Top = "Top",
-  Bottom = "Bottom"
+  Top = 'Top',
+  Bottom = 'Bottom'
 }
 
 export interface ElementConfigType {
-  fontName: string
   walletAddress?: string
 
   // button specific
+  buttonFontName: string
   buttonText: string
   buttonDescriptionText: string
   buttonBorder: CornerType
@@ -36,6 +36,8 @@ export interface ElementConfigType {
   buttonTooltip: string
 
   // banner specific
+  bannerFontName: string
+  bannerFontSize: number
   bannerTitleText: string
   bannerDescriptionText: string
   bannerSlideAnimation: SlideAnimationType
@@ -45,6 +47,8 @@ export interface ElementConfigType {
   bannerBackgroundColor: string
 
   // widget specific
+  widgetFontName: string
+  widgetFontSize: number
   widgetTitleText: string
   widgetDescriptionText: string
   // widgetDonateAmount: number // not posibble currently
@@ -54,6 +58,8 @@ export interface ElementConfigType {
   widgetBackgroundColor: string
   widgetButtonTextColor: string
   widgetButtonBackgroundColor: string
+  widgetTriggerBackgroundColor: string
+  widgetTriggerIcon: string
 }
 
 export type JSONError<T extends z.ZodTypeAny> = {

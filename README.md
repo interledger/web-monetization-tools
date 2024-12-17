@@ -66,7 +66,7 @@ You can use OpenSSL for this.
 
 Install OpenSSL (if you don't already have it):
 
-- Windows: Download and install OpenSSL from [here](https://slproweb.com/products/Win32OpenSSL.html "here").
+- Windows: Download and install OpenSSL from [here](https://slproweb.com/products/Win32OpenSSL.html 'here').
 - Mac: Use brew install openssl.
 - Linux: Install it via your package manager (e.g: sudo apt install openssl ).
 

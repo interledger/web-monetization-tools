@@ -1,4 +1,4 @@
-import type { SVGProps } from "react";
+import type { SVGProps } from 'react'
 
 export const PoweredBy = (props: SVGProps<SVGSVGElement>) => {
   return (
@@ -206,5 +206,5 @@ export const PoweredBy = (props: SVGProps<SVGSVGElement>) => {
         height="61.55"
       />
     </svg>
-  );
-};
+  )
+}

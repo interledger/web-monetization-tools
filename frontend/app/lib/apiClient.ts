@@ -1,7 +1,7 @@
 import axios from 'axios'
 import https from 'https'
 import fs from 'fs'
-import { ElementConfigType } from './types'
+import { ElementConfigType } from './types.js'
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 export type ApiResponse<T = any> = {
@@ -11,16 +11,14 @@ export type ApiResponse<T = any> = {
 }
 
 const isProd = import.meta.env.PROD
-const apiUrl = isProd
-  ? import.meta.env.VITE_API_URL
-  : import.meta.env.VITE_INTERNAL_API_URL // internal because docker issues
+const apiUrl = process.env.API_URL!
 
 let httpsAgent: https.Agent | undefined
 
 if (!isProd) {
   try {
     // Load self-signed certificate
-    const backendCert = fs.readFileSync('/certs/cert.pem')
+    const backendCert = fs.readFileSync('/app/certs/cert.pem')
 
     // Create an HTTPS agent with the certificate
     httpsAgent = isProd
@@ -33,9 +31,31 @@ if (!isProd) {
     console.error('Could not load certificate:', err)
   }
 }
+
 export class ApiClient {
   public static async getDefaultConfig(): Promise<ApiResponse> {
     const response = await axios.get(`${apiUrl}tools/default`, { httpsAgent })
+
+    if (response.status === 200) {
+      return {
+        isFailure: false,
+        payload: response.data
+      }
+    } else {
+      return {
+        errors: [`status ${response.status}: ${response.statusText}`],
+        isFailure: true
+      }
+    }
+  }
+
+  public static async getUserConfig(
+    walletAddress: string
+  ): Promise<ApiResponse> {
+    const wa = encodeURIComponent(
+      walletAddress.replace('$', '').replace('https://', '')
+    )
+    const response = await axios.get(`${apiUrl}tools/${wa}`, { httpsAgent })
 
     if (response.status === 200) {
       return {
