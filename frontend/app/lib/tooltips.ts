@@ -1,10 +1,10 @@
 export const tooltips = {
   walletAddress:
-    'Your wallet address is used to save your configured component, verify ownership of the component you want to update, and integrate it into the page displaying the component, enabling fund acceptance via Web Monetization.',
+    "Your wallet address is required in order for us to save this component's configuration for you, link it to the original creator, and verify ownership for future updates. It also embeds the wallet address into your web page automatically, enabling Web Monetization on your behalf.",
   banner:
-    "If the Web Monetization extension is inactive, an embedded banner will be shown until the user closes it. You can customize the banner's colors, title, and text, and a browser-specific link to the extension is automatically included.",
+    "When a Web Monetization extension isn't detected, a banner will inform users that this site is Web Monetized. It will automatically include a browser-specific link to the extension. Messaging and styling are fully customizable to align with your site's look and feel.",
   widget:
-    'The embedded widget appears in the lower right corner of your website and opens an overlay with a title, text, and payment solution, all of which can be customized in terms of colors and text. While preset values are fixed, you have the option to set custom values for visitors.',
+    'This widget enables one-time payments for your website. It appears in the lower right corner, visible to all visitors regardless of their Web Monetization status. The title, text, and styling of the displayed message are customizable.',
   scriptModal:
     'Copy your script and insert it just before the closing </body> tag on your website, or place it within a script type element if you\'re using a site management software (ex: WordPress, etc). <br />Be sure to review and select all the options in the "Include" section, that you want to display on your website.'
 }

@@ -117,7 +117,7 @@ export const availableTools = [
     link: 'create/widget',
     tooltip: tooltips.widget,
     description:
-      'You can add a widget to provide a brief explanation or description, along with a donation or one-time payment option, even for users without the Web Monetization extension.'
+      'You can add a widget to provide a brief explanation or description, along with a donation or one-time payment option, even for users without the Web Monetization extension. It also adds your wallet address for your site to be monetized.'
   },
   {
     enabled: false,
