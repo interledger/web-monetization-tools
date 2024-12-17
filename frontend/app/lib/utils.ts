@@ -95,8 +95,8 @@ export const generateConfigCss = (
 
   const css = `       
         .wm_button {
-            font-family: ${selectedWidgetFont}, system-ui, sans-serif !important;
-            font-size: 16px;
+            font-family: ${selectedButtonFont}, system-ui, sans-serif !important;
+            font-size: ${(config.buttonFontSize ?? 16) + 2}px;
             padding: 8px 20px;
             border: 1px solid transparent;
             color: ${config.buttonTextColor};
@@ -149,6 +149,7 @@ export const generateConfigCss = (
 
         .button-tippy-wrapper {
           font-family: ${selectedButtonFont}, system-ui, sans-serif !important;
+          font-size: ${config.buttonFontSize}px;
           color: ${config.buttonTooltipTextColor};
           background-color: transparent;
           margin-bottom: 5px;

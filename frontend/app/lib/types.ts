@@ -26,6 +26,7 @@ export interface ElementConfigType {
 
   // button specific
   buttonFontName: string
+  buttonFontSize: number
   buttonText: string
   buttonDescriptionText: string
   buttonBorder: CornerType

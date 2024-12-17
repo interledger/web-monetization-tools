@@ -1,5 +1,6 @@
 {
   "buttonFontName": "Arial",
+  "buttonFontSize": 16,
   "buttonText": "Click me",
   "buttonDescriptionText": "Open a new way to support our content",
   "buttonBorder": "Light",

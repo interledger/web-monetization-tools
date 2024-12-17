@@ -143,6 +143,16 @@ const ButtonConfig = ({
             }
           />
         </div>
+        <div className="flex items-center max-w-20 w-18 shrink-0">
+          <FontSize
+            name="buttonFontSize"
+            label="Size"
+            value={config?.buttonFontSize}
+            updateSize={(value) =>
+              setToolConfig({ ...config, buttonFontSize: Number(value ?? 16) })
+            }
+          />
+        </div>
         <div className="flex w-full items-center">
           <Input
             withBorder
