@@ -6,12 +6,10 @@ export const validConfigTypes = ['button', 'banner', 'widget']
 export const textColorPresets = ['#ffffff', '#000000']
 export const triggerColorPresets = ['#ffffff', '#000000', '#096b63']
 export const backgroundColorPresets = [
-  '#ff808c',
+  '#ffffff',
   '#4ec6c0',
-  '#a2bddb',
   '#f8c6db',
   '#f69656',
-  '#93e5d6',
   '#7f76b2'
 ]
 export const FontsType = ['Arial', 'Open Sans', 'Cookie', 'Titillium Web']
@@ -109,7 +107,7 @@ export const availableTools = [
     link: 'create/banner',
     tooltip: tooltips.banner,
     description:
-      "The banner informs visitors who don't have the Web Monetization extension active, with a call-to-action linking to the extension or providing details about the options available. It also adds a payment pointer to your site."
+      "The banner informs visitors who don't have the Web Monetization extension active, with a call-to-action linking to the extension or providing details about the options available. It also adds your wallet address for your site to be monetized."
   },
   {
     enabled: true,

@@ -106,8 +106,8 @@ export const generateConfigCss = (
         }       
         .wm_banner {
             font-family: ${selectedBannerFont}, system-ui, sans-serif !important;
-            font-size: 16px;
-            padding: 12px 20px;
+            font-size: ${config.bannerFontSize}px;
+            padding: 0 20px;
             border: 1px solid transparent;
             border-radius: ${bannerBorder};
             color: ${config.bannerTextColor};
@@ -115,13 +115,26 @@ export const generateConfigCss = (
             transition: all 0.5s ease;
             overflow: hidden;
         }
+        .wm_banner.bottom {
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+        }
         .wm_banner h5 {
-            font-size: 18px;
+            font-size: ${(config.bannerFontSize ?? 16) + 2}px;
+            margin-top: 12px;
+        }
+        .wm_banner h5 span {
+            font-size: ${(config.bannerFontSize ?? 16) + 2}px;
+        }
+        .wm_banner ._wm_link {
+          display: block;
+          margin-bottom: 12px;
         }
 
         .wm_widget .content {
             font-family: ${selectedWidgetFont}, system-ui, sans-serif !important;
-            font-size: 14px;
+            font-size: ${(config.widgetFontSize ?? 16) - 2}px;
             padding: 12px 20px;
             color: ${config.widgetTextColor};
             background-color: ${config.widgetBackgroundColor};
@@ -130,7 +143,7 @@ export const generateConfigCss = (
           background-color: ${config.widgetTriggerBackgroundColor};
         }
         .wm_widget .content h5 {
-          font-size: 16px;
+          font-size: ${config.widgetFontSize}px;
         }
 
         .ilpay_body {

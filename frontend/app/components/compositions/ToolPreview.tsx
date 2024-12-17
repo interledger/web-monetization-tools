@@ -1,7 +1,11 @@
 import { cx } from 'class-variance-authority'
 import { useEffect, useState } from 'react'
 import { bgColors } from '~/lib/presets.js'
-import { ElementConfigType, SlideAnimationType } from '~/lib/types.js'
+import {
+  ElementConfigType,
+  PositionType,
+  SlideAnimationType
+} from '~/lib/types.js'
 import {
   encodeAndCompressParameters,
   generateConfigCss,
@@ -21,11 +25,13 @@ const BannerConfig = ({ config }: { config: ElementConfigType }) => {
   const [animated, setAnimated] = useState(
     config.bannerSlideAnimation != SlideAnimationType.None
   )
+  const [position, setPosition] = useState(PositionType.Bottom)
   const [triggerAnimation, setTriggerAnimation] = useState(false)
   const [extensionLink, setExtensionLink] = useState('')
 
   useEffect(() => {
     setAnimated(config.bannerSlideAnimation != SlideAnimationType.None)
+    setPosition(config.bannerPosition)
   }, [config])
 
   useEffect(() => {
@@ -34,7 +40,7 @@ const BannerConfig = ({ config }: { config: ElementConfigType }) => {
   }, [])
 
   return (
-    <div>
+    <div className="min-h-40">
       {animated && (
         <div className="flex justify-end -mt-5 mb-1">
           <img
@@ -47,15 +53,30 @@ const BannerConfig = ({ config }: { config: ElementConfigType }) => {
         </div>
       )}
       <div
-        className={cx('wm_banner', animated && triggerAnimation && 'animate')}
+        className={cx(
+          'flex min-h-40',
+          position == PositionType.Bottom && 'items-end'
+        )}
       >
-        {config.bannerTitleText && <h5>{config.bannerTitleText}</h5>}
-        <span>{config.bannerDescriptionText}</span>
-        <br />
-        <span
-          className="_wm_link underline cursor-pointer"
-          dangerouslySetInnerHTML={{ __html: extensionLink }}
-        ></span>
+        <div
+          className={cx(
+            'wm_banner',
+            position == PositionType.Bottom && 'bottom',
+            animated && triggerAnimation && 'animate'
+          )}
+        >
+          {config.bannerTitleText && (
+            <h5 className="flex flex-row flex-wrap justify-between">
+              {config.bannerTitleText}
+              <span className="cursor-pointer text-sm">x</span>
+            </h5>
+          )}
+          <span className="w-full my-2">{config.bannerDescriptionText}</span>
+          <span
+            className="_wm_link underline cursor-pointer"
+            dangerouslySetInnerHTML={{ __html: extensionLink }}
+          ></span>
+        </div>
       </div>
     </div>
   )
@@ -63,9 +84,13 @@ const BannerConfig = ({ config }: { config: ElementConfigType }) => {
 
 const WidgetConfig = ({
   config,
+  openWidget,
+  setOpenWidget,
   ilpayUrl
 }: {
   config: ElementConfigType
+  openWidget: boolean
+  setOpenWidget: React.Dispatch<React.SetStateAction<boolean>>
   ilpayUrl: string
 }) => {
   const [widgetOpen, setWidgetOpen] = useState(false)
@@ -75,12 +100,24 @@ const WidgetConfig = ({
     ;(async () => {
       const configCss = generateConfigCss(config, true)
       const css = await encodeAndCompressParameters(String(configCss))
-      const iframeSrc = `${ilpayUrl}?action=${encodeURI(
+      const iframeSrc = `${ilpayUrl}?amount=1&action=${encodeURI(
         config.widgetButtonText
       )}&receiver=${encodeURI(config.walletAddress || '')}&css=${css}`
       setIframeUrl(iframeSrc)
     })()
   }, [config])
+
+  useEffect(() => {
+    if (openWidget) {
+      setWidgetOpen(true)
+    }
+  }, [openWidget, widgetOpen])
+
+  useEffect(() => {
+    if (!widgetOpen) {
+      setOpenWidget(false)
+    }
+  }, [widgetOpen])
 
   const triggerIcon = config?.widgetTriggerIcon
     ? config?.widgetTriggerIcon
@@ -98,7 +135,9 @@ const WidgetConfig = ({
       >
         <div className="flex flex-col h-auto w-full">
           <h5>{config?.widgetTitleText}</h5>
-          <p>{config?.widgetDescriptionText}</p>
+          <p className="max-h-32 overflow-hidden">
+            {config?.widgetDescriptionText}
+          </p>
         </div>
         <div className="flex h-full overflow-hidden">
           <iframe
@@ -119,18 +158,33 @@ const WidgetConfig = ({
   )
 }
 
-const renderElementConfig = (
-  type: string,
-  toolConfig: ElementConfigType,
+const RenderElementConfig = ({
+  type,
+  toolConfig,
+  openWidget,
+  setOpenWidget,
+  ilpayUrl
+}: {
+  type: string
+  toolConfig: ElementConfigType
+  openWidget: boolean
+  setOpenWidget: React.Dispatch<React.SetStateAction<boolean>>
   ilpayUrl: string
-) => {
+}) => {
   switch (type) {
     case 'button':
       return <ButtonConfig config={toolConfig} />
     case 'banner':
       return <BannerConfig config={toolConfig} />
     case 'widget':
-      return <WidgetConfig config={toolConfig} ilpayUrl={ilpayUrl} />
+      return (
+        <WidgetConfig
+          config={toolConfig}
+          ilpayUrl={ilpayUrl}
+          openWidget={openWidget}
+          setOpenWidget={setOpenWidget}
+        />
+      )
     default:
       return <NotFoundConfig />
   }
@@ -139,12 +193,16 @@ const renderElementConfig = (
 type ToolPreviewProps = {
   type?: string
   toolConfig: ElementConfigType
+  openWidget?: boolean
+  setOpenWidget: React.Dispatch<React.SetStateAction<boolean>>
   ilpayUrl: string
 }
 
 export const ToolPreview = ({
   type,
   toolConfig,
+  openWidget,
+  setOpenWidget,
   ilpayUrl
 }: ToolPreviewProps) => {
   const bgColor = bgColors[type as keyof typeof bgColors] ?? bgColors.button
@@ -157,7 +215,13 @@ export const ToolPreview = ({
       )}
     >
       {generateConfigCss(toolConfig)}
-      {renderElementConfig(type ?? '', toolConfig, ilpayUrl)}
+      <RenderElementConfig
+        type={type ?? ''}
+        toolConfig={toolConfig}
+        openWidget={openWidget ?? false}
+        setOpenWidget={setOpenWidget}
+        ilpayUrl={ilpayUrl}
+      />
     </div>
   )
 }
