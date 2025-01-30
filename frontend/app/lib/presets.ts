@@ -49,11 +49,11 @@ export const widgetControlOptions = [
   },
   {
     value: 'buttonbackground',
-    label: 'Btn background'
+    label: 'Button background'
   },
   {
     value: 'buttontext',
-    label: 'Btn Text'
+    label: 'Button Text'
   },
   {
     value: 'trigger',
