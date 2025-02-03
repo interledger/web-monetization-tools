@@ -148,6 +148,28 @@ const drawElement = (
         document.body.appendChild(shadowHost)
         break
       }
+      case 'button': {
+        const font = getFontFamily(config.widgetFontName, 'button')
+        shadowHost.style.setProperty('--wmt-button-font', font.selectedFont)
+        shadowHost.style.setProperty(
+          '--wmt-button-font-size',
+          config.buttonFontSize
+        )
+        const css = getCSSFile('css/button.css')
+        const element = drawButton(walletAddress, config)
+        shadowRoot.appendChild(css)
+        shadowRoot.appendChild(element)
+        // font family needs to be outside of the shadow DOM
+        document.body.appendChild(font.fontFamily)
+
+        // find buttons, replace with shadow dom
+        const buttons = document.querySelectorAll('._wm_tools_button')
+        buttons.forEach((button) => {
+          button.replaceWith(shadowRoot)
+        })
+        // console.log(buttons)
+        break
+      }
       case 'banner':
       default:
         const font = getFontFamily(config.bannerFontName, 'banner')
@@ -235,6 +257,25 @@ const drawBanner = (config: Config) => {
     'beforeend',
     `<span class="_wm_link">${getWebMonetizationLink()}</span>`
   )
+
+  return element
+}
+
+const drawButton = (walletAddress: string, config: Config) => {
+  const element = document.createElement('button')
+  element.className = '_wm_tools_button'
+
+  element.style.color = config.buttonTextColor
+  element.style.backgroundColor = config.buttonBackgroundColor
+
+  const buttonBorder =
+    config.buttonBorder == 'Light'
+      ? '0.375rem'
+      : config.buttonBorder == 'Pill'
+        ? '1rem'
+        : '0'
+  element.style.borderRadius = buttonBorder
+  element.innerHTML = config.buttonText
 
   return element
 }

@@ -6,6 +6,7 @@ export const tooltips = {
   widget:
     'The embedded widget appears in the lower right corner of your website and opens an overlay with a title, text, and payment solution, all of which can be customized in terms of colors and text. While preset values are fixed, you have the option to set custom values for visitors.',
   button: '',
+  buttonCodeTooltip: 'Copy the button html to where you want the button to appear on your website',
   scriptModal:
     'Copy your script and insert it just before the closing </body> tag on your website, or place it within a script type element if you\'re using a site management software (ex: WordPress, etc). <br />Be sure to review and select all the options in the "Include" section, that you want to display on your website.'
 }

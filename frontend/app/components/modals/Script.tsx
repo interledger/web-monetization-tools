@@ -8,17 +8,20 @@ import { removeItem } from '~/lib/utils.js'
 type ScriptModalProps = {
   title: string
   tooltip?: string
+  buttonCodeTooltip?: string
   defaultType?: string
   scriptForDisplay: string
   isOpen: boolean
   onClose: () => void
 }
 
-const selectableTypes = ['banner', 'widget']
+const selectableTypes = ['banner', 'widget', 'button']
+const buttonCode = "<span class='_wm_tools_button'></span>"
 
 export const ScriptModal = ({
   title,
   tooltip,
+  buttonCodeTooltip,
   defaultType,
   scriptForDisplay,
   isOpen,
@@ -96,6 +99,25 @@ export const ScriptModal = ({
                     ></CopyButton>
                   </div>
                 </div>
+                {types.includes('button') && (
+                  <div className="flex flex-col">
+                    <span className="flex w-full ml-4">Button code <InfoWithTooltip tooltip={buttonCodeTooltip} /></span>
+                    <div className='flex'>
+                      <code className="flex m-6 my-2 p-2 max-w-md w-md border border-tealish whitespace-pre-wrap break-all break-words overflow-x-auto block">
+                        {buttonCode}
+                      </code>
+                      <div className="flex">
+                        <CopyButton
+                          aria-label="copy button"
+                          className="h-7 w-7"
+                          size="sm"
+                          value={buttonCode}
+                          variant="input"
+                        ></CopyButton>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <Form method="post" replace preventScrollReset>
                   <div className="flex justify-end space-x-4">
                     <Button
