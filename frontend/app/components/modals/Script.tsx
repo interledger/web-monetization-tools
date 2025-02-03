@@ -101,8 +101,11 @@ export const ScriptModal = ({
                 </div>
                 {types.includes('button') && (
                   <div className="flex flex-col">
-                    <span className="flex w-full ml-4">Button code <InfoWithTooltip tooltip={buttonCodeTooltip} /></span>
-                    <div className='flex'>
+                    <span className="flex w-full ml-4">
+                      Button code{' '}
+                      <InfoWithTooltip tooltip={buttonCodeTooltip} />
+                    </span>
+                    <div className="flex">
                       <code className="flex m-6 my-2 p-2 max-w-md w-md border border-tealish whitespace-pre-wrap break-all break-words overflow-x-auto block">
                         {buttonCode}
                       </code>
