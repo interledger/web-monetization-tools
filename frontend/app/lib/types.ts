@@ -26,10 +26,15 @@ export interface ElementConfigType {
 
   // button specific
   buttonFontName: string
+  buttonFontSize: number
   buttonText: string
+  buttonDescriptionText: string
   buttonBorder: CornerType
   buttonTextColor: string
   buttonBackgroundColor: string
+  buttonTooltipTextColor: string
+  buttonTooltipBackgroundColor: string
+  buttonTooltip: string
 
   // banner specific
   bannerFontName: string

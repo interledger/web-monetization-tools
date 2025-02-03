@@ -6,6 +6,8 @@ import { processSVG } from '~/lib/utils.js'
 import { triggerColorPresets } from '~/lib/presets.js'
 
 export type UploadControlProps = {
+  name: string
+  value: string
   setImage: (value: string, color?: string) => void
 }
 
@@ -35,7 +37,11 @@ const resizeImage = (img: HTMLImageElement, maxSize: number = 100): string => {
   return canvas.toDataURL('image/png')
 }
 
-export const UploadControl = ({ setImage }: UploadControlProps) => {
+export const UploadControl = ({
+  setImage,
+  name,
+  value
+}: UploadControlProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const defaultColor = triggerColorPresets[0]
 
@@ -83,6 +89,7 @@ export const UploadControl = ({ setImage }: UploadControlProps) => {
         ref={fileInputRef}
         onChange={handleFileChange}
       />
+      <input type="hidden" name={name} value={value} />
       <Button
         className="max-h-8"
         aria-label="Upload image"

@@ -14,7 +14,9 @@ import {
   fontOptions,
   slideOptions,
   positionOptions,
-  widgetControlOptions
+  widgetControlOptions,
+  buttonControlOptions,
+  buttonTooltipOptions
 } from '~/lib/presets.js'
 import {
   Button,
@@ -53,6 +55,12 @@ const ButtonConfig = ({
 
   const bgColor = bgColors.button
 
+  useEffect(() => {
+    if (['tooltiptext', 'tooltipbackground'].indexOf(displayedControl) != -1) {
+      setToolConfig({ ...config, buttonTooltip: '1' })
+    }
+  }, [displayedControl])
+
   return (
     <div className="w-full">
       <div
@@ -85,12 +93,36 @@ const ButtonConfig = ({
             }}
             className={cx(displayedControl != 'text' && 'hidden')}
           />
+
+          <ColorPicker
+            label="Tooltip Background"
+            name="buttonTooltipBackgroundColor"
+            preset="background"
+            value={config?.buttonTooltipBackgroundColor}
+            updateColor={(value) =>
+              setToolConfig({
+                ...config,
+                buttonTooltipBackgroundColor: value
+              })
+            }
+            className={cx(displayedControl != 'tooltipbackground' && 'hidden')}
+          />
+          <ColorPicker
+            label="Tooltip Text color"
+            name="buttonTooltipTextColor"
+            preset="text"
+            value={config?.buttonTooltipTextColor}
+            updateColor={(value) => {
+              setToolConfig({ ...config, buttonTooltipTextColor: value })
+            }}
+            className={cx(displayedControl != 'tooltiptext' && 'hidden')}
+          />
         </div>
         <div className="flex items-center max-w-36 w-32 mr-3">
           <Select
             placeholder="Background"
-            options={controlOptions}
-            defaultValue={controlOptions.find(
+            options={buttonControlOptions}
+            defaultValue={buttonControlOptions.find(
               (opt) => opt.value == 'background'
             )}
             onChange={(value) => setDisplayedControl(value)}
@@ -101,6 +133,7 @@ const ButtonConfig = ({
         <div className="flex items-center max-w-36 w-32 shrink-0">
           <Select
             withBorder
+            label="Font"
             name="buttonFontName"
             placeholder="Select Font"
             options={fontOptions}
@@ -110,9 +143,20 @@ const ButtonConfig = ({
             }
           />
         </div>
+        <div className="flex items-center max-w-20 w-18 shrink-0">
+          <FontSize
+            name="buttonFontSize"
+            label="Size"
+            value={config?.buttonFontSize}
+            updateSize={(value) =>
+              setToolConfig({ ...config, buttonFontSize: Number(value ?? 16) })
+            }
+          />
+        </div>
         <div className="flex w-full items-center">
           <Input
             withBorder
+            label="Title"
             name="buttonText"
             value={config?.buttonText || ''}
             className="w-full"
@@ -125,6 +169,7 @@ const ButtonConfig = ({
         <div className="flex items-center max-w-36 w-32 shrink-0">
           <Select
             withBorder
+            label="Border"
             name="buttonBorder"
             placeholder="Select Rounding"
             options={cornerOptions}
@@ -133,6 +178,40 @@ const ButtonConfig = ({
             )}
             onChange={(value) =>
               setToolConfig({ ...config, buttonBorder: value as CornerType })
+            }
+          />
+        </div>
+      </div>
+      <div className="flex items-start w-full gap-2 mt-4">
+        <div className="flex items-center max-w-36 w-32 shrink-0">
+          <Select
+            withBorder
+            label="Tooltip"
+            name="buttonTooltip"
+            placeholder="Show tooltip"
+            options={buttonTooltipOptions}
+            value={buttonTooltipOptions.find(
+              (opt) => opt.value == config?.buttonTooltip
+            )}
+            onChange={(value) =>
+              setToolConfig({
+                ...config,
+                buttonTooltip: value
+              })
+            }
+          />
+        </div>
+        <div className="flex items-center w-full">
+          <Input
+            withBorder
+            name="buttonDescriptionText"
+            value={config?.buttonDescriptionText || ''}
+            className="w-full mt-7"
+            onChange={(e) =>
+              setToolConfig({
+                ...config,
+                buttonDescriptionText: e.target.value ?? ''
+              })
             }
           />
         </div>
@@ -407,6 +486,8 @@ const WidgetConfig = ({
               }}
             />
             <UploadControl
+              name="widgetTriggerIcon"
+              value={config?.widgetTriggerIcon}
               setImage={(value, color) => {
                 setToolConfig({
                   ...config,

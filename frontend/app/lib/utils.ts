@@ -69,7 +69,7 @@ export const generateConfigCss = (
   config: ElementConfigType,
   returnRaw = false
 ) => {
-  // const selectedButtonFont = getSelectedFont(config.buttonFontName)
+  const selectedButtonFont = getSelectedFont(config.buttonFontName)
   const selectedBannerFont = getSelectedFont(config.bannerFontName)
   const selectedWidgetFont = getSelectedFont(config.widgetFontName)
   const buttonBorder =
@@ -95,14 +95,15 @@ export const generateConfigCss = (
 
   const css = `       
         .wm_button {
-            font-family: ${selectedWidgetFont}, system-ui, sans-serif !important;
-            font-size: 16px;
+            font-family: ${selectedButtonFont}, system-ui, sans-serif !important;
+            font-size: ${(config.buttonFontSize ?? 16) + 2}px;
             padding: 8px 20px;
             border: 1px solid transparent;
             color: ${config.buttonTextColor};
             background-color: ${config.buttonBackgroundColor};
             border-radius: ${buttonBorder};
             transition: all 0.5s ease;
+            margin-top: 20px;
         }       
         .wm_banner {
             font-family: ${selectedBannerFont}, system-ui, sans-serif !important;
@@ -144,6 +145,38 @@ export const generateConfigCss = (
         }
         .wm_widget .content h5 {
           font-size: ${config.widgetFontSize}px;
+        }
+
+        .button-tippy-wrapper {
+          font-family: ${selectedButtonFont}, system-ui, sans-serif !important;
+          font-size: ${config.buttonFontSize}px;
+          color: ${config.buttonTooltipTextColor};
+          background-color: transparent;
+          margin-bottom: 5px;
+        }
+        .button-tippy-wrapper .tippy-content {
+          padding: 4px 10px;
+          border-radius: ${buttonBorder};
+          background-color: ${config.buttonTooltipBackgroundColor};
+        }
+
+        .button-tippy-wrapper .tippy-arrow,
+        .button-tippy-wrapper .tippy-arrow::before {
+          position: absolute;
+          width: 14px;
+          height: 14px;
+          margin-top: -2px;
+          background-color: ${config.buttonTooltipBackgroundColor};
+        }
+
+        .button-tippy-wrapper .tippy-arrow {
+          visibility: hidden;
+        }
+
+        .button-tippy-wrapper .tippy-arrow::before {
+          visibility: visible;
+          content: '';
+          transform: rotate(45deg);
         }
 
         .ilpay_body {

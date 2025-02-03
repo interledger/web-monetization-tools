@@ -12,12 +12,45 @@ import {
   getWebMonetizationLink
 } from '~/lib/utils.js'
 import { WidgetFooter, NotFoundConfig } from '../index.js'
+import Tippy from '@tippyjs/react'
 
 const ButtonConfig = ({ config }: { config: ElementConfigType }) => {
+  const [canRenderTooltip, setCanRenderConfig] = useState(false)
+
+  useEffect(() => {
+    setCanRenderConfig(false)
+    setTimeout(() => {
+      setCanRenderConfig(true)
+    }, 500)
+  }, [config.buttonTooltip])
+
+  useEffect(() => {
+    setCanRenderConfig(true)
+  }, [])
+
   return (
-    <button className="wm_button" onClick={(e) => console.log(e)}>
-      {config.buttonText || '?'}
-    </button>
+    <>
+      {canRenderTooltip ? (
+        <Tippy
+          visible={
+            config.buttonTooltip == '2'
+              ? undefined
+              : config.buttonTooltip != '0' &&
+                !!config.buttonDescriptionText.length
+          }
+          className="button-tippy-wrapper"
+          content={<span>{config.buttonDescriptionText}</span>}
+        >
+          <button type="button" className="wm_button">
+            {config.buttonText || '?'}
+          </button>
+        </Tippy>
+      ) : (
+        <button type="button" className="wm_button">
+          {config.buttonText || '?'}
+        </button>
+      )}
+    </>
   )
 }
 

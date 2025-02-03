@@ -49,15 +49,34 @@ export const widgetControlOptions = [
   },
   {
     value: 'buttonbackground',
-    label: 'Btn background'
+    label: 'Button background'
   },
   {
     value: 'buttontext',
-    label: 'Btn Text'
+    label: 'Button Text'
   },
   {
     value: 'trigger',
     label: 'Trigger & Icon'
+  }
+]
+
+export const buttonControlOptions = [
+  {
+    value: 'background',
+    label: 'Background'
+  },
+  {
+    value: 'text',
+    label: 'Text'
+  },
+  {
+    value: 'tooltipbackground',
+    label: 'Tooltip background'
+  },
+  {
+    value: 'tooltiptext',
+    label: 'Tooltip Text'
   }
 ]
 
@@ -69,6 +88,21 @@ export const slideOptions = [
   {
     value: SlideAnimationType.Down,
     label: 'Yes'
+  }
+]
+
+export const buttonTooltipOptions = [
+  {
+    value: '0',
+    label: 'Hide'
+  },
+  {
+    value: '1',
+    label: 'Show'
+  },
+  {
+    value: '2',
+    label: 'Hover'
   }
 ]
 
@@ -120,12 +154,12 @@ export const availableTools = [
       'You can add a widget to provide a brief explanation or description, along with a donation or one-time payment option, even for users without the Web Monetization extension. It also adds your wallet address for your site to be monetized.'
   },
   {
-    enabled: false,
+    enabled: true,
     title: 'Button',
     image: 'button_representation.svg',
     bgColor: 'from-wm-green to-wm-green-fade',
     link: 'create/button',
-    tooltip: '',
+    tooltip: tooltips.button,
     description:
       'You can place a custom button with a short tooltip on your site that triggers a payment option in a full-page overlay, offering a convenient way for visitors to support your work or content.'
   },
