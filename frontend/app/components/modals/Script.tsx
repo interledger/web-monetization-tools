@@ -10,6 +10,7 @@ type ScriptModalProps = {
   tooltip?: string
   defaultType?: string
   scriptForDisplay: string
+  selectedVersion: string
   isOpen: boolean
   onClose: () => void
 }
@@ -21,6 +22,7 @@ export const ScriptModal = ({
   tooltip,
   defaultType,
   scriptForDisplay,
+  selectedVersion,
   isOpen,
   onClose
 }: ScriptModalProps) => {
@@ -37,7 +39,9 @@ export const ScriptModal = ({
   }
 
   useEffect(() => {
-    const script = scriptForDisplay.replace('[elements]', types.join('|'))
+    const script = scriptForDisplay
+      .replace('[elements]', types.join('|'))
+      .replace('[version]', selectedVersion)
     setProcessedScript(script)
   }, [types, scriptForDisplay])
 

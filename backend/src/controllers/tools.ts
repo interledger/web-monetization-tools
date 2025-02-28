@@ -19,6 +19,52 @@ export const getDefault = async (_: Request, res: Response) => {
   }
 }
 
+export const createUserConfig = async (req: Request, res: Response) => {
+  try {
+    const data = req.body
+    const tag = data.version
+
+    if (!data.walletAddress) {
+      throw 'Wallet address is required'
+    }
+    const defaultData = await getDefaultData()
+    const defaultDataContent = JSON.parse(defaultData).default
+
+    const { s3, params } = getS3AndParams(data.walletAddress)
+
+    let fileContentString = '{}'
+    try {
+      // existing config
+      const s3data = await s3.send(new GetObjectCommand(params))
+      // Convert the file stream to a string
+      fileContentString = await streamToString(
+        s3data.Body as NodeJS.ReadableStream
+      )
+    } catch (error) {
+      const err = error as Error
+      if (err.name === 'NoSuchKey') {
+        // file / config not found, continue with defaults
+      } else {
+        console.log(error)
+        res.status(500).send('An error occurred while fetching data')
+        return
+      }
+    }
+
+    const currentData = Object.assign(
+      JSON.parse(fileContentString),
+      { [tag]: defaultDataContent }
+    )
+
+    console.log(currentData)
+
+    res.status(200).send(JSON.parse(currentData))
+  } catch (error) {
+    console.log(error)
+    res.status(500).send('An error occurred when fetching data')
+  }
+}
+
 export const saveUserConfig = async (req: Request, res: Response) => {
   try {
     const data = req.body
@@ -26,6 +72,9 @@ export const saveUserConfig = async (req: Request, res: Response) => {
     if (!data.walletAddress) {
       throw 'Wallet address is required'
     }
+
+    const version = data?.version || 'default'
+    delete data?.version
 
     const { s3, params } = getS3AndParams(data.walletAddress)
 
@@ -50,6 +99,8 @@ export const saveUserConfig = async (req: Request, res: Response) => {
         return
       }
     }
+
+    console.log(JSON.parse(fileContentString))
 
     const changedValues = _.omit(data, function (value, key) {
       return defaultData[key] === value
@@ -114,5 +165,6 @@ export const getUserConfig = async (req: Request, res: Response) => {
 export default {
   getDefault,
   getUserConfig,
+  createUserConfig,
   saveUserConfig
 }

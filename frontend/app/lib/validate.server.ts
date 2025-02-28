@@ -7,6 +7,10 @@ export const walletSchema = z.object({
   walletAddress: z.string().min(1, { message: 'Wallet address is required' })
 })
 
+export const versionSchema = z.object({
+  version: z.string().min(1, { message: 'Version is required' })
+})
+
 export const createButtonSchema = z
   .object({
     elementType: z.literal('button'),
@@ -17,6 +21,7 @@ export const createButtonSchema = z
     buttonBackgroundColor: z.string().min(6)
   })
   .merge(walletSchema)
+  .merge(versionSchema)
 
 export const createBannerSchema = z
   .object({
@@ -34,6 +39,7 @@ export const createBannerSchema = z
     bannerBorder: z.nativeEnum(CornerType)
   })
   .merge(walletSchema)
+  .merge(versionSchema)
 
 export const createWidgetSchema = z
   .object({
@@ -51,6 +57,7 @@ export const createWidgetSchema = z
     widgetTriggerIcon: z.string().optional()
   })
   .merge(walletSchema)
+  .merge(versionSchema)
 
 export const getElementSchema = (type: string) => {
   switch (type) {

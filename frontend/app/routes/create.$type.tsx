@@ -6,11 +6,16 @@ import {
   useNavigation
 } from '@remix-run/react'
 import { useEffect, useState } from 'react'
-import { ImportModal, ScriptModal } from '~/components/modals/index.js'
+import {
+  ImportModal,
+  NewVersionModal,
+  ScriptModal
+} from '~/components/modals/index.js'
 import {
   ErrorPanel,
   NotFoundConfig,
   PageHeader,
+  SelectOption,
   ToolConfig,
   ToolPreview
 } from '~/components/index.js'
@@ -24,6 +29,7 @@ import {
   createBannerSchema,
   createButtonSchema,
   createWidgetSchema,
+  versionSchema,
   walletSchema
 } from '~/lib/validate.server'
 
@@ -37,7 +43,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
   // get default config
   const apiResponse: ApiResponse = await ApiClient.getDefaultConfig()
-  const defaultConfig: ElementConfigType = apiResponse?.payload
+  const defaultConfig: ElementConfigType = apiResponse?.payload?.default
 
   const ilpayUrl = process.env.ILPAY_URL || ''
   const toolsUrl = process.env.FRONTEND_URL || ''
@@ -56,11 +62,16 @@ export default function Create() {
   const [toolConfig, setToolConfig] = useState<ElementConfigType>(defaultConfig)
   const [modalOpen, setModalOpen] = useState(false)
   const [importModalOpen, setImportModalOpen] = useState(false)
+  const [newVersionModalOpen, setNewVersionModalOpen] = useState(false)
+  const [selectedVersion, setSelectedVersion] = useState('default')
+  const [versionOptions, setVersionOptions] = useState<SelectOption[]>([
+    { label: 'Default', value: 'default' }
+  ])
 
   const wa = (toolConfig?.walletAddress || '')
     .replace('$', '')
     .replace('https://', '')
-  const scriptToDisplay = `<script id="wmt-init-script" type="module" src="${toolsUrl}init.js?wa=${wa}&types=[elements]"></script>`
+  const scriptToDisplay = `<script id="wmt-init-script" type="module" src="${toolsUrl}init.js?wa=${wa}&tag=[version]&types=[elements]"></script>`
 
   useEffect(() => {
     const errors = Object.keys(response?.errors?.fieldErrors || {})
@@ -84,7 +95,11 @@ export default function Create() {
         title={`Create ${elementType}`}
         elementType={elementType}
         setImportModalOpen={setImportModalOpen}
+        setNewVersionModalOpen={setNewVersionModalOpen}
         link="/"
+        versionOptions={versionOptions}
+        selectedVersion={selectedVersion}
+        setSelectedVersion={setSelectedVersion}
       />
       {validConfigTypes.includes(String(elementType)) ? (
         <div className="flex flex-col">
@@ -107,6 +122,7 @@ export default function Create() {
                 setOpenWidget={setOpenWidget}
               />
             </fieldset>
+            <input type="hidden" name="version" value={selectedVersion} />
             <div className="px-6 pt-5">
               <ErrorPanel errors={response?.errors.message} />
             </div>
@@ -117,6 +133,7 @@ export default function Create() {
       )}
       <ScriptModal
         title="Your script"
+        selectedVersion={selectedVersion}
         tooltip={tooltips.scriptModal}
         defaultType={elementType}
         scriptForDisplay={scriptToDisplay}
@@ -131,6 +148,15 @@ export default function Create() {
         toolConfig={toolConfig}
         setToolConfig={setToolConfig}
         errors={response?.errors}
+      />
+      <NewVersionModal
+        title="Create a new version of your config"
+        isOpen={newVersionModalOpen}
+        isSubmitting={isSubmitting}
+        onClose={() => setNewVersionModalOpen(false)}
+        errors={response?.errors}
+        toolConfig={toolConfig}
+        setToolConfig={setToolConfig}
       />
     </div>
   )
@@ -158,6 +184,21 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     const payload = result.data
     apiResponse = await ApiClient.getUserConfig(payload.walletAddress)
+
+    return json({ errors, apiResponse, displayScript }, { status: 200 })
+  } else if (intent == 'newversion') {
+    const result = versionSchema.merge(walletSchema).safeParse(formData)
+
+    if (!result.success) {
+      errors.fieldErrors = result.error.flatten().fieldErrors
+      return json({ errors, apiResponse, displayScript }, { status: 400 })
+    }
+
+    const payload = result.data
+    apiResponse = await ApiClient.createUserConfig(
+      payload.version,
+      payload.walletAddress
+    )
 
     return json({ errors, apiResponse, displayScript }, { status: 200 })
   } else {

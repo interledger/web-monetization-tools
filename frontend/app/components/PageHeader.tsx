@@ -1,19 +1,27 @@
 import { useNavigate } from '@remix-run/react'
 import { cx } from 'class-variance-authority'
 import { availableTools } from '~/lib/presets.js'
-import { Button, InfoWithTooltip } from './index.js'
+import { Button, InfoWithTooltip, Select, SelectOption } from './index.js'
 import { Chevron } from './icons.js'
 
 export const PageHeader = ({
   elementType,
   title,
   link,
-  setImportModalOpen
+  setImportModalOpen,
+  setNewVersionModalOpen,
+  versionOptions,
+  selectedVersion,
+  setSelectedVersion
 }: {
   elementType: string | undefined
   title: string
   link: string
   setImportModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setNewVersionModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+  versionOptions: SelectOption[]
+  selectedVersion: string
+  setSelectedVersion: (value: string) => void
 }) => {
   const navigate = useNavigate()
 
@@ -32,6 +40,25 @@ export const PageHeader = ({
           <span>{title}</span>
           <InfoWithTooltip tooltip={currentElement?.tooltip} />
         </h3>
+      </div>
+      <div className="flex mr-2">
+        <Select
+          placeholder="Default"
+          options={versionOptions}
+          defaultValue={versionOptions.find(
+            (opt) => opt.value == selectedVersion
+          )}
+          onChange={(value) => setSelectedVersion(value)}
+        />
+        <Button
+          className="mr-2"
+          aria-label="add version"
+          onClick={() => {
+            setNewVersionModalOpen(true)
+          }}
+        >
+          Add
+        </Button>
       </div>
       <div className="ml-auto">
         <Button
