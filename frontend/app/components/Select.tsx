@@ -120,7 +120,7 @@ export const Select = ({
         >
           <Combobox.Options
             className={cx(
-              'absolute max-h-60 w-full overflow-auto rounded-b-md bg-white py-1 z-10 text-base shadow-lg outline-0 focus:outline-none sm:text-sm',
+              'absolute max-h-60 w-auto overflow-auto rounded-b-md bg-white py-1 z-10 text-base shadow-lg outline-0 focus:outline-none sm:text-sm',
               label ? 'mt-14' : 'mt-8'
             )}
           >
