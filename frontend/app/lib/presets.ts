@@ -120,7 +120,7 @@ export const availableTools = [
       'You can add a widget to provide a brief explanation or description, along with a donation or one-time payment option, even for users without the Web Monetization extension. It also adds your wallet address for your site to be monetized.'
   },
   {
-    enabled: true,
+    enabled: false,
     title: 'Button',
     image: 'button_representation.svg',
     bgColor: 'from-wm-green to-wm-green-fade',
