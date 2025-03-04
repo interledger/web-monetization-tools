@@ -12,7 +12,8 @@ export default {
       width: {
         '256': '72rem',
         '148': '42rem',
-        '128': '36rem'
+        '128': '36rem',
+        'md': '28rem'
       },
       height: {
         '148': '42rem'

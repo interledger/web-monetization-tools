@@ -407,6 +407,8 @@ const WidgetConfig = ({
               }}
             />
             <UploadControl
+              name="widgetTriggerIcon"
+              value={config?.widgetTriggerIcon}
               setImage={(value, color) => {
                 setToolConfig({
                   ...config,
