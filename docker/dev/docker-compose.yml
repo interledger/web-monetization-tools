@@ -5,7 +5,7 @@ services:
     build:
       context: ../..
       dockerfile: backend/Dockerfile.dev
-    command: "pnpm nodemon --watch . --ext ts,js,mjs,cjs,json --exec \"pnpm tsx src/server.ts\""
+    command: 'pnpm nodemon --watch . --ext ts,js,mjs,cjs,json --exec pnpm tsx src/server.ts'
     ports:
       - '5101:5101'
     expose:
