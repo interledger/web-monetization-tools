@@ -46,8 +46,8 @@ export default function App() {
         <Links />
       </head>
       <body className="h-screen">
-        <main className="h-screen flex flex-col justify-between">
-          <div className="flex flex-col">
+        <main className="h-auto min-h-full flex flex-col justify-between">
+          <div className="h-full flex flex-col  bg-[url(/images/bg-tile.svg)] bg-[auto_25em]">
             <Header />
             <Outlet />
           </div>
