@@ -5,7 +5,7 @@ services:
     build:
       context: ../..
       dockerfile: backend/Dockerfile.dev
-    command: pnpm nodemon --watch . --ext ts,js,mjs,cjs,json --exec "pnpm tsx src/server.ts"
+    command: 'pnpm nodemon --watch . --ext ts,js,mjs,cjs,json --exec pnpm tsx src/server.ts'
     ports:
       - '5101:5101'
     expose:
@@ -13,6 +13,7 @@ services:
     volumes:
       - ../../certs:/app/certs # Ensure certificates are available
       - ../../backend:/app/backend
+      - /app/backend/node_modules
     networks:
       - wm-tools
     environment:
@@ -55,6 +56,7 @@ services:
     volumes:
       - ../../certs:/app/certs
       - ../../frontend:/app/frontend
+      - /app/frontend/node_modules
 
 networks:
   wm-tools:
