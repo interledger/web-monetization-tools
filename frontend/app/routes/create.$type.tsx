@@ -8,6 +8,7 @@ import {
 import { useEffect, useState } from 'react'
 import {
   ImportModal,
+  InfoModal,
   NewVersionModal,
   ScriptModal
 } from '~/components/modals/index.js'
@@ -24,7 +25,11 @@ import { type Message, messageStorage } from '~/lib/message.server.js'
 import { validConfigTypes } from '~/lib/presets.js'
 import { tooltips } from '~/lib/tooltips.js'
 import { ElementConfigType, ElementErrors } from '~/lib/types.js'
-import { encodeAndCompressParameters, getIlpayCss } from '~/lib/utils.js'
+import {
+  capitalizeFirstLetter,
+  encodeAndCompressParameters,
+  getIlpayCss
+} from '~/lib/utils.js'
 import {
   createBannerSchema,
   createButtonSchema,
@@ -60,9 +65,12 @@ export default function Create() {
 
   const [openWidget, setOpenWidget] = useState(false)
   const [toolConfig, setToolConfig] = useState<ElementConfigType>(defaultConfig)
+  const [fullConfig, setFullConfig] =
+    useState<Record<string, ElementConfigType>>()
   const [modalOpen, setModalOpen] = useState(false)
   const [importModalOpen, setImportModalOpen] = useState(false)
   const [newVersionModalOpen, setNewVersionModalOpen] = useState(false)
+  const [infoModalOpen, setInfoModalOpen] = useState(false)
   const [selectedVersion, setSelectedVersion] = useState('default')
   const [versionOptions, setVersionOptions] = useState<SelectOption[]>([
     { label: 'Default', value: 'default' }
@@ -81,13 +89,48 @@ export default function Create() {
     } else if (
       response &&
       response.apiResponse &&
+      response.apiResponse.newversion
+    ) {
+      const versionLabels = Object.keys(response.apiResponse?.payload).map(
+        (key) => {
+          return { label: capitalizeFirstLetter(key), value: key }
+        }
+      )
+      setVersionOptions(versionLabels)
+
+      const selVersion = response.apiResponse.newversion
+      setSelectedVersion(selVersion)
+      const config = response.apiResponse.payload[selVersion]
+      setToolConfig(config)
+      setNewVersionModalOpen(false)
+      setInfoModalOpen(true)
+    } else if (
+      response &&
+      response.apiResponse &&
       response.apiResponse.isFailure == false
     ) {
-      const config = response.apiResponse.payload
+      const versionLabels = Object.keys(response.apiResponse?.payload).map(
+        (key) => {
+          return { label: capitalizeFirstLetter(key), value: key }
+        }
+      )
+      setVersionOptions(versionLabels)
+
+      setFullConfig(response.apiResponse.payload)
+      const config = response.apiResponse.payload['default']
       setToolConfig(config)
       setImportModalOpen(false)
+      setInfoModalOpen(true)
     }
   }, [response])
+
+  useEffect(() => {
+    if (fullConfig) {
+      console.log(fullConfig)
+      const config = fullConfig[selectedVersion]
+      // setToolConfig(config)
+    }
+  }, [selectedVersion])
 
   return (
     <div className="flex flex-col gap-6 min-w-128 max-w-prose mx-auto my-8">
@@ -158,6 +201,12 @@ export default function Create() {
         toolConfig={toolConfig}
         setToolConfig={setToolConfig}
       />
+      <InfoModal
+        title="Available configs"
+        content={versionOptions.map((ver) => ver.value).join(', ')}
+        isOpen={infoModalOpen}
+        onClose={() => setInfoModalOpen(false)}
+      />
     </div>
   )
 }
@@ -167,7 +216,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = Object.fromEntries(await request.formData())
   const intent = formData?.intent
 
-  let apiResponse: ApiResponse = { isFailure: true }
+  let apiResponse: ApiResponse = { isFailure: true, newversion: false }
   let displayScript: boolean = false
   const errors: ElementErrors = {
     fieldErrors: {},
@@ -199,6 +248,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       payload.version,
       payload.walletAddress
     )
+    apiResponse.newversion = payload.version
 
     return json({ errors, apiResponse, displayScript }, { status: 200 })
   } else {

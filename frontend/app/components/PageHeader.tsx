@@ -45,9 +45,7 @@ export const PageHeader = ({
         <Select
           placeholder="Default"
           options={versionOptions}
-          defaultValue={versionOptions.find(
-            (opt) => opt.value == selectedVersion
-          )}
+          value={versionOptions.find((opt) => opt.value == selectedVersion)}
           onChange={(value) => setSelectedVersion(value)}
         />
         <Button
