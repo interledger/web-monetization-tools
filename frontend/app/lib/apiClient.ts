@@ -8,6 +8,7 @@ export type ApiResponse<T = any> = {
   readonly payload?: T
   readonly isFailure: false | true
   readonly errors?: Array<string>
+  newversion?: false | string
 }
 
 const isProd = import.meta.env.PROD
@@ -94,7 +95,8 @@ export class ApiClient {
     } else {
       return {
         errors: [`status ${response.status}: ${response.statusText}`],
-        isFailure: true
+        isFailure: true,
+        newversion: false
       }
     }
   }

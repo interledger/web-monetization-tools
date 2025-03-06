@@ -2,6 +2,7 @@ import type { Request, Response } from 'express'
 import { PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
 import _ from 'underscore'
 import {
+  filterDeepProperties,
   getDefaultData,
   getS3AndParams,
   streamToString
@@ -22,7 +23,7 @@ export const getDefault = async (_: Request, res: Response) => {
 export const createUserConfig = async (req: Request, res: Response) => {
   try {
     const data = req.body
-    const tag = data.version
+    const tag = data.version || data.tag
 
     if (!data.walletAddress) {
       throw 'Wallet address is required'
@@ -51,14 +52,28 @@ export const createUserConfig = async (req: Request, res: Response) => {
       }
     }
 
-    const currentData = Object.assign(
-      JSON.parse(fileContentString),
-      { [tag]: defaultDataContent }
-    )
+    let currentData = JSON.parse(fileContentString)
 
-    console.log(currentData)
+    if (currentData?.default) {
+      currentData = Object.assign(filterDeepProperties(currentData), {
+        [tag]: defaultDataContent
+      })
+    } else {
+      currentData = Object.assign(
+        { default: currentData },
+        {
+          [tag]: defaultDataContent
+        }
+      )
+    }
 
-    res.status(200).send(JSON.parse(currentData))
+    const fileContent = JSON.stringify(currentData)
+    const extendedParams = { ...params, Body: fileContent }
+
+    // save json to file
+    await s3.send(new PutObjectCommand(extendedParams))
+
+    res.status(200).send(currentData)
   } catch (error) {
     console.log(error)
     res.status(500).send('An error occurred when fetching data')
@@ -100,21 +115,22 @@ export const saveUserConfig = async (req: Request, res: Response) => {
       }
     }
 
-    console.log(JSON.parse(fileContentString))
+    //loop through the existing configs, update all ?
 
-    const changedValues = _.omit(data, function (value, key) {
-      return defaultData[key] === value
-    })
 
-    const currentData = Object.assign(
-      JSON.parse(defaultData),
-      JSON.parse(fileContentString)
-    )
-    const fileContent = JSON.stringify(
-      Object.assign(currentData, ...[changedValues])
-    )
+    // const changedValues = _.omit(data, function (value, key) {
+    //   return defaultData[key] === value
+    // })
 
-    const extendedParams = { ...params, Body: fileContent }
+    // const currentData = Object.assign(
+    //   JSON.parse(defaultData),
+    //   JSON.parse(fileContentString)
+    // )
+    // const fileContent = JSON.stringify(
+    //   Object.assign(currentData, ...[changedValues])
+    // )
+
+    // const extendedParams = { ...params, Body: fileContent }
 
     await s3.send(new PutObjectCommand(extendedParams))
 
@@ -143,10 +159,11 @@ export const getUserConfig = async (req: Request, res: Response) => {
       data.Body as NodeJS.ReadableStream
     )
 
-    const fileContent = Object.assign(
+    let fileContent = Object.assign(
       JSON.parse(defaultData),
       ...[JSON.parse(fileContentString)]
     )
+    fileContent = filterDeepProperties(fileContent)
 
     res.status(200).send(fileContent)
   } catch (error) {
