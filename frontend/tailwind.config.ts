@@ -32,18 +32,18 @@ export default {
         'wm-purple': '#7F76B2'
       },
       animation: {
-        'fadeIn': 'fadeIn 0.3s ease-in-out',
-        'scaleIn': 'scaleIn 0.3s ease-out',
+        fadeIn: 'fadeIn 0.3s ease-in-out',
+        scaleIn: 'scaleIn 0.3s ease-out'
       },
       keyframes: {
         fadeIn: {
           '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
+          '100%': { opacity: '1' }
         },
         scaleIn: {
           '0%': { transform: 'scale(0.9)', opacity: '0' },
-          '100%': { transform: 'scale(1)', opacity: '1' },
-        },
+          '100%': { transform: 'scale(1)', opacity: '1' }
+        }
       }
     }
   },

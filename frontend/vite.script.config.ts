@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
   return {
     build: {
       minify: !isDevelopment, // Minify the output in production mode
-      sourcemap: isDevelopment? 'inline' : false, // Generate sourcemaps in development mode
+      sourcemap: isDevelopment ? 'inline' : false, // Generate sourcemaps in development mode
       lib: {
         entry: './script/index.tsx', // Entry point for the script file
         formats: ['iife'], // Use IIFE format (can change based on your needs)

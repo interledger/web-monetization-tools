@@ -34,11 +34,13 @@ export const InfoWithTooltip = ({
   return (
     <>
       {canRenderTooltip && tooltip && (
-        <div className="relative inline-flex" 
-             onMouseEnter={() => setShowTooltip(true)}
-             onMouseLeave={() => setShowTooltip(false)}>
+        <div
+          className="relative inline-flex"
+          onMouseEnter={() => setShowTooltip(true)}
+          onMouseLeave={() => setShowTooltip(false)}
+        >
           <InfoIcon />
-          
+
           {showTooltip && (
             <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 text-sm bg-white text-gray-800 rounded shadow-md z-10 max-w-xs whitespace-normal">
               <div className="absolute w-2 h-2 bg-white transform rotate-45 -bottom-1 left-1/2 -translate-x-1/2"></div>
