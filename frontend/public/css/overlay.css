@@ -1,0 +1,108 @@
+/* overlay - positioned fixed relative to viewport */
+._wm_tools_button_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+  padding: 1rem;
+  pointer-events: none;
+  font-family: var(--wmt-button-font), sans-serif;
+}
+
+._wm_tools_button_overlay_open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* overlay background */
+._wm_tools_button_overlay_backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* overlay container */
+._wm_tools_button_overlay_content {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  background-color: white;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  transform: scale(1);
+  transition: transform 0.3s ease;
+}
+
+/* overlay header */
+._wm_tools_button_overlay_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+._wm_tools_button_overlay_header h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+._wm_tools_button_overlay_close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+._wm_tools_button_overlay_close:hover {
+  opacity: 0.8;
+}
+
+/* overlay body */
+._wm_tools_button_overlay_body {
+  overflow: auto;
+  padding: 0.75rem 1.25rem;
+}
+
+._wm_tools_button_overlay_iframe {
+  border: 0;
+  min-height: 30rem;
+  overflow: hidden;
+}
+
+/* overlay footer */
+._wm_tools_button_overlay_footer {
+  border-top: 1px solid #e5e7eb;
+  padding: 0 1.25rem;
+  padding-bottom: 0.75rem;
+}
+
+/* widget Powered By (used in button footer) */
+._wm_tools_widget_poweredby {
+  display: flex;
+  margin-top: 1.5rem;
+  cursor: pointer;
+}
+
+._wm_tools_widget_poweredby img {
+  height: 2.5rem;
+}

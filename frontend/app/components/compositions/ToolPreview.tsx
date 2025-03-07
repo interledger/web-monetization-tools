@@ -1,5 +1,5 @@
 import { cx } from 'class-variance-authority'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { bgColors } from '~/lib/presets.js'
 import {
   ElementConfigType,
@@ -12,44 +12,108 @@ import {
   getWebMonetizationLink
 } from '~/lib/utils.js'
 import { WidgetFooter, NotFoundConfig } from '../index.js'
-import Tippy from '@tippyjs/react'
 
-const ButtonConfig = ({ config }: { config: ElementConfigType }) => {
-  const [canRenderTooltip, setCanRenderConfig] = useState(false)
+const ButtonConfig = ({ config, ilPayUrl }: { config: ElementConfigType, ilPayUrl: string }) => {
+  const [showTooltip, setShowTooltip] = useState(false)
+  const [overlayOpen, setOverlayOpen] = useState(false)
+  const [iframeUrl, setIframeUrl] = useState('')
+  const iframeRef = useRef<HTMLIFrameElement>(null)
 
+  const shouldShowTooltip = 
+    config.buttonTooltip !== '0' && 
+    !!config.buttonDescriptionText.length && 
+    (config.buttonTooltip === '1' || (config.buttonTooltip === '2' && showTooltip));
+
+  // generate iframe URL when config changes
   useEffect(() => {
-    setCanRenderConfig(false)
-    setTimeout(() => {
-      setCanRenderConfig(true)
-    }, 500)
-  }, [config.buttonTooltip])
-
-  useEffect(() => {
-    setCanRenderConfig(true)
-  }, [])
+    ;(async () => {
+      const configCss = generateConfigCss(config, true)
+      const css = await encodeAndCompressParameters(String(configCss))
+      const iframeSrc = `${ilPayUrl}?amount=1&action=${encodeURI(
+        config.buttonText || 'Donate'
+      )}&receiver=${encodeURI(config.walletAddress || '')}&css=${css}`
+      setIframeUrl(iframeSrc)
+    })()
+  }, [config])
 
   return (
     <>
-      {canRenderTooltip ? (
-        <Tippy
-          visible={
-            config.buttonTooltip == '2'
-              ? undefined
-              : config.buttonTooltip != '0' &&
-                !!config.buttonDescriptionText.length
-          }
-          className="button-tippy-wrapper"
-          content={<span>{config.buttonDescriptionText}</span>}
+      <div 
+        className="button-container relative inline-flex"
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
+      >
+        <button 
+          type="button" 
+          className="wm_button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setOverlayOpen(true);
+          }}
         >
-          <button type="button" className="wm_button">
-            {config.buttonText || '?'}
-          </button>
-        </Tippy>
-      ) : (
-        <button type="button" className="wm_button">
           {config.buttonText || '?'}
         </button>
-      )}
+
+        {shouldShowTooltip && (
+          <div className="button-tooltip-wrapper">
+            <span className="block whitespace-nowrap overflow-hidden text-ellipsis">{config.buttonDescriptionText}</span>
+            <div className="button-tooltip-arrow"></div>
+          </div>
+        )}
+      </div>
+
+      {/* overlay preview - always rendered but conditionally visible */}
+      <div 
+        className={cx(
+          'button-overlay-preview fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-300',
+          overlayOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
+        )}
+      >
+        <div 
+          className="overlay-backdrop absolute inset-0 bg-black bg-opacity-70 transition-opacity duration-300"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setOverlayOpen(false);
+          }}
+        ></div>
+        
+        <div className="overlay-content bg-white rounded-lg shadow-xl max-h-[90vh] relative z-10 overflow-hidden flex flex-col transition-transform duration-300 scale-100">
+          <div className="overlay-header flex justify-between items-center p-4 border-b">
+            <h3 className="font-medium">{config.buttonText || 'Donate'}</h3>
+            <button 
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setOverlayOpen(false);
+              }}
+              className="text-gray-500 hover:text-gray-700 transition-colors duration-200 p-1 rounded-full hover:bg-gray-100"
+              aria-label="Close"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <div className="overlay-body p-3 px-5 flex-1 overflow-auto relative">
+            <iframe
+              ref={iframeRef}
+              id="button_ilpay_iframe"
+              className="overflow-hidden min-h-[30rem]"
+              src={iframeUrl}
+              title="Payment Preview"
+              loading="eager"
+            />
+          </div>
+          
+          <div className="overlay-footer px-5 pb-3 border-t">
+            <WidgetFooter />
+          </div>
+        </div>
+      </div>
     </>
   )
 }
@@ -204,9 +268,10 @@ const RenderElementConfig = ({
   setOpenWidget: React.Dispatch<React.SetStateAction<boolean>>
   ilpayUrl: string
 }) => {
+
   switch (type) {
     case 'button':
-      return <ButtonConfig config={toolConfig} />
+      return <ButtonConfig config={toolConfig} ilPayUrl={ilpayUrl} />
     case 'banner':
       return <BannerConfig config={toolConfig} />
     case 'widget':

@@ -5,9 +5,7 @@ import {
   useEffect,
   useState
 } from 'react'
-import Tippy from '@tippyjs/react'
 import { Info } from './icons.js'
-import 'tippy.js/dist/tippy.css'
 
 const InfoIcon = forwardRef(
   (props: ComponentPropsWithoutRef<'span'>, ref: Ref<HTMLSpanElement>) => {
@@ -27,6 +25,7 @@ export const InfoWithTooltip = ({
   tooltip: string | undefined
 }) => {
   const [canRenderTooltip, setCanRenderConfig] = useState(false)
+  const [showTooltip, setShowTooltip] = useState(false)
 
   useEffect(() => {
     setCanRenderConfig(true)
@@ -35,12 +34,18 @@ export const InfoWithTooltip = ({
   return (
     <>
       {canRenderTooltip && tooltip && (
-        <Tippy
-          content={<span dangerouslySetInnerHTML={{ __html: tooltip }}></span>}
-          allowHTML={true}
-        >
+        <div className="relative inline-flex" 
+             onMouseEnter={() => setShowTooltip(true)}
+             onMouseLeave={() => setShowTooltip(false)}>
           <InfoIcon />
-        </Tippy>
+          
+          {showTooltip && (
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 text-sm bg-white text-gray-800 rounded shadow-md z-10 max-w-xs whitespace-normal">
+              <div className="absolute w-2 h-2 bg-white transform rotate-45 -bottom-1 left-1/2 -translate-x-1/2"></div>
+              <span dangerouslySetInnerHTML={{ __html: tooltip }}></span>
+            </div>
+          )}
+        </div>
       )}
     </>
   )

@@ -103,8 +103,9 @@ export const generateConfigCss = (
             background-color: ${config.buttonBackgroundColor};
             border-radius: ${buttonBorder};
             transition: all 0.5s ease;
-            margin-top: 20px;
-        }       
+            margin-top: 3px;
+        }
+       
         .wm_banner {
             font-family: ${selectedBannerFont}, system-ui, sans-serif !important;
             font-size: ${config.bannerFontSize}px;
@@ -147,41 +148,58 @@ export const generateConfigCss = (
           font-size: ${config.widgetFontSize}px;
         }
 
-        .button-tippy-wrapper {
+        .button-container {
+          position: relative;
+          display: inline-block;
+        }
+        
+        .button-tooltip-wrapper {
+          position: absolute;
           font-family: ${selectedButtonFont}, system-ui, sans-serif !important;
           font-size: ${config.buttonFontSize}px;
           color: ${config.buttonTooltipTextColor};
-          background-color: transparent;
-          margin-bottom: 5px;
-        }
-        .button-tippy-wrapper .tippy-content {
-          padding: 4px 10px;
-          border-radius: ${buttonBorder};
           background-color: ${config.buttonTooltipBackgroundColor};
+          border-radius: ${buttonBorder};
+          padding: 4px 10px;
+          bottom: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          margin-bottom: 10px;
+          max-width: 200px;
+          text-align: center;
+          z-index: 10;
         }
-
-        .button-tippy-wrapper .tippy-arrow,
-        .button-tippy-wrapper .tippy-arrow::before {
+        
+        .button-tooltip-arrow {
           position: absolute;
           width: 14px;
           height: 14px;
-          margin-top: -2px;
+          bottom: -7px;
+          left: 50%;
+          transform: translateX(-50%) rotate(45deg);
           background-color: ${config.buttonTooltipBackgroundColor};
         }
-
-        .button-tippy-wrapper .tippy-arrow {
-          visibility: hidden;
+        
+        .button-overlay-preview {
+          font-family: ${selectedButtonFont}, system-ui, sans-serif !important;
         }
-
-        .button-tippy-wrapper .tippy-arrow::before {
-          visibility: visible;
-          content: '';
-          transform: rotate(45deg);
+        
+        .button-overlay-preview .overlay-content {
+          border-radius: ${buttonBorder};
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+          transition: all 0.3s ease;
+        }
+        
+        .button-overlay-preview .overlay-header {
+          font-size: ${config.buttonFontSize}px;
+          color: ${config.buttonTextColor};
+          background-color: ${config.buttonBackgroundColor};
         }
 
         .ilpay_body {
           font-family: ${selectedWidgetFont}, system-ui, sans-serif !important;
           color: ${config.widgetTextColor};
+          padding: 0 5px;
         }
 
         .ilpay_body #headlessui-portal-root {
