@@ -118,6 +118,7 @@ export default function Create() {
       <ScriptModal
         title="Your script"
         tooltip={tooltips.scriptModal}
+        buttonCodeTooltip={tooltips.buttonCodeTooltip}
         defaultType={elementType}
         scriptForDisplay={scriptToDisplay}
         isOpen={modalOpen}

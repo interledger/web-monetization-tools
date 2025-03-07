@@ -69,7 +69,7 @@ export const generateConfigCss = (
   config: ElementConfigType,
   returnRaw = false
 ) => {
-  // const selectedButtonFont = getSelectedFont(config.buttonFontName)
+  const selectedButtonFont = getSelectedFont(config.buttonFontName)
   const selectedBannerFont = getSelectedFont(config.bannerFontName)
   const selectedWidgetFont = getSelectedFont(config.widgetFontName)
   const buttonBorder =
@@ -95,15 +95,17 @@ export const generateConfigCss = (
 
   const css = `       
         .wm_button {
-            font-family: ${selectedWidgetFont}, system-ui, sans-serif !important;
-            font-size: 16px;
+            font-family: ${selectedButtonFont}, system-ui, sans-serif !important;
+            font-size: ${(config.buttonFontSize ?? 16) + 2}px;
             padding: 8px 20px;
             border: 1px solid transparent;
             color: ${config.buttonTextColor};
             background-color: ${config.buttonBackgroundColor};
             border-radius: ${buttonBorder};
             transition: all 0.5s ease;
-        }       
+            margin-top: 3px;
+        }
+       
         .wm_banner {
             font-family: ${selectedBannerFont}, system-ui, sans-serif !important;
             font-size: ${config.bannerFontSize}px;
@@ -146,9 +148,58 @@ export const generateConfigCss = (
           font-size: ${config.widgetFontSize}px;
         }
 
+        .button-container {
+          position: relative;
+          display: inline-block;
+        }
+        
+        .button-tooltip-wrapper {
+          position: absolute;
+          font-family: ${selectedButtonFont}, system-ui, sans-serif !important;
+          font-size: ${config.buttonFontSize}px;
+          color: ${config.buttonTooltipTextColor};
+          background-color: ${config.buttonTooltipBackgroundColor};
+          border-radius: ${buttonBorder};
+          padding: 4px 10px;
+          bottom: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          margin-bottom: 10px;
+          max-width: 200px;
+          text-align: center;
+          z-index: 10;
+        }
+        
+        .button-tooltip-arrow {
+          position: absolute;
+          width: 14px;
+          height: 14px;
+          bottom: -7px;
+          left: 50%;
+          transform: translateX(-50%) rotate(45deg);
+          background-color: ${config.buttonTooltipBackgroundColor};
+        }
+        
+        .button-overlay-preview {
+          font-family: ${selectedButtonFont}, system-ui, sans-serif !important;
+        }
+        
+        .button-overlay-preview .overlay-content {
+          border-radius: ${buttonBorder};
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+          transition: all 0.3s ease;
+        }
+        
+        .button-overlay-preview .overlay-header {
+          font-size: ${config.buttonFontSize}px;
+          color: ${config.buttonTextColor};
+          background-color: ${config.buttonBackgroundColor};
+        }
+
         .ilpay_body {
           font-family: ${selectedWidgetFont}, system-ui, sans-serif !important;
           color: ${config.widgetTextColor};
+          padding: 0 5px;
         }
 
         .ilpay_body #headlessui-portal-root {
