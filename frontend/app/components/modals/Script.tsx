@@ -43,7 +43,7 @@ export const ScriptModal = ({
       .replace('[elements]', types.join('|'))
       .replace('[version]', selectedVersion)
     setProcessedScript(script)
-  }, [types, scriptForDisplay])
+  }, [types, scriptForDisplay, selectedVersion])
 
   return (
     <Dialog as="div" className="relative z-10" onClose={onClose} open={isOpen}>
