@@ -49,13 +49,27 @@ export const PageHeader = ({
           onChange={(value) => setSelectedVersion(value)}
         />
         <Button
-          className="mr-2"
+          intent="icon"
+          className="mr-2 pt-0"
           aria-label="add version"
+          title="add version"
           onClick={() => {
             setNewVersionModalOpen(true)
           }}
         >
-          Add
+          +
+        </Button>
+        <Button
+          intent="icon"
+          className="mr-2 pt-0 text-red-500 "
+          aria-label="remove version"
+          title="remove version"
+          disabled={selectedVersion == 'default'}
+          onClick={() => {
+            setConfirmModalOpen(true)
+          }}
+        >
+          x
         </Button>
       </div>
       <div className="ml-auto">
