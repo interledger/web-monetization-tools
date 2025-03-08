@@ -56,6 +56,7 @@ export const streamToString = (
 }
 
 // return only properties that are at least levelCount deep
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 export const filterDeepProperties = (
   obj: Record<string, any>,
   levelCount: number = 2

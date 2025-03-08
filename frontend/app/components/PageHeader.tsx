@@ -10,6 +10,7 @@ export const PageHeader = ({
   link,
   setImportModalOpen,
   setNewVersionModalOpen,
+  setConfirmModalOpen,
   versionOptions,
   selectedVersion,
   setSelectedVersion
@@ -19,6 +20,7 @@ export const PageHeader = ({
   link: string
   setImportModalOpen: React.Dispatch<React.SetStateAction<boolean>>
   setNewVersionModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setConfirmModalOpen: React.Dispatch<React.SetStateAction<boolean>>
   versionOptions: SelectOption[]
   selectedVersion: string
   setSelectedVersion: (value: string) => void
