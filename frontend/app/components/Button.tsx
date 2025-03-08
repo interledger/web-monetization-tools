@@ -13,6 +13,7 @@ const buttonStyles = cva(
           'text-sm hover:from-wm-purple hover:to-[#7f7fff] hover:text-white hover:bg-gradient-to-r',
         danger:
           'disabled:bg-red-200 bg-red-500 hover:bg-red-600 shadow-md text-white',
+        icon: 'enabled:hover:bg-gradient-to-r enabled:hover:from-wm-green enabled:hover:to-wm-green-fade aspect-square shadow-md max-w-[30px] disabled:bg-gray-200 disabled:hover:bg-gray-200!',
         invisible: 'px-1 border-none text-white'
       },
       size: {

@@ -8,6 +8,7 @@ export type ApiResponse<T = any> = {
   readonly payload?: T
   readonly isFailure: false | true
   readonly errors?: Array<string>
+  newversion?: false | string
 }
 
 const isProd = import.meta.env.PROD
@@ -70,10 +71,40 @@ export class ApiClient {
     }
   }
 
+  public static async createUserConfig(
+    version: string,
+    walletAddress: string
+  ): Promise<ApiResponse> {
+    const tag = encodeURIComponent(version)
+    const wa = encodeURIComponent(
+      walletAddress.replace('$', '').replace('https://', '')
+    )
+    const response = await axios.post(
+      `${apiUrl}tools`,
+      { walletAddress: wa, tag },
+      {
+        httpsAgent
+      }
+    )
+
+    if (response.status === 200) {
+      return {
+        isFailure: false,
+        payload: response.data
+      }
+    } else {
+      return {
+        errors: [`status ${response.status}: ${response.statusText}`],
+        isFailure: true,
+        newversion: false
+      }
+    }
+  }
+
   public static async saveUserConfig(
     configData: Partial<ElementConfigType>
   ): Promise<ApiResponse> {
-    const response = await axios.post(`${apiUrl}tools`, configData, {
+    const response = await axios.put(`${apiUrl}tools`, configData, {
       httpsAgent
     })
 

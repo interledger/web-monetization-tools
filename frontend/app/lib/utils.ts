@@ -319,3 +319,7 @@ export const getWebMonetizationLink = () => {
     return `Learn more&nbsp;<a rel="noindex nofollow" target="_blank" href="https://webmonetization.org/">here</a>.`
   }
 }
+
+export const capitalizeFirstLetter = (string: string): string => {
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}
