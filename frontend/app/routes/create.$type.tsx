@@ -7,6 +7,7 @@ import {
 } from '@remix-run/react'
 import { useEffect, useState } from 'react'
 import {
+  ConfirmModal,
   ImportModal,
   InfoModal,
   NewVersionModal,
@@ -34,6 +35,7 @@ import {
   createBannerSchema,
   createButtonSchema,
   createWidgetSchema,
+  fullConfigSchema,
   versionSchema,
   walletSchema
 } from '~/lib/validate.server'
@@ -71,6 +73,7 @@ export default function Create() {
   const [importModalOpen, setImportModalOpen] = useState(false)
   const [newVersionModalOpen, setNewVersionModalOpen] = useState(false)
   const [infoModalOpen, setInfoModalOpen] = useState(false)
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false)
   const [selectedVersion, setSelectedVersion] = useState('default')
   const [versionOptions, setVersionOptions] = useState<SelectOption[]>([
     { label: 'Default', value: 'default' }
@@ -80,6 +83,22 @@ export default function Create() {
     .replace('$', '')
     .replace('https://', '')
   const scriptToDisplay = `<script id="wmt-init-script" type="module" src="${toolsUrl}init.js?wa=${wa}&tag=[version]&types=[elements]"></script>`
+
+  const onConfirm = () => {
+    if (fullConfig) {
+      const { [selectedVersion]: _, ...rest } = fullConfig
+      setFullConfig(rest)
+      const config = fullConfig['default']
+      setToolConfig(config)
+
+      const filteredOptions = versionOptions.filter(
+        (ver) => ver.value != selectedVersion
+      )
+      setVersionOptions(filteredOptions)
+      setSelectedVersion('default')
+      setConfirmModalOpen(false)
+    }
+  }
 
   useEffect(() => {
     const errors = Object.keys(response?.errors?.fieldErrors || {})
@@ -125,21 +144,29 @@ export default function Create() {
   }, [response])
 
   useEffect(() => {
+    const updatedFullConfig = {
+      ...fullConfig,
+      [selectedVersion]: toolConfig
+    }
+    setFullConfig(updatedFullConfig)
+  }, [toolConfig])
+
+  useEffect(() => {
     if (fullConfig) {
-      console.log(fullConfig)
       const config = fullConfig[selectedVersion]
-      // setToolConfig(config)
+      setToolConfig(config)
     }
   }, [selectedVersion])
 
   return (
     <div className="flex flex-col gap-6 min-w-128 max-w-prose mx-auto my-8">
       <PageHeader
+        link="/"
         title={`Create ${elementType}`}
         elementType={elementType}
         setImportModalOpen={setImportModalOpen}
         setNewVersionModalOpen={setNewVersionModalOpen}
-        link="/"
+        setConfirmModalOpen={setConfirmModalOpen}
         versionOptions={versionOptions}
         selectedVersion={selectedVersion}
         setSelectedVersion={setSelectedVersion}
@@ -165,6 +192,11 @@ export default function Create() {
                 setOpenWidget={setOpenWidget}
               />
             </fieldset>
+            <input
+              type="hidden"
+              name="fullconfig"
+              value={JSON.stringify(fullConfig)}
+            />
             <input type="hidden" name="version" value={selectedVersion} />
             <div className="px-6 pt-5">
               <ErrorPanel errors={response?.errors.message} />
@@ -206,6 +238,12 @@ export default function Create() {
         content={versionOptions.map((ver) => ver.value).join(', ')}
         isOpen={infoModalOpen}
         onClose={() => setInfoModalOpen(false)}
+      />
+      <ConfirmModal
+        title={`Are you sure you want to remove ${selectedVersion}?`}
+        isOpen={confirmModalOpen}
+        onClose={() => setConfirmModalOpen(false)}
+        onConfirm={onConfirm}
       />
     </div>
   )
@@ -265,9 +303,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
       default:
         currentSchema = createBannerSchema
     }
-    const result = currentSchema.safeParse(
-      Object.assign(formData, { ...{ elementType } })
-    )
+    const result = currentSchema
+      .merge(fullConfigSchema)
+      .safeParse(Object.assign(formData, { ...{ elementType } }))
 
     if (!result.success) {
       errors.fieldErrors = result.error.flatten().fieldErrors
