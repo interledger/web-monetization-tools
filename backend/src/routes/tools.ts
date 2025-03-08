@@ -3,12 +3,14 @@ import {
   getDefault,
   getUserConfig,
   createUserConfig,
-  saveUserConfig
+  saveUserConfig,
+  getUserConfigByTag
 } from '../controllers/tools.js'
 
 const userRoutes = (router: Router) => {
   router.get('/tools/default', getDefault)
   router.get('/tools/:id', getUserConfig)
+  router.get('/tools/:id/:tag', getUserConfigByTag)
   router.post('/tools', createUserConfig)
   router.put('/tools', saveUserConfig)
 
