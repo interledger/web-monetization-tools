@@ -30,6 +30,9 @@ import {
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const elementType = params.type
 
+  const url = new URL(request.url)
+  const contentOnlyParam = url.searchParams.get('contentOnly')
+
   const cookies = request.headers.get('cookie')
 
   const session = await messageStorage.getSession(cookies)
@@ -42,15 +45,23 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   const ilpayUrl = process.env.ILPAY_URL || ''
   const toolsUrl = process.env.FRONTEND_URL || ''
 
-  return { elementType, defaultConfig, message, ilpayUrl, toolsUrl }
+  return {
+    elementType,
+    defaultConfig,
+    message,
+    ilpayUrl,
+    toolsUrl,
+    contentOnlyParam
+  }
 }
 
 export default function Create() {
-  const { elementType, defaultConfig, ilpayUrl, toolsUrl } =
+  const { elementType, defaultConfig, ilpayUrl, toolsUrl, contentOnlyParam } =
     useLoaderData<typeof loader>()
   const response = useActionData<typeof action>()
   const { state } = useNavigation()
   const isSubmitting = state === 'submitting'
+  const contentOnly = contentOnlyParam != null
 
   const [openWidget, setOpenWidget] = useState(false)
   const [toolConfig, setToolConfig] = useState<ElementConfigType>(defaultConfig)
@@ -84,7 +95,7 @@ export default function Create() {
         title={`Create ${elementType}`}
         elementType={elementType}
         setImportModalOpen={setImportModalOpen}
-        link="/"
+        link={`/${contentOnly ? '?contentOnly' : ''}`}
       />
       {validConfigTypes.includes(String(elementType)) ? (
         <div className="flex flex-col">

@@ -25,7 +25,7 @@ export default function Index() {
     <div className="h-full p-14">
       <div className="flex flex-wrap justify-center gap-6 max-w-prosex p-4 mx-auto">
         {availableTools.map((tool) => {
-          const toolLink = `${tool.link}${contentOnly && '?contentOnly'}`
+          const toolLink = `${tool.link}${contentOnly ? '?contentOnly' : ''}`
           const props = {
             ...tool,
             link: toolLink
