@@ -15,6 +15,7 @@ type SelectProps = {
   placeholder: string
   name?: string
   label?: string
+  tooltip?: string
   disabled?: boolean
   required?: boolean
   error?: string | string[]
@@ -31,6 +32,7 @@ export const Select = ({
   name,
   placeholder,
   label,
+  tooltip,
   error,
   disabled = false,
   required = false,
@@ -78,7 +80,14 @@ export const Select = ({
         <input type="hidden" name={name} value={internalValue.value} />
       ) : null}
       <div className={cx('flex flex-col relative w-full', label && 'mt-1')}>
-        {label && <Label className="w-full mb-px">{label}</Label>}
+        {label && (
+          <Label
+            className={cx('w-full mb-px', tooltip && 'flex')}
+            tooltip={tooltip}
+          >
+            {label}
+          </Label>
+        )}
         <div
           className={cx(
             'relative w-full cursor-default overflow-hidden bg-white text-left outline-0 focus:outline-none sm:text-sm h-9',

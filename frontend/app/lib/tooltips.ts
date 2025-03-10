@@ -6,5 +6,6 @@ export const tooltips = {
   widget:
     'This widget enables one-time payments for your website. It appears in the lower right corner, visible to all visitors regardless of their Web Monetization status. The title, text, and styling of the displayed message are customizable.',
   scriptModal:
-    'Copy your script and insert it just before the closing </body> tag on your website, or place it within a script type element if you\'re using a site management software (ex: WordPress, etc). <br />Be sure to review and select all the options in the "Include" section, that you want to display on your website.'
+    'Copy your script and insert it just before the closing </body> tag on your website, or place it within a script type element if you\'re using a site management software (ex: WordPress, etc). <br />Be sure to review and select all the options in the "Include" section, that you want to display on your website.',
+  font: 'Setting the Font to Inherit, will make the component use the font from the website it is added to.'
 }
