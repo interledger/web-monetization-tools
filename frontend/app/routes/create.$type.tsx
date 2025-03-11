@@ -213,9 +213,13 @@ export default function Create() {
             <input
               type="hidden"
               name="fullconfig"
-              value={JSON.stringify(fullConfig)}
+              value={JSON.stringify(fullConfig ?? {})}
             />
-            <input type="hidden" name="version" value={selectedVersion} />
+            <input
+              type="hidden"
+              name="version"
+              value={selectedVersion || 'default'}
+            />
             <div className="px-6 pt-5">
               <ErrorPanel errors={response?.errors.message} />
             </div>

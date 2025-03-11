@@ -89,7 +89,7 @@ export const UploadControl = ({
         ref={fileInputRef}
         onChange={handleFileChange}
       />
-      <input type="hidden" name={name} value={value} />
+      <input type="hidden" name={name} value={value ?? ''} />
       <Button
         className="max-h-8"
         aria-label="Upload image"

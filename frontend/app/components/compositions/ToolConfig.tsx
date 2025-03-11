@@ -27,6 +27,7 @@ import {
   UploadControl,
   FontSize
 } from '../index.js'
+import { tooltips } from '~/lib/tooltips.js'
 
 type ToolConfigProps = {
   type?: string
@@ -257,6 +258,7 @@ const BannerConfig = ({
             withBorder
             name="bannerFontName"
             label="Font"
+            tooltip={tooltips.font}
             placeholder="Select Font"
             options={fontOptions}
             value={defaultFontValue}
@@ -269,7 +271,7 @@ const BannerConfig = ({
           <FontSize
             name="bannerFontSize"
             label="Size"
-            value={config?.bannerFontSize}
+            value={config?.bannerFontSize || 16}
             updateSize={(value) =>
               setToolConfig({ ...config, bannerFontSize: Number(value ?? 16) })
             }
