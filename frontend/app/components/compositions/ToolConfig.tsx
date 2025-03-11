@@ -27,6 +27,7 @@ import {
   UploadControl,
   FontSize
 } from '../index.js'
+import { tooltips } from '~/lib/tooltips.js'
 
 type ToolConfigProps = {
   type?: string
@@ -152,6 +153,7 @@ const BannerConfig = ({
   )
 
   const bgColor = bgColors.banner
+  const characterLimit = 500
 
   return (
     <div className="w-full font-sans text-sm">
@@ -256,6 +258,7 @@ const BannerConfig = ({
             withBorder
             name="bannerFontName"
             label="Font"
+            tooltip={tooltips.font}
             placeholder="Select Font"
             options={fontOptions}
             value={defaultFontValue}
@@ -268,7 +271,7 @@ const BannerConfig = ({
           <FontSize
             name="bannerFontSize"
             label="Size"
-            value={config?.bannerFontSize}
+            value={config?.bannerFontSize || 16}
             updateSize={(value) =>
               setToolConfig({ ...config, bannerFontSize: Number(value ?? 16) })
             }
@@ -281,12 +284,15 @@ const BannerConfig = ({
             name="bannerTitleText"
             value={config?.bannerTitleText || ''}
             className="w-full"
-            onChange={(e) =>
-              setToolConfig({
-                ...config,
-                bannerTitleText: e.target.value ?? ''
-              })
-            }
+            onChange={(e) => {
+              if (e.target.value.length <= characterLimit) {
+                setToolConfig({
+                  ...config,
+                  bannerTitleText: e.target.value ?? ''
+                })
+              }
+            }}
+            maxLength={characterLimit}
           />
         </div>
       </div>
@@ -297,12 +303,15 @@ const BannerConfig = ({
           label="Text"
           name="bannerDescriptionText"
           value={config?.bannerDescriptionText || ''}
-          onChange={(e) =>
-            setToolConfig({
-              ...config,
-              bannerDescriptionText: e.target.value ?? ''
-            })
-          }
+          onChange={(e) => {
+            if (e.target.value.length <= characterLimit) {
+              setToolConfig({
+                ...config,
+                bannerDescriptionText: e.target.value ?? ''
+              })
+            }
+          }}
+          maxLength={characterLimit}
           error={errors?.fieldErrors.bannerDescriptionText}
         />
       </div>

@@ -1,4 +1,8 @@
-import type { LinksFunction, MetaFunction } from '@remix-run/node'
+import type {
+  LinksFunction,
+  LoaderFunctionArgs,
+  MetaFunction
+} from '@remix-run/node'
 import {
   Links,
   Meta,
@@ -16,19 +20,24 @@ import stylesheet from '~/tailwind.css?url'
 import { Button, Footer, Header, Snackbar } from './components/index.js'
 import { XCircle } from './components/icons.js'
 
-export const loader = async () => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const url = new URL(request.url)
+  const contentOnlyParam = url.searchParams.get('contentOnly')
+
   let message
 
   if (!message) {
-    return json({ message: null })
+    return json({ message: null, contentOnlyParam })
   }
 
-  return json({ message })
+  return json({ message, contentOnlyParam })
 }
 
 export default function App() {
-  const { message } = useLoaderData<typeof loader>()
+  const { message, contentOnlyParam } = useLoaderData<typeof loader>()
   const [snackbarOpen, setSnackbarOpen] = useState(false)
+
+  const contentOnly = contentOnlyParam != null
 
   useEffect(() => {
     if (!message) {
@@ -48,10 +57,10 @@ export default function App() {
       <body className="h-screen">
         <main className="h-auto min-h-full flex flex-col justify-between">
           <div className="h-full flex flex-col  bg-[url(/images/bg-tile.svg)] bg-[auto_25em]">
-            <Header />
+            {!contentOnly && <Header />}
             <Outlet />
           </div>
-          <Footer />
+          {!contentOnly && <Footer />}
         </main>
         <Snackbar
           id="snackbar"
