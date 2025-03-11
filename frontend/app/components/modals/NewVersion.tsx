@@ -57,12 +57,15 @@ export const NewVersionModal = ({
                       />
                     </div>
                     <div className="flex w-full items-center">
-                      <Input
-                        name="version"
-                        label="Version title"
-                        placeholder="Default"
-                        error={errors?.fieldErrors.version}
-                      />
+                      <div className="w-full my-4">
+                        <Input
+                          name="version"
+                          label="Version title"
+                          placeholder="Default"
+                          error={errors?.fieldErrors.version}
+                          withBorder
+                        />
+                      </div>
                     </div>
                     <div className="flex justify-end space-x-4">
                       <Button
