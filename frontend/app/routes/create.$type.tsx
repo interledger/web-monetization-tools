@@ -40,13 +40,13 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   const defaultConfig: ElementConfigType = apiResponse?.payload
 
   const ilpayUrl = process.env.ILPAY_URL || ''
-  const toolsUrl = process.env.FRONTEND_URL || ''
+  const scriptInitUrl = process.env.SCRIPT_EMBED_URL || ''
 
-  return { elementType, defaultConfig, message, ilpayUrl, toolsUrl }
+  return { elementType, defaultConfig, message, ilpayUrl, scriptInitUrl }
 }
 
 export default function Create() {
-  const { elementType, defaultConfig, ilpayUrl, toolsUrl } =
+  const { elementType, defaultConfig, ilpayUrl, scriptInitUrl } =
     useLoaderData<typeof loader>()
   const response = useActionData<typeof action>()
   const { state } = useNavigation()
@@ -60,7 +60,7 @@ export default function Create() {
   const wa = (toolConfig?.walletAddress || '')
     .replace('$', '')
     .replace('https://', '')
-  const scriptToDisplay = `<script id="wmt-init-script" type="module" src="${toolsUrl}init.js?wa=${wa}&types=[elements]"></script>`
+  const scriptToDisplay = `<script id="wmt-init-script" type="module" src="${scriptInitUrl}init.js?wa=${wa}&types=[elements]"></script>`
 
   useEffect(() => {
     const errors = Object.keys(response?.errors?.fieldErrors || {})
