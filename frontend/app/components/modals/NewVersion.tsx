@@ -3,6 +3,7 @@ import { Form } from '@remix-run/react'
 import { ElementConfigType, ElementErrors } from '~/lib/types.js'
 import { XIcon } from '~/components/icons.js'
 import { Button, Input, WalletAddress } from '~/components/index.js'
+import { useState } from 'react'
 
 type NewVersionModalProps = {
   title: string
@@ -23,6 +24,8 @@ export const NewVersionModal = ({
   toolConfig,
   setToolConfig
 }: NewVersionModalProps) => {
+  const [versionName, setVersionName] = useState('')
+
   return (
     <Dialog as="div" className="relative z-10" onClose={onClose} open={isOpen}>
       <div className="fixed inset-0 bg-slate-500 bg-opacity-75 transition-opacity" />
@@ -62,7 +65,14 @@ export const NewVersionModal = ({
                           name="version"
                           label="Version title"
                           placeholder="Default"
+                          value={versionName}
                           error={errors?.fieldErrors.version}
+                          onChange={(e) => {
+                            const newValue = e.target.value
+                            if (/^[a-zA-Z0-9-_ ]*$/.test(newValue)) {
+                              setVersionName(newValue)
+                            }
+                          }}
                           withBorder
                         />
                       </div>
