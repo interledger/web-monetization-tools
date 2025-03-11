@@ -1,19 +1,29 @@
 import { useNavigate } from '@remix-run/react'
 import { cx } from 'class-variance-authority'
 import { availableTools } from '~/lib/presets.js'
-import { Button, InfoWithTooltip } from './index.js'
+import { Button, InfoWithTooltip, Select, SelectOption } from './index.js'
 import { Chevron } from './icons.js'
 
 export const PageHeader = ({
   elementType,
   title,
   link,
-  setImportModalOpen
+  setImportModalOpen,
+  setNewVersionModalOpen,
+  setConfirmModalOpen,
+  versionOptions,
+  selectedVersion,
+  setSelectedVersion
 }: {
   elementType: string | undefined
   title: string
   link: string
   setImportModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setNewVersionModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setConfirmModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+  versionOptions: SelectOption[]
+  selectedVersion: string
+  setSelectedVersion: (value: string) => void
 }) => {
   const navigate = useNavigate()
 
@@ -32,6 +42,37 @@ export const PageHeader = ({
           <span>{title}</span>
           <InfoWithTooltip tooltip={currentElement?.tooltip} />
         </h3>
+      </div>
+      <div className="flex mr-2">
+        <Select
+          placeholder="Default"
+          options={versionOptions}
+          value={versionOptions.find((opt) => opt.value == selectedVersion)}
+          onChange={(value) => setSelectedVersion(value)}
+        />
+        <Button
+          intent="icon"
+          className="mr-2 pt-0"
+          aria-label="add version"
+          title="add version"
+          onClick={() => {
+            setNewVersionModalOpen(true)
+          }}
+        >
+          +
+        </Button>
+        <Button
+          intent="icon"
+          className="mr-2 pt-0 text-red-500 "
+          aria-label="remove version"
+          title="remove version"
+          disabled={selectedVersion == 'default'}
+          onClick={() => {
+            setConfirmModalOpen(true)
+          }}
+        >
+          x
+        </Button>
       </div>
       <div className="ml-auto">
         <Button

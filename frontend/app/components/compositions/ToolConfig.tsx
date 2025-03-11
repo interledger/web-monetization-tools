@@ -152,6 +152,7 @@ const BannerConfig = ({
   )
 
   const bgColor = bgColors.banner
+  const characterLimit = 500
 
   return (
     <div className="w-full font-sans text-sm">
@@ -281,12 +282,15 @@ const BannerConfig = ({
             name="bannerTitleText"
             value={config?.bannerTitleText || ''}
             className="w-full"
-            onChange={(e) =>
-              setToolConfig({
-                ...config,
-                bannerTitleText: e.target.value ?? ''
-              })
-            }
+            onChange={(e) => {
+              if (e.target.value.length <= characterLimit) {
+                setToolConfig({
+                  ...config,
+                  bannerTitleText: e.target.value ?? ''
+                })
+              }
+            }}
+            maxLength={characterLimit}
           />
         </div>
       </div>
@@ -297,12 +301,15 @@ const BannerConfig = ({
           label="Text"
           name="bannerDescriptionText"
           value={config?.bannerDescriptionText || ''}
-          onChange={(e) =>
-            setToolConfig({
-              ...config,
-              bannerDescriptionText: e.target.value ?? ''
-            })
-          }
+          onChange={(e) => {
+            if (e.target.value.length <= characterLimit) {
+              setToolConfig({
+                ...config,
+                bannerDescriptionText: e.target.value ?? ''
+              })
+            }
+          }}
+          maxLength={characterLimit}
           error={errors?.fieldErrors.bannerDescriptionText}
         />
       </div>
