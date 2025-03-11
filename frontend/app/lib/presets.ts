@@ -12,7 +12,13 @@ export const backgroundColorPresets = [
   '#f69656',
   '#7f76b2'
 ]
-export const FontsType = ['Arial', 'Inherit', 'Open Sans', 'Cookie', 'Titillium Web']
+export const FontsType = [
+  'Arial',
+  'Inherit',
+  'Open Sans',
+  'Cookie',
+  'Titillium Web'
+]
 
 export const bgColors = {
   button: 'from-wm-green to-wm-green-fade',
