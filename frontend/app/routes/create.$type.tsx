@@ -70,8 +70,13 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 }
 
 export default function Create() {
-  const { elementType, defaultConfig, ilpayUrl, scriptInitUrl, contentOnlyParam } =
-    useLoaderData<typeof loader>()
+  const {
+    elementType,
+    defaultConfig,
+    ilpayUrl,
+    scriptInitUrl,
+    contentOnlyParam
+  } = useLoaderData<typeof loader>()
   const response = useActionData<typeof action>()
   const { state } = useNavigation()
   const isSubmitting = state === 'submitting'
