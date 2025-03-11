@@ -30,7 +30,9 @@ export const createUserConfig = async (req: Request, res: Response) => {
     }
     const defaultData = await getDefaultData()
     const defaultDataContent = JSON.parse(defaultData).default
-    defaultDataContent.walletAddress = `https://${data.walletAddress}`
+    defaultDataContent.walletAddress = decodeURIComponent(
+      `https://${data.walletAddress}`
+    )
 
     const { s3, params } = getS3AndParams(data.walletAddress)
 
