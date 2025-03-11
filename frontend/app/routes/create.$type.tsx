@@ -119,11 +119,10 @@ export default function Create() {
         }
       )
       setVersionOptions(versionLabels)
+      setFullConfig(response.apiResponse.payload)
 
       const selVersion = response.apiResponse.newversion
       setSelectedVersion(selVersion)
-      const config = response.apiResponse.payload[selVersion]
-      setToolConfig(config)
       setNewVersionModalOpen(false)
       setInfoModalOpen(true)
     } else if (
@@ -142,8 +141,6 @@ export default function Create() {
       setVersionOptions(versionLabels)
 
       setFullConfig(response.apiResponse.payload)
-      const config = response.apiResponse.payload['default']
-      setToolConfig(config)
       setSelectedVersion('default')
       setImportModalOpen(false)
       setInfoModalOpen(true)
@@ -178,7 +175,7 @@ export default function Create() {
         selectedVersion={selectedVersion}
         setSelectedVersion={setSelectedVersion}
       />
-      {validConfigTypes.includes(String(elementType)) ? (
+      {toolConfig && validConfigTypes.includes(String(elementType)) ? (
         <div className="flex flex-col">
           <Form method="post" replace>
             <fieldset disabled={isSubmitting}>
