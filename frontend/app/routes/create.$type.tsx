@@ -130,7 +130,10 @@ export default function Create() {
     ) {
       const versionLabels = Object.keys(response.apiResponse?.payload).map(
         (key) => {
-          return { label: capitalizeFirstLetter(key), value: key }
+          return {
+            label: capitalizeFirstLetter(key.replaceAll('-', ' ')),
+            value: key
+          }
         }
       )
       setVersionOptions(versionLabels)
@@ -282,11 +285,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }
 
     const payload = result.data
+    const versionName = payload.version.replaceAll(' ', '-')
     apiResponse = await ApiClient.createUserConfig(
-      payload.version,
+      versionName,
       payload.walletAddress
     )
-    apiResponse.newversion = payload.version
+    apiResponse.newversion = versionName
 
     return json({ errors, apiResponse, displayScript }, { status: 200 })
   } else {
