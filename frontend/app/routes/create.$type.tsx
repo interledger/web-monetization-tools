@@ -100,12 +100,15 @@ export default function Create() {
       setSelectedVersion('default')
       setConfirmModalOpen(false)
 
-      setTimeout(() => {
-        const theForm = document.getElementById(
-          'config-form'
-        ) as HTMLFormElement | null
-        submitForm(theForm)
-      }, 1000)
+      const formData = new FormData()
+      formData.append('intent', 'remove')
+      formData.append('version', 'default')
+      formData.append('fullconfig', JSON.stringify(rest))
+      const defaultSet = rest.default as unknown as Record<string, string>
+      Object.keys(defaultSet).map((key) => {
+        formData.append(key, defaultSet[key])
+      })
+      submitForm(formData, { method: 'post' })
     }
   }
 
@@ -152,7 +155,9 @@ export default function Create() {
       setFullConfig(response.apiResponse.payload)
       setSelectedVersion('default')
       setImportModalOpen(false)
-      setInfoModalOpen(true)
+      if (response.intent != 'remove') {
+        setInfoModalOpen(true)
+      }
     }
   }, [response])
 
@@ -279,19 +284,25 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     if (!result.success) {
       errors.fieldErrors = result.error.flatten().fieldErrors
-      return json({ errors, apiResponse, displayScript }, { status: 400 })
+      return json(
+        { errors, apiResponse, displayScript, intent },
+        { status: 400 }
+      )
     }
 
     const payload = result.data
     apiResponse = await ApiClient.getUserConfig(payload.walletAddress)
 
-    return json({ errors, apiResponse, displayScript }, { status: 200 })
+    return json({ errors, apiResponse, displayScript, intent }, { status: 200 })
   } else if (intent == 'newversion') {
     const result = versionSchema.merge(walletSchema).safeParse(formData)
 
     if (!result.success) {
       errors.fieldErrors = result.error.flatten().fieldErrors
-      return json({ errors, apiResponse, displayScript }, { status: 400 })
+      return json(
+        { errors, apiResponse, displayScript, intent },
+        { status: 400 }
+      )
     }
 
     const payload = result.data
@@ -302,7 +313,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     )
     apiResponse.newversion = versionName
 
-    return json({ errors, apiResponse, displayScript }, { status: 200 })
+    return json({ errors, apiResponse, displayScript, intent }, { status: 200 })
   } else {
     let currentSchema
 
@@ -323,7 +334,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     if (!result.success) {
       errors.fieldErrors = result.error.flatten().fieldErrors
-      return json({ errors, apiResponse, displayScript }, { status: 400 })
+      return json(
+        { errors, apiResponse, displayScript, intent },
+        { status: 400 }
+      )
     }
 
     const payload = result.data
@@ -337,8 +351,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }
 
     apiResponse = await ApiClient.saveUserConfig(payload)
-    displayScript = true
+    if (intent != 'remove') {
+      displayScript = true
+    }
 
-    return json({ errors, apiResponse, displayScript }, { status: 200 })
+    return json({ errors, apiResponse, displayScript, intent }, { status: 200 })
   }
 }
