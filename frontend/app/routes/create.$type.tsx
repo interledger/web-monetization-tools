@@ -3,7 +3,8 @@ import {
   Form,
   useActionData,
   useLoaderData,
-  useNavigation
+  useNavigation,
+  useSubmit
 } from '@remix-run/react'
 import { useEffect, useState } from 'react'
 import {
@@ -83,6 +84,7 @@ export default function Create() {
     .replace('$', '')
     .replace('https://', '')
   const scriptToDisplay = `<script id="wmt-init-script" type="module" src="${toolsUrl}init.js?wa=${wa}&tag=[version]&types=[elements]"></script>`
+  const submitForm = useSubmit()
 
   const onConfirm = () => {
     if (fullConfig) {
@@ -97,6 +99,13 @@ export default function Create() {
       setVersionOptions(filteredOptions)
       setSelectedVersion('default')
       setConfirmModalOpen(false)
+
+      setTimeout(() => {
+        const theForm = document.getElementById(
+          'config-form'
+        ) as HTMLFormElement | null
+        submitForm(theForm)
+      }, 1000)
     }
   }
 
@@ -177,7 +186,7 @@ export default function Create() {
       />
       {toolConfig && validConfigTypes.includes(String(elementType)) ? (
         <div className="flex flex-col">
-          <Form method="post" replace>
+          <Form id="config-form" method="post" replace>
             <fieldset disabled={isSubmitting}>
               <ToolPreview
                 type={elementType}
