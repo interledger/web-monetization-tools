@@ -112,7 +112,10 @@ export default function Create() {
     ) {
       const versionLabels = Object.keys(response.apiResponse?.payload).map(
         (key) => {
-          return { label: capitalizeFirstLetter(key), value: key }
+          return {
+            label: capitalizeFirstLetter(key.replaceAll('-', ' ')),
+            value: key
+          }
         }
       )
       setVersionOptions(versionLabels)
@@ -141,6 +144,7 @@ export default function Create() {
       setFullConfig(response.apiResponse.payload)
       const config = response.apiResponse.payload['default']
       setToolConfig(config)
+      setSelectedVersion('default')
       setImportModalOpen(false)
       setInfoModalOpen(true)
     }
