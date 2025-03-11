@@ -57,21 +57,26 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   const defaultConfig: ElementConfigType = apiResponse?.payload?.default
 
   const ilpayUrl = process.env.ILPAY_URL || ''
-  const toolsUrl = process.env.FRONTEND_URL || ''
+  const scriptInitUrl = process.env.SCRIPT_EMBED_URL || ''
 
   return {
     elementType,
     defaultConfig,
     message,
     ilpayUrl,
-    toolsUrl,
+    scriptInitUrl,
     contentOnlyParam
   }
 }
 
 export default function Create() {
-  const { elementType, defaultConfig, ilpayUrl, toolsUrl, contentOnlyParam } =
-    useLoaderData<typeof loader>()
+  const {
+    elementType,
+    defaultConfig,
+    ilpayUrl,
+    scriptInitUrl,
+    contentOnlyParam
+  } = useLoaderData<typeof loader>()
   const response = useActionData<typeof action>()
   const { state } = useNavigation()
   const isSubmitting = state === 'submitting'
@@ -94,7 +99,7 @@ export default function Create() {
   const wa = (toolConfig?.walletAddress || '')
     .replace('$', '')
     .replace('https://', '')
-  const scriptToDisplay = `<script id="wmt-init-script" type="module" src="${toolsUrl}init.js?wa=${wa}&tag=[version]&types=[elements]"></script>`
+  const scriptToDisplay = `<script id="wmt-init-script" type="module" src="${scriptInitUrl}init.js?wa=${wa}&tag=[version]&types=[elements]"></script>`
   const submitForm = useSubmit()
 
   const onConfirm = () => {
