@@ -91,9 +91,14 @@ const getFontFamily = (family: string, forElement: string = 'banner') => {
     currentFontFamily.remove()
   }
 
-  let selectedFont = 'Arial'
+  let selectedFont = 'inherit'
   if (allowedFonts.indexOf(family) != -1) {
     selectedFont = family
+  }
+
+  // skip injecting of font if set to inherit
+  if (selectedFont == 'inherit') {
+    return
   }
 
   const styleObj = document.createElement('link') as HTMLLinkElement
@@ -134,7 +139,10 @@ const drawElement = (
     switch (type) {
       case 'widget': {
         const font = getFontFamily(config.widgetFontName, 'widget')
-        shadowHost.style.setProperty('--wmt-widget-font', font.selectedFont)
+        shadowHost.style.setProperty(
+          '--wmt-widget-font',
+          font?.selectedFont ? font.selectedFont : 'inherit'
+        )
         shadowHost.style.setProperty(
           '--wmt-widget-font-size',
           config.widgetFontSize
@@ -143,15 +151,20 @@ const drawElement = (
         const element = drawWidget(walletAddress, config)
         shadowRoot.appendChild(css)
         shadowRoot.appendChild(element)
-        // font family needs to be outside of the shadow DOM
-        document.body.appendChild(font.fontFamily)
+        if (font?.fontFamily) {
+          // font family needs to be outside of the shadow DOM
+          document.body.appendChild(font.fontFamily)
+        }
         document.body.appendChild(shadowHost)
         break
       }
       case 'banner':
       default:
         const font = getFontFamily(config.bannerFontName, 'banner')
-        shadowHost.style.setProperty('--wmt-banner-font', font.selectedFont)
+        shadowHost.style.setProperty(
+          '--wmt-banner-font',
+          font?.selectedFont ? font.selectedFont : 'inherit'
+        )
         shadowHost.style.setProperty(
           '--wmt-banner-font-size',
           config.bannerFontSize
@@ -162,8 +175,10 @@ const drawElement = (
           shadowRoot.appendChild(css)
           shadowRoot.appendChild(element)
         }
-        // font family needs to be outside of the shadow DOM
-        document.body.appendChild(font.fontFamily)
+        if (font?.fontFamily) {
+          // font family needs to be outside of the shadow DOM
+          document.body.appendChild(font.fontFamily)
+        }
         document.body.appendChild(shadowHost)
     }
   }
