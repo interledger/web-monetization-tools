@@ -77,7 +77,7 @@ export const Select = ({
       disabled={disabled}
     >
       {name ? (
-        <input type="hidden" name={name} value={internalValue.value} />
+        <input type="hidden" name={name} value={internalValue.value ?? ''} />
       ) : null}
       <div className={cx('flex flex-col relative w-full', label && 'mt-1')}>
         {label && (

@@ -53,7 +53,7 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
 
     return (
       <div className={cx('flex relative', className)} ref={ref} {...props}>
-        <input type="hidden" name={name} value={value} id={internalId} />
+        <input type="hidden" name={name} value={value ?? ''} id={internalId} />
         <div className="flex p-3">
           {colorPresets.map((color) => (
             <div

@@ -65,7 +65,7 @@ export const NewVersionModal = ({
                           name="version"
                           label="Version title"
                           placeholder="Default"
-                          value={versionName}
+                          value={versionName ?? ''}
                           error={errors?.fieldErrors.version}
                           onChange={(e) => {
                             const newValue = e.target.value

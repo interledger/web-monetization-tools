@@ -271,7 +271,7 @@ const BannerConfig = ({
           <FontSize
             name="bannerFontSize"
             label="Size"
-            value={config?.bannerFontSize}
+            value={config?.bannerFontSize || 16}
             updateSize={(value) =>
               setToolConfig({ ...config, bannerFontSize: Number(value ?? 16) })
             }
