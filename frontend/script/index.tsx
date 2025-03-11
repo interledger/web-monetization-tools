@@ -3,7 +3,10 @@ const FRONTEND_URL = import.meta.env.VITE_SCRIPT_FRONTEND_URL
 const API_URL = import.meta.env.VITE_SCRIPT_API_URL
 const ILPAY_URL = import.meta.env.VITE_SCRIPT_ILPAY_URL
 
-let paramTypes: string[] | undefined, paramWallet: string | undefined, urlWallet
+let paramTypes: string[] | undefined,
+  paramWallet: string | undefined,
+  paramTag: string = 'default',
+  urlWallet
 
 // TODO: Have a defined interface for the config
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -17,6 +20,7 @@ if (currentScript) {
   const params = new URLSearchParams(scriptUrl.search)
   paramTypes = (params.get('types') || '').split('|')
   paramWallet = params.get('wa') || undefined
+  paramTag = params.get('tag') || 'default'
   urlWallet = encodeURIComponent(params.get('wa') || '')
 }
 
@@ -25,7 +29,7 @@ if (!paramTypes || !paramWallet) {
   throw 'Missing parameters! Could not initialise WM Tools.'
 }
 
-fetch(`${API_URL}tools/${urlWallet}`)
+fetch(`${API_URL}tools/${urlWallet}/${paramTag}`)
   .then((response) => response.json())
   .then((resp) => {
     const config = resp
