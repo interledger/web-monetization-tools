@@ -5,7 +5,7 @@ services:
     build:
       context: ../..
       dockerfile: backend/Dockerfile.dev
-    command: pnpm nodemon --watch . --ext ts,js,mjs,cjs,json --exec "pnpm tsx src/server.ts"
+    command: 'pnpm nodemon --watch . --ext ts,js,mjs,cjs,json --exec pnpm tsx src/server.ts'
     ports:
       - '5101:5101'
     expose:
@@ -13,6 +13,7 @@ services:
     volumes:
       - ../../certs:/app/certs # Ensure certificates are available
       - ../../backend:/app/backend
+      - /app/backend/node_modules
     networks:
       - wm-tools
     environment:
@@ -37,6 +38,7 @@ services:
         VITE_SCRIPT_API_URL: ${SCRIPT_API_URL}
         VITE_SCRIPT_FRONTEND_URL: ${SCRIPT_FRONTEND_URL}
         VITE_SCRIPT_ILPAY_URL: ${SCRIPT_ILPAY_URL}
+        VITE_INIT_SCRIPT_URL: ${SCRIPT_EMBED_URL}
     ports:
       - '5100:5100'
     expose:
@@ -47,6 +49,7 @@ services:
       API_URL: ${API_URL}
       ILPAY_URL: ${SCRIPT_ILPAY_URL}
       FRONTEND_URL: ${SCRIPT_FRONTEND_URL}
+      INIT_SCRIPT_URL: ${SCRIPT_EMBED_URL}
     networks:
       - wm-tools
     command: pnpm run dev
@@ -55,6 +58,7 @@ services:
     volumes:
       - ../../certs:/app/certs
       - ../../frontend:/app/frontend
+      - /app/frontend/node_modules
 
 networks:
   wm-tools:

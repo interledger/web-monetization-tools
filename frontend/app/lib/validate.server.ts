@@ -1,8 +1,19 @@
 import { z } from 'zod'
 import { CornerType, PositionType, SlideAnimationType } from './types.js'
 
+const rangeError = { message: 'Value has to be between 16 and 24' }
+
 export const walletSchema = z.object({
   walletAddress: z.string().min(1, { message: 'Wallet address is required' })
+})
+
+export const versionSchema = z.object({
+  version: z.string().min(1, { message: 'Version is required' })
+})
+
+// need a better definition & validation for this
+export const fullConfigSchema = z.object({
+  fullconfig: z.string().min(1, { message: 'Unknown error' })
 })
 
 export const createButtonSchema = z
@@ -15,11 +26,13 @@ export const createButtonSchema = z
     buttonBackgroundColor: z.string().min(6)
   })
   .merge(walletSchema)
+  .merge(versionSchema)
 
 export const createBannerSchema = z
   .object({
     elementType: z.literal('banner'),
     bannerFontName: z.string().min(1, { message: 'Choose a font' }),
+    bannerFontSize: z.coerce.number().min(16, rangeError).max(24, rangeError),
     bannerTitleText: z.string().optional(),
     bannerDescriptionText: z
       .string()
@@ -31,20 +44,25 @@ export const createBannerSchema = z
     bannerBorder: z.nativeEnum(CornerType)
   })
   .merge(walletSchema)
+  .merge(versionSchema)
 
 export const createWidgetSchema = z
   .object({
     elementType: z.literal('widget'),
     widgetFontName: z.string().min(1, { message: 'Choose a font' }),
+    widgetFontSize: z.coerce.number().min(16, rangeError).max(24, rangeError),
     widgetButtonText: z.string().min(1),
     widgetDescriptionText: z.string().min(1),
     widgetButtonBorder: z.nativeEnum(CornerType),
     widgetButtonBackgroundColor: z.string().min(1),
     widgetButtonTextColor: z.string().min(1),
     widgetTextColor: z.string().min(1),
-    widgetBackgroundColor: z.string().min(1)
+    widgetBackgroundColor: z.string().min(1),
+    widgetTriggerBackgroundColor: z.string().min(1),
+    widgetTriggerIcon: z.string().optional()
   })
   .merge(walletSchema)
+  .merge(versionSchema)
 
 export const getElementSchema = (type: string) => {
   switch (type) {

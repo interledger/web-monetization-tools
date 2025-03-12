@@ -1,14 +1,17 @@
 ._wm_tools_banner {
   width: 100vw;
+  max-width: 1024px;
   box-sizing: border-box;
   position: fixed;
-  left: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
   padding: 10px 25px;
   padding-bottom: 30px;
   z-index: 99998; /* needs to be 1 lower then the widget, to handle overlap */
   text-align: justify;
   overflow: hidden;
   font-family: var(--wmt-banner-font), sans-serif;
+  font-size: calc(var(--wmt-banner-font-size)* 1px);
 }
 
 ._wm_tools_banner_header {
@@ -23,8 +26,12 @@
 }
 
 ._wm_tools_banner h5 {
-  font-size: 1rem;
+  font-size: calc((var(--wmt-banner-font-size) + 2)*1px);
   margin: 15px 0;
+}
+
+._wm_tools_banner h5 span {
+  font-size: calc((var(--wmt-banner-font-size) + 2)*1px);
 }
 
 ._wm_tools_banner_top {
@@ -47,6 +54,9 @@
   animation: slideUp 3s ease-in-out 2s forwards;
 }
 
+._wm_link {
+  margin-top: 8px;
+}
 ._wm_link,
 ._wm_link a {
   display: flex;

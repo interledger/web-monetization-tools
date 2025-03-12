@@ -4,16 +4,21 @@ import { CornerType, SlideAnimationType, PositionType } from './types.js'
 export const validConfigTypes = ['button', 'banner', 'widget']
 
 export const textColorPresets = ['#ffffff', '#000000']
+export const triggerColorPresets = ['#ffffff', '#000000', '#096b63']
 export const backgroundColorPresets = [
-  '#ff808c',
+  '#ffffff',
   '#4ec6c0',
-  '#a2bddb',
   '#f8c6db',
   '#f69656',
-  '#93e5d6',
   '#7f76b2'
 ]
-export const FontsType = ['Arial', 'Open Sans', 'Cookie', 'Titillium Web']
+export const FontsType = [
+  'Arial',
+  'Inherit',
+  'Open Sans',
+  'Cookie',
+  'Titillium Web'
+]
 
 export const bgColors = {
   button: 'from-wm-green to-wm-green-fade',
@@ -50,11 +55,15 @@ export const widgetControlOptions = [
   },
   {
     value: 'buttonbackground',
-    label: 'Btn background'
+    label: 'Button background'
   },
   {
     value: 'buttontext',
-    label: 'Btn Text'
+    label: 'Button Text'
+  },
+  {
+    value: 'trigger',
+    label: 'Trigger & Icon'
   }
 ]
 
@@ -104,17 +113,17 @@ export const availableTools = [
     link: 'create/banner',
     tooltip: tooltips.banner,
     description:
-      "The banner informs visitors who don't have the Web Monetization extension active, with a call-to-action linking to the extension or providing details about the options available. It also adds a payment pointer to your site."
+      "The banner informs visitors who don't have the Web Monetization extension active, with a call-to-action linking to the extension or providing details about the options available. It also adds your wallet address for your site to be monetized."
   },
   {
-    enabled: true,
+    enabled: false,
     title: 'Widget',
     image: 'widget_representation.svg',
     bgColor: 'from-wm-red to-wm-red-fade',
     link: 'create/widget',
     tooltip: tooltips.widget,
     description:
-      'You can add a widget to provide a brief explanation or description, along with a donation or one-time payment option, even for users without the Web Monetization extension.'
+      'You can add a widget to provide a brief explanation or description, along with a donation or one-time payment option, even for users without the Web Monetization extension. It also adds your wallet address for your site to be monetized.'
   },
   {
     enabled: false,

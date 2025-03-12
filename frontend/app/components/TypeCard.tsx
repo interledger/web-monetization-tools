@@ -20,7 +20,7 @@ export const TypeCard = ({
   bgColor
 }: TypeCardProps) => {
   return (
-    <div className="flex flex-col shrink-0 bg-white rounded-lg w-80 p-6">
+    <div className="flex flex-col shrink-0 bg-white rounded-lg w-80 p-6 border border-wm-green-shade">
       <div className={cx('flex py-6 rounded-lg bg-gradient-to-r', bgColor)}>
         <img
           className="max-h-24 mx-auto"

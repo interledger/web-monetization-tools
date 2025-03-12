@@ -30,6 +30,7 @@ services:
         VITE_SCRIPT_API_URL: ${SCRIPT_API_URL}
         VITE_SCRIPT_FRONTEND_URL: ${SCRIPT_FRONTEND_URL}
         VITE_SCRIPT_ILPAY_URL: ${SCRIPT_ILPAY_URL}
+        VITE_INIT_SCRIPT_URL: ${SCRIPT_EMBED_URL}
     ports:
       - '5100:5100'
     expose:
@@ -40,6 +41,7 @@ services:
       API_URL: ${API_URL}
       ILPAY_URL: ${SCRIPT_ILPAY_URL}
       FRONTEND_URL: ${SCRIPT_FRONTEND_URL}
+      INIT_SCRIPT_URL: ${SCRIPT_EMBED_URL}
     networks:
       - wm-tools
     depends_on:

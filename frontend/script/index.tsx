@@ -3,7 +3,10 @@ const FRONTEND_URL = import.meta.env.VITE_SCRIPT_FRONTEND_URL
 const API_URL = import.meta.env.VITE_SCRIPT_API_URL
 const ILPAY_URL = import.meta.env.VITE_SCRIPT_ILPAY_URL
 
-let paramTypes: string[] | undefined, paramWallet: string | undefined, urlWallet
+let paramTypes: string[] | undefined,
+  paramWallet: string | undefined,
+  paramTag: string = 'default',
+  urlWallet
 
 // TODO: Have a defined interface for the config
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -17,6 +20,7 @@ if (currentScript) {
   const params = new URLSearchParams(scriptUrl.search)
   paramTypes = (params.get('types') || '').split('|')
   paramWallet = params.get('wa') || undefined
+  paramTag = params.get('tag') || 'default'
   urlWallet = encodeURIComponent(params.get('wa') || '')
 }
 
@@ -25,7 +29,7 @@ if (!paramTypes || !paramWallet) {
   throw 'Missing parameters! Could not initialise WM Tools.'
 }
 
-fetch(`${API_URL}tools/${urlWallet}`)
+fetch(`${API_URL}tools/${urlWallet}/${paramTag}`)
   .then((response) => response.json())
   .then((resp) => {
     const config = resp
@@ -91,9 +95,14 @@ const getFontFamily = (family: string, forElement: string = 'banner') => {
     currentFontFamily.remove()
   }
 
-  let selectedFont = 'Arial'
+  let selectedFont = 'inherit'
   if (allowedFonts.indexOf(family) != -1) {
     selectedFont = family
+  }
+
+  // skip injecting of font if set to inherit
+  if (selectedFont == 'inherit') {
+    return
   }
 
   const styleObj = document.createElement('link') as HTMLLinkElement
@@ -134,28 +143,46 @@ const drawElement = (
     switch (type) {
       case 'widget': {
         const font = getFontFamily(config.widgetFontName, 'widget')
-        shadowHost.style.setProperty('--wmt-widget-font', font.selectedFont)
+        shadowHost.style.setProperty(
+          '--wmt-widget-font',
+          font?.selectedFont ? font.selectedFont : 'inherit'
+        )
+        shadowHost.style.setProperty(
+          '--wmt-widget-font-size',
+          config.widgetFontSize
+        )
         const css = getCSSFile('css/widget.css')
         const element = drawWidget(walletAddress, config)
         shadowRoot.appendChild(css)
         shadowRoot.appendChild(element)
-        // font family needs to be outside of the shadow DOM
-        document.body.appendChild(font.fontFamily)
+        if (font?.fontFamily) {
+          // font family needs to be outside of the shadow DOM
+          document.body.appendChild(font.fontFamily)
+        }
         document.body.appendChild(shadowHost)
         break
       }
       case 'banner':
       default:
         const font = getFontFamily(config.bannerFontName, 'banner')
-        shadowHost.style.setProperty('--wmt-banner-font', font.selectedFont)
+        shadowHost.style.setProperty(
+          '--wmt-banner-font',
+          font?.selectedFont ? font.selectedFont : 'inherit'
+        )
+        shadowHost.style.setProperty(
+          '--wmt-banner-font-size',
+          config.bannerFontSize
+        )
         const css = getCSSFile('css/banner.css')
         const element = drawBanner(config)
         if (element) {
           shadowRoot.appendChild(css)
           shadowRoot.appendChild(element)
         }
-        // font family needs to be outside of the shadow DOM
-        document.body.appendChild(font.fontFamily)
+        if (font?.fontFamily) {
+          // font family needs to be outside of the shadow DOM
+          document.body.appendChild(font.fontFamily)
+        }
         document.body.appendChild(shadowHost)
     }
   }
@@ -274,12 +301,16 @@ const drawWidget = (walletAddress: string, config: Config) => {
 
   element.appendChild(content)
 
+  const triggerIcon = config?.widgetTriggerIcon
+    ? config?.widgetTriggerIcon
+    : `${FRONTEND_URL}images/wm_logo_animated.svg`
+
   const trigger = document.createElement('div')
   trigger.className = '_wm_tools_widget_trigger'
-  trigger.style.backgroundColor = config.widgetBackgroundColor
+  trigger.style.backgroundColor = config.widgetTriggerBackgroundColor
   trigger.innerHTML = `
         <img
-          src="${FRONTEND_URL}images/wm_logo_animated.svg"
+          src="${triggerIcon}"
           alt="widget trigger"
         />`
   trigger.addEventListener('click', () => {
