@@ -1,6 +1,6 @@
 import type { ComponentPropsWithoutRef } from 'react'
 import { forwardRef, useId, useState } from 'react'
-import { HexColorPicker } from 'react-colorful'
+import { HexColorPicker, HexColorInput } from 'react-colorful'
 import { cx } from 'class-variance-authority'
 import ClickAwayListener from 'react-click-away-listener'
 import {
@@ -96,13 +96,23 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
               <div
                 className={cx(
                   'absolute border border-gray-400 p-1 -mt-8 ml-8 bg-gray-200 rounded-lg z-10',
-                  displayColorpicker ? 'flex' : 'hidden'
+                  displayColorpicker ? 'flex flex-col' : 'hidden'
                 )}
               >
+                <style>{`.react-colorful__last-control { border-radius: 0; }`}</style>
                 <HexColorPicker
                   color={String(value)}
                   onChange={(color) => updateColor(color)}
                 />
+                <div className="flex items-center justify-center p-2 bg-white border-t border-gray-300">
+                  <span className="text-gray-600 mr-2">#</span>
+                  <HexColorInput
+                    color={String(value)}
+                    onChange={(color) => updateColor(color)}
+                    className="w-24 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+                    placeholder="000000"
+                  />
+                </div>
               </div>
             </ClickAwayListener>
           </div>
