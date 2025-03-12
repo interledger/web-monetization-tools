@@ -57,7 +57,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   const defaultConfig: ElementConfigType = apiResponse?.payload?.default
 
   const ilpayUrl = process.env.ILPAY_URL || ''
-  const scriptInitUrl = process.env.SCRIPT_EMBED_URL || ''
+  const scriptInitUrl = process.env.INIT_SCRIPT_URL || ''
 
   return {
     elementType,
