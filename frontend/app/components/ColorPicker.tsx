@@ -99,6 +99,7 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
                   displayColorpicker ? 'flex flex-col' : 'hidden'
                 )}
               >
+                <style>{`.react-colorful__last-control { border-radius: 0; }`}</style>
                 <HexColorPicker
                   color={String(value)}
                   onChange={(color) => updateColor(color)}
