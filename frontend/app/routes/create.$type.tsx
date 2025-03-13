@@ -270,6 +270,7 @@ export default function Create() {
         errors={response?.errors}
         toolConfig={toolConfig}
         setToolConfig={setToolConfig}
+        fullConfig={fullConfig}
       />
       <InfoModal
         title="Available configs"
@@ -315,7 +316,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     return json({ errors, apiResponse, displayScript, intent }, { status: 200 })
   } else if (intent == 'newversion') {
-    const result = versionSchema.merge(walletSchema).safeParse(formData)
+    const result = versionSchema
+      .merge(walletSchema)
+      .merge(fullConfigSchema)
+      .safeParse(formData)
 
     if (!result.success) {
       errors.fieldErrors = result.error.flatten().fieldErrors
@@ -327,6 +331,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     const payload = result.data
     const versionName = payload.version.replaceAll(' ', '-')
+    const configKeys = Object.keys(JSON.parse(payload.fullconfig))
+    if (configKeys.indexOf(versionName) !== -1) {
+      errors.fieldErrors = { version: ['Already exists'] }
+      return json(
+        { errors, apiResponse, displayScript, intent },
+        { status: 400 }
+      )
+    }
     apiResponse = await ApiClient.createUserConfig(
       versionName,
       payload.walletAddress
