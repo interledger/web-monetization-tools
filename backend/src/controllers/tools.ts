@@ -225,10 +225,13 @@ const sanitizeConfigFields = <T extends Partial<SanitizedFields>>(
       const sanitized = sanitizeHtml(decoded, {
         allowedAttributes: {}
       })
-      if (sanitized !== config[field]) {
+      const decodedSanitized = he.decode(sanitized)
+      // compare decoded versions to check for malicious content
+      if (decodedSanitized !== decoded) {
         throw new Error(`Invalid HTML in field: ${field}`)
       }
-      config[field] = sanitized
+
+      config[field] = decodedSanitized
     }
   }
   return config
