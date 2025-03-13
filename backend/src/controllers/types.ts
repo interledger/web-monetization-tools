@@ -51,5 +51,19 @@ export interface ConfigVersions {
     css: string
     walletAddress: string
     version?: string
+    tag?: string // when creating a new config
   }
+}
+
+export type SanitizedFields = {
+bannerTitleText?: string;
+bannerDescriptionText?: string;
+widgetTitleText?: string;
+widgetDescriptionText?: string;
+widgetButtonText?: string;
+buttonText?: string;
+buttonDescriptionText?: string;
+walletAddress?: string;
+tag?: string;
+version?: string;
 }

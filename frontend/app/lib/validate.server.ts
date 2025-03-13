@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { CornerType, PositionType, SlideAnimationType } from './types.js'
+import { isWalletAddress } from './utils.js'
 
 const rangeError = { message: 'Value has to be between 16 and 24' }
 
@@ -36,7 +37,7 @@ function toWalletAddressUrl(s: string): string {
 
 const isValidWalletAddress = async (
   walletAddressUrl: string
-): Promise<void> => {
+): Promise<boolean> => {
   const response = await fetch(walletAddressUrl, {
     headers: {
       Accept: 'application/json'
@@ -50,11 +51,14 @@ const isValidWalletAddress = async (
   }
 
   const msgInvalidWalletAddress = 'Provided URL is not a valid wallet address.'
-  await response.json().catch((error) => {
+  const json = await response.json().catch((error) => {
     throw new Error(msgInvalidWalletAddress, { cause: error })
   })
+  if (!isWalletAddress(json)) {
+    throw new Error(msgInvalidWalletAddress);
+  }
 
-  Promise.resolve()
+  return true;
 }
 
 export const versionSchema = z.object({

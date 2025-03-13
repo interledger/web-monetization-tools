@@ -1,5 +1,5 @@
 import React from 'react'
-import { CornerType, ElementConfigType } from './types.js'
+import { CornerType, ElementConfigType, WalletAddress } from './types.js'
 
 const getSelectedFont = (name: string) => {
   switch (name) {
@@ -323,3 +323,18 @@ export const getWebMonetizationLink = () => {
 export const capitalizeFirstLetter = (string: string): string => {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
+
+export const isWalletAddress = (o: WalletAddress): o is WalletAddress => {
+  return !!(
+    o.id &&
+    typeof o.id === 'string' &&
+    o.assetScale &&
+    typeof o.assetScale === 'number' &&
+    o.assetCode &&
+    typeof o.assetCode === 'string' &&
+    o.authServer &&
+    typeof o.authServer === 'string' &&
+    o.resourceServer &&
+    typeof o.resourceServer === 'string'
+  );
+};

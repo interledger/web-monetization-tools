@@ -2,6 +2,7 @@ import sanitizeHtml from 'sanitize-html'
 import type { Request, Response } from 'express'
 import { PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
 import _ from 'underscore'
+import he from 'he';
 import {
   filterDeepProperties,
   getDefaultData,
@@ -12,6 +13,7 @@ import { S3FileNotFoundError } from '../services/errors.js'
 import {
   ConfigVersions,
   CreateConfigRequest,
+  SanitizedFields,
   SaveUserConfigRequest
 } from './types.js'
 
@@ -35,16 +37,12 @@ export const createUserConfig = async (req: Request, res: Response) => {
       throw 'Wallet address is required'
     }
     const defaultData = await getDefaultData()
-    const defaultDataContent = JSON.parse(defaultData).default
+    const defaultDataContent: ConfigVersions[keyof ConfigVersions] & { walletAddress: string } = JSON.parse(defaultData).default
     defaultDataContent.walletAddress = decodeURIComponent(
       `https://${data.walletAddress}`
     )
 
-    try {
-      sanitizeConfigFields({ ...defaultDataContent, tag })
-    } catch (e) {
-      throw e
-    }
+    sanitizeConfigFields({ ...defaultDataContent, tag })
 
     const { s3, params } = getS3AndParams(data.walletAddress)
 
@@ -109,13 +107,9 @@ export const saveUserConfig = async (req: Request, res: Response) => {
 
     // sanitize all versions/tags in the config
     Object.keys(fullConfig).forEach((key) => {
-      try {
         if (typeof fullConfig[key] === 'object') {
           fullConfig[key] = sanitizeConfigFields(fullConfig[key])
         }
-      } catch (e) {
-        throw e
-      }
     })
 
     const filteredData = filterDeepProperties(fullConfig)
@@ -206,8 +200,8 @@ export const getUserConfigByTag = async (req: Request, res: Response) => {
   }
 }
 
-const sanitizeConfigFields = (config: any) => {
-  const fieldsToSanitize = [
+const sanitizeConfigFields = <T extends Partial<SanitizedFields>>(config: T): T => {
+  const fieldsToSanitize: Array<keyof SanitizedFields> = [
     'bannerTitleText',
     'bannerDescriptionText',
     'widgetTitleText',
@@ -221,9 +215,11 @@ const sanitizeConfigFields = (config: any) => {
   ]
 
   for (const field of fieldsToSanitize) {
-    if (config[field]) {
-      const sanitized = sanitizeHtml(config[field], {
-        allowedTags: ['b', 'i', 'em', 'strong']
+    const value = config[field]
+    if (value) {
+      const decoded = he.decode(value)
+      const sanitized = sanitizeHtml(decoded, {
+        allowedAttributes: {},
       })
       if (sanitized !== config[field]) {
         throw new Error(`Invalid HTML in field: ${field}`)
