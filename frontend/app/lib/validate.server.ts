@@ -75,3 +75,39 @@ export const getElementSchema = (type: string) => {
       return createButtonSchema
   }
 }
+
+export const validateForm = (
+  formData: {
+    [k: string]: FormDataEntryValue
+  },
+  elementType?: string
+) => {
+  const intent = formData?.intent
+  let result
+
+  if (intent == 'import') {
+    result = walletSchema.safeParse(formData)
+  } else if (intent == 'newversion') {
+    result = versionSchema.merge(walletSchema).safeParse(formData)
+  } else {
+    let currentSchema
+
+    switch (elementType) {
+      case 'button':
+        currentSchema = createButtonSchema
+        break
+      case 'widget':
+        currentSchema = createWidgetSchema
+        break
+      case 'banner':
+      default:
+        currentSchema = createBannerSchema
+    }
+    result = currentSchema
+      .merge(fullConfigSchema)
+      .safeParse(Object.assign(formData, { ...{ elementType } }))
+  }
+  const payload = result.data as unknown as any
+
+  return { result, payload }
+}
