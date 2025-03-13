@@ -1,3 +1,4 @@
+import sanitizeHtml from 'sanitize-html'
 import type { Request, Response } from 'express'
 import { PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
 import _ from 'underscore'
@@ -8,6 +9,11 @@ import {
   streamToString
 } from '../services/utils.js'
 import { S3FileNotFoundError } from '../services/errors.js'
+import {
+  ConfigVersions,
+  CreateConfigRequest,
+  SaveUserConfigRequest
+} from './types.js'
 
 export const getDefault = async (_: Request, res: Response) => {
   try {
@@ -22,7 +28,7 @@ export const getDefault = async (_: Request, res: Response) => {
 
 export const createUserConfig = async (req: Request, res: Response) => {
   try {
-    const data = req.body
+    const data: CreateConfigRequest = req.body
     const tag = data.version || data.tag
 
     if (!data.walletAddress) {
@@ -33,6 +39,12 @@ export const createUserConfig = async (req: Request, res: Response) => {
     defaultDataContent.walletAddress = decodeURIComponent(
       `https://${data.walletAddress}`
     )
+
+    try {
+      sanitizeConfigFields({ ...defaultDataContent, tag })
+    } catch (e) {
+      throw e
+    }
 
     const { s3, params } = getS3AndParams(data.walletAddress)
 
@@ -85,7 +97,7 @@ export const createUserConfig = async (req: Request, res: Response) => {
 
 export const saveUserConfig = async (req: Request, res: Response) => {
   try {
-    const data = req.body
+    const data: SaveUserConfigRequest = req.body
 
     if (!data.walletAddress) {
       throw 'Wallet address is required'
@@ -93,14 +105,24 @@ export const saveUserConfig = async (req: Request, res: Response) => {
 
     const { s3, params } = getS3AndParams(data.walletAddress)
 
-    // filter data so we are saving only config and none of the extra params received
-    const fullConfig = JSON.parse(data?.fullconfig)
+    const fullConfig: ConfigVersions = JSON.parse(data?.fullconfig)
+
+    // sanitize all versions/tags in the config
+    Object.keys(fullConfig).forEach((key) => {
+      try {
+        if (typeof fullConfig[key] === 'object') {
+          fullConfig[key] = sanitizeConfigFields(fullConfig[key])
+        }
+      } catch (e) {
+        throw e
+      }
+    })
+
     const filteredData = filterDeepProperties(fullConfig)
     const fileContent = JSON.stringify(filteredData)
     const extendedParams = { ...params, Body: fileContent }
 
     await s3.send(new PutObjectCommand(extendedParams))
-
     res.status(200).send(filteredData)
   } catch (err) {
     console.log(err)
@@ -182,6 +204,34 @@ export const getUserConfigByTag = async (req: Request, res: Response) => {
       res.status(500).send('An error occurred while fetching data')
     }
   }
+}
+
+const sanitizeConfigFields = (config: any) => {
+  const fieldsToSanitize = [
+    'bannerTitleText',
+    'bannerDescriptionText',
+    'widgetTitleText',
+    'widgetDescriptionText',
+    'widgetButtonText',
+    'buttonText',
+    'buttonDescriptionText',
+    'walletAddress',
+    'tag',
+    'version'
+  ]
+
+  for (const field of fieldsToSanitize) {
+    if (config[field]) {
+      const sanitized = sanitizeHtml(config[field], {
+        allowedTags: ['b', 'i', 'em', 'strong']
+      })
+      if (sanitized !== config[field]) {
+        throw new Error(`Invalid HTML in field: ${field}`)
+      }
+      config[field] = sanitized
+    }
+  }
+  return config
 }
 
 export default {

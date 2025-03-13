@@ -4,8 +4,58 @@ import { CornerType, PositionType, SlideAnimationType } from './types.js'
 const rangeError = { message: 'Value has to be between 16 and 24' }
 
 export const walletSchema = z.object({
-  walletAddress: z.string().min(1, { message: 'Wallet address is required' })
+  walletAddress: z
+    .string()
+    .min(1, { message: 'Wallet address is required' })
+    .superRefine(async (url, ctx) => {
+      if (url.length === 0) return
+
+      try {
+        const parsed = new URL(toWalletAddressUrl(url))
+        if (parsed.protocol !== 'https:') {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Wallet address must use HTTPS protocol'
+          })
+          return
+        }
+
+        await isValidWalletAddress(parsed.toString())
+      } catch {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Invalid wallet address format'
+        })
+      }
+    })
 })
+
+function toWalletAddressUrl(s: string): string {
+  return s.startsWith('$') ? s.replace('$', 'https://') : s
+}
+
+const isValidWalletAddress = async (
+  walletAddressUrl: string
+): Promise<void> => {
+  const response = await fetch(walletAddressUrl, {
+    headers: {
+      Accept: 'application/json'
+    }
+  })
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error('This wallet address does not exist.')
+    }
+    throw new Error('Failed to fetch wallet address.')
+  }
+
+  const msgInvalidWalletAddress = 'Provided URL is not a valid wallet address.'
+  await response.json().catch((error) => {
+    throw new Error(msgInvalidWalletAddress, { cause: error })
+  })
+
+  Promise.resolve()
+}
 
 export const versionSchema = z.object({
   version: z.string().min(1, { message: 'Version is required' })

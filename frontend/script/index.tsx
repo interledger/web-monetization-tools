@@ -37,30 +37,6 @@ fetch(`${API_URL}tools/${urlWallet}/${paramTag}`)
   })
   .catch((error) => console.log(error))
 
-// functions
-const getWebMonetizationLink = () => {
-  const userAgent = navigator.userAgent
-
-  // Detect browsers
-  if (userAgent.includes('Firefox')) {
-    return `Get the&nbsp;<a rel="noindex nofollow" target="_blank" href="https://addons.mozilla.org/en-US/firefox/addon/web-monetization-extension/">extension</a>`
-  } else if (
-    userAgent.includes('Chrome') &&
-    !userAgent.includes('Edg') &&
-    !userAgent.includes('OPR')
-  ) {
-    return `Get the&nbsp;<a rel="noindex nofollow" target="_blank" href="https://chromewebstore.google.com/detail/web-monetization-extensio/oiabcfomehhigdepbbclppomkhlknpii">extension</a>`
-  } else if (userAgent.includes('Edg')) {
-    return `Get the&nbsp;<a rel="noindex nofollow" target="_blank" href="https://microsoftedge.microsoft.com/addons/detail/web-monetization-extensio/imjgemgmeoioefpmfefmffbboogighjl">extension</a>`
-    //   } else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
-    //     return "Safari"
-    //   } else if (userAgent.includes("MSIE") || userAgent.includes("Trident")) {
-    //     return "Internet Explorer"
-  } else {
-    return `Learn more&nbsp;<a rel="noindex nofollow" target="_blank" href="https://webmonetization.org/">here</a>.`
-  }
-}
-
 const createShadowDOM = () => {
   const shadowHost = document.createElement('div')
   const shadowRoot = shadowHost.attachShadow({ mode: 'open' })
@@ -232,30 +208,75 @@ const drawBanner = (config: Config) => {
 
   const bannerHeader = document.createElement('div')
   bannerHeader.className = '_wm_tools_banner_header'
+
   if (config.bannerTitleText) {
-    bannerHeader.innerHTML = `<h5>${config.bannerTitleText}</h5>`
+    const title = document.createElement('h5')
+    const titleText = document.createTextNode(config.bannerTitleText)
+    title.appendChild(titleText)
+    bannerHeader.appendChild(title)
   } else {
-    bannerHeader.innerHTML = `<span></span>`
+    const emptySpan = document.createElement('span')
+    bannerHeader.appendChild(emptySpan)
   }
+
   const closeButton = document.createElement('span')
-  closeButton.innerHTML = 'x'
+  const closeText = document.createTextNode('x')
+  closeButton.appendChild(closeText)
   closeButton.addEventListener('click', () => {
     sessionStorage.setItem('_wm_tools_closed_by_user', 'true')
     element.classList.add('_wm_tools_hidden')
   })
-  bannerHeader.append(closeButton)
+  bannerHeader.appendChild(closeButton)
+  element.appendChild(bannerHeader)
 
-  element.append(bannerHeader)
-  element.insertAdjacentHTML(
-    'beforeend',
-    `<span>${config.bannerDescriptionText}</span>`
-  )
-  element.insertAdjacentHTML(
-    'beforeend',
-    `<span class="_wm_link">${getWebMonetizationLink()}</span>`
-  )
+  // description text
+  const descriptionSpan = document.createElement('span')
+  const descriptionText = document.createTextNode(config.bannerDescriptionText)
+  descriptionSpan.appendChild(descriptionText)
+  element.appendChild(descriptionSpan)
+
+  // WebMonetization link
+  const linkSpan = document.createElement('span')
+  linkSpan.className = '_wm_link'
+
+  const linkElement = document.createElement('a')
+  linkElement.rel = 'noindex nofollow'
+  linkElement.target = '_blank'
+  linkElement.href = getWebMonetizationLinkHref()
+  const linkText = document.createTextNode(getWebMonetizationLinkText())
+  linkElement.appendChild(linkText)
+  linkSpan.appendChild(linkElement)
+  element.appendChild(linkSpan)
 
   return element
+}
+
+const getWebMonetizationLinkHref = () => {
+  const userAgent = navigator.userAgent
+  if (userAgent.includes('Firefox')) {
+    return 'https://addons.mozilla.org/en-US/firefox/addon/web-monetization-extension/'
+  } else if (
+    userAgent.includes('Chrome') &&
+    !userAgent.includes('Edg') &&
+    !userAgent.includes('OPR')
+  ) {
+    return 'https://chromewebstore.google.com/detail/web-monetization-extensio/oiabcfomehhigdepbbclppomkhlknpii'
+  } else if (userAgent.includes('Edg')) {
+    return 'https://microsoftedge.microsoft.com/addons/detail/web-monetization-extensio/imjgemgmeoioefpmfefmffbboogighjl'
+  }
+  return 'https://webmonetization.org/'
+}
+
+const getWebMonetizationLinkText = () => {
+  const userAgent = navigator.userAgent
+  if (
+    userAgent.includes('Firefox') ||
+    userAgent.includes('Chrome') ||
+    userAgent.includes('Edg')
+  ) {
+    return 'Get the extension'
+  }
+  return 'Learn more'
 }
 
 const drawWidget = (walletAddress: string, config: Config) => {
