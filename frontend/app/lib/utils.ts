@@ -336,5 +336,5 @@ export const isWalletAddress = (o: WalletAddress): o is WalletAddress => {
     typeof o.authServer === 'string' &&
     o.resourceServer &&
     typeof o.resourceServer === 'string'
-  );
-};
+  )
+}

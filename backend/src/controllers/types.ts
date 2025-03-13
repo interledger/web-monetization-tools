@@ -56,14 +56,14 @@ export interface ConfigVersions {
 }
 
 export type SanitizedFields = {
-bannerTitleText?: string;
-bannerDescriptionText?: string;
-widgetTitleText?: string;
-widgetDescriptionText?: string;
-widgetButtonText?: string;
-buttonText?: string;
-buttonDescriptionText?: string;
-walletAddress?: string;
-tag?: string;
-version?: string;
+  bannerTitleText?: string
+  bannerDescriptionText?: string
+  widgetTitleText?: string
+  widgetDescriptionText?: string
+  widgetButtonText?: string
+  buttonText?: string
+  buttonDescriptionText?: string
+  walletAddress?: string
+  tag?: string
+  version?: string
 }

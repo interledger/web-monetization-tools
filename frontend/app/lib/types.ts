@@ -79,9 +79,9 @@ export type ElementErrors = {
 }
 
 export interface WalletAddress {
-  id: string;
-  assetScale: number;
-  assetCode: string;
-  authServer: string;
-  resourceServer: string;
+  id: string
+  assetScale: number
+  assetCode: string
+  authServer: string
+  resourceServer: string
 }

@@ -55,10 +55,10 @@ const isValidWalletAddress = async (
     throw new Error(msgInvalidWalletAddress, { cause: error })
   })
   if (!isWalletAddress(json)) {
-    throw new Error(msgInvalidWalletAddress);
+    throw new Error(msgInvalidWalletAddress)
   }
 
-  return true;
+  return true
 }
 
 export const versionSchema = z.object({
