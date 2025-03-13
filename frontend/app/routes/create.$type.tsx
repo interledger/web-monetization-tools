@@ -32,14 +32,13 @@ import {
   encodeAndCompressParameters,
   getIlpayCss
 } from '~/lib/utils.js'
+import { validateForm } from '~/lib/validate.server'
+import { getSession } from '~/lib/session'
 import {
-  createBannerSchema,
-  createButtonSchema,
-  createWidgetSchema,
-  fullConfigSchema,
-  versionSchema,
-  walletSchema
-} from '~/lib/validate.server'
+  fetchQuote,
+  getValidWalletAddress,
+  initializePayment
+} from '~/lib/open-payments.server'
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const elementType = params.type
@@ -131,15 +130,10 @@ export default function Create() {
   useEffect(() => {
     const errors = Object.keys(response?.errors?.fieldErrors || {})
 
-    if (
-      response &&
-      response.apiResponse &&
-      response.apiResponse.payload &&
-      response.apiResponse.payload.grantRequired
-    ) {
-      /// code comes here
-    } else if (response && !errors.length && response.displayScript) {
+    if (response && !errors.length && response.displayScript) {
       setModalOpen(true)
+    } else if (response && response.grantRequired) {
+      console.log(response.grantRequired)
     } else if (
       response &&
       response.apiResponse &&
@@ -301,38 +295,71 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   let apiResponse: ApiResponse = { isFailure: true, newversion: false }
   let displayScript: boolean = false
+  let grantRequired: string | undefined
+  let opId: string
   const errors: ElementErrors = {
     fieldErrors: {},
     message: []
   }
 
-  if (intent == 'import') {
-    const result = walletSchema.safeParse(formData)
+  const actionResponse = {
+    errors,
+    apiResponse,
+    displayScript,
+    intent,
+    grantRequired
+  }
 
-    if (!result.success) {
-      errors.fieldErrors = result.error.flatten().fieldErrors
-      return json(
-        { errors, apiResponse, displayScript, intent },
-        { status: 400 }
-      )
+  // validate form data
+  const { result, payload } = validateForm(formData, elementType)
+  if (!result.success || !payload) {
+    errors.fieldErrors = result.error?.flatten().fieldErrors || {
+      walletAddress: undefined
     }
+    return json(actionResponse, { status: 400 })
+  }
 
-    const payload = result.data
+  // no need when importing
+  if (intent != 'import') {
+    const session = await getSession(request.headers.get('Cookie'))
+    opId = session.get('opId')
+
+    if (!opId) {
+      try {
+        const ownerWalletAddress: string = payload.walletAddress as string
+        const walletAddress = await getValidWalletAddress(ownerWalletAddress)
+        const quote = await fetchQuote({
+          senderAddress: walletAddress,
+          receiverAddress: walletAddress,
+          amount: 0.1, // 0 value fails on ILP side
+          note: 'Publisher Tools owner verification'
+        })
+
+        const redirectUrl = `${process.env.FRONTEND_URL}create/${elementType}/`
+        const grant = await initializePayment({
+          walletAddress: walletAddress.id,
+          quote: quote,
+          redirectUrl
+        })
+        actionResponse.grantRequired = grant.interact.redirect
+      } catch (err) {
+        console.log({ err })
+        errors.fieldErrors = {
+          walletAddress: ['Could not verify ownership of wallet address']
+        }
+        actionResponse.errors = errors
+      }
+
+      return json(actionResponse, { status: 200 })
+    }
+  }
+
+  if (intent == 'import') {
     apiResponse = await ApiClient.getUserConfig(payload.walletAddress)
 
-    return json({ errors, apiResponse, displayScript, intent }, { status: 200 })
+    actionResponse.apiResponse = apiResponse
+    return json(actionResponse, { status: 200 })
   } else if (intent == 'newversion') {
-    const result = versionSchema.merge(walletSchema).safeParse(formData)
-
-    if (!result.success) {
-      errors.fieldErrors = result.error.flatten().fieldErrors
-      return json(
-        { errors, apiResponse, displayScript, intent },
-        { status: 400 }
-      )
-    }
-
-    const payload = result.data
     const versionName = payload.version.replaceAll(' ', '-')
     apiResponse = await ApiClient.createUserConfig(
       versionName,
@@ -340,35 +367,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
     )
     apiResponse.newversion = versionName
 
-    return json({ errors, apiResponse, displayScript, intent }, { status: 200 })
+    actionResponse.apiResponse = apiResponse
+    return json(actionResponse, { status: 200 })
   } else {
-    let currentSchema
-
-    switch (elementType) {
-      case 'button':
-        currentSchema = createButtonSchema
-        break
-      case 'widget':
-        currentSchema = createWidgetSchema
-        break
-      case 'banner':
-      default:
-        currentSchema = createBannerSchema
-    }
-    const result = currentSchema
-      .merge(fullConfigSchema)
-      .safeParse(Object.assign(formData, { ...{ elementType } }))
-
-    if (!result.success) {
-      errors.fieldErrors = result.error.flatten().fieldErrors
-      return json(
-        { errors, apiResponse, displayScript, intent },
-        { status: 400 }
-      )
-    }
-
-    const payload = result.data
-
     if (payload.elementType == 'widget') {
       const css = await encodeAndCompressParameters(
         getIlpayCss(payload as unknown as ElementConfigType)
@@ -378,10 +379,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }
 
     apiResponse = await ApiClient.saveUserConfig(payload)
-    if (intent != 'remove') {
-      displayScript = true
-    }
 
-    return json({ errors, apiResponse, displayScript, intent }, { status: 200 })
+    actionResponse.apiResponse = apiResponse
+    actionResponse.displayScript = intent != 'remove' ? true : displayScript
+    return json(actionResponse, { status: 200 })
   }
 }

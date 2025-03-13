@@ -12,49 +12,55 @@ import { randomUUID } from 'crypto'
 
 async function createClient() {
   return await createAuthenticatedClient({
-    keyId: process.env.KEY_ID!,
-    privateKey: Buffer.from(process.env.PRIVATE_KEY!, 'base64'),
-    walletAddressUrl: process.env.WALLET_ADDRESS!
+    keyId: process.env.OP_KEY_ID!,
+    privateKey: Buffer.from(process.env.OP_PRIVATE_KEY!, 'base64'),
+    walletAddressUrl: process.env.OP_WALLET_ADDRESS!
   })
+}
+
+export async function getValidWalletAddress(walletAddress: string) {
+  const opClient = await createClient()
+  const response = await getWalletAddress(walletAddress, opClient)
+  return response
 }
 
 type QuoteResponse = Quote & { incomingPaymentGrantToken: string }
 
-export async function fetchQuote(
-  args: {
-    walletAddress: string
-    receiver: string
-    amount: number
-    note?: string
-  },
-  receiver: WalletAddress
-): Promise<QuoteResponse> {
+export async function fetchQuote({
+  senderAddress,
+  receiverAddress,
+  amount,
+  note
+}: {
+  senderAddress: WalletAddress
+  receiverAddress: WalletAddress
+  amount: number
+  note?: string
+}): Promise<QuoteResponse> {
   const opClient = await createClient()
-  const walletAddress = await getWalletAddress(args.walletAddress, opClient)
-
   const amountObj = {
     value: BigInt(
-      (args.amount * 10 ** walletAddress.assetScale).toFixed()
+      (amount * 10 ** senderAddress.assetScale).toFixed()
     ).toString(),
-    assetCode: walletAddress.assetCode,
-    assetScale: walletAddress.assetScale
+    assetCode: senderAddress.assetCode,
+    assetScale: senderAddress.assetScale
   }
 
   const incomingPaymentGrant = await getIncomingPaymentGrant(
-    receiver.authServer,
+    receiverAddress.authServer,
     opClient
   )
 
   // create incoming payment without incoming amount
   const incomingPayment = await createIncomingPayment({
     accessToken: incomingPaymentGrant.access_token.value,
-    walletAddress: receiver,
-    note: args.note || '',
+    walletAddress: receiverAddress,
+    note: note || '',
     opClient
   })
 
   const quoteGrant = await getQuoteGrant({
-    authServer: walletAddress.authServer,
+    authServer: senderAddress.authServer,
     opClient: opClient
   })
 
@@ -66,19 +72,20 @@ export async function fetchQuote(
   const quote = await opClient.quote
     .create(
       {
-        url: new URL(walletAddress.id).origin,
+        url: new URL(senderAddress.id).origin,
         accessToken: quoteGrant.access_token.value
       },
       {
         method: 'ilp',
-        walletAddress: walletAddress.id,
+        walletAddress: senderAddress.id,
         receiver: incomingPayment.id,
         debitAmount: amountObj
       }
     )
-    .catch(() => {
+    .catch((error) => {
+      console.log({ error })
       throw new Error(
-        `Could not create quote for receiver ${receiver.publicName}.`
+        `Could not create quote for receiver ${receiverAddress.publicName}.`
       )
     })
 
@@ -204,6 +211,7 @@ export async function createRequestPayment(args: {
 export async function initializePayment(args: {
   walletAddress: string
   quote: Quote
+  redirectUrl?: string
 }) {
   const opClient = await createClient()
   const walletAddress = await getWalletAddress(args.walletAddress, opClient)
@@ -216,7 +224,8 @@ export async function initializePayment(args: {
     receiveAmount: args.quote.receiveAmount,
     nonce: clientNonce,
     paymentId: paymentId,
-    opClient
+    opClient,
+    redirectUrl: args.redirectUrl
   })
 
   return outgoingPaymentGrant
@@ -238,7 +247,7 @@ type CreateOutgoingPaymentParams = {
 }
 
 async function createOutgoingPaymentGrant(
-  params: CreateOutgoingPaymentParams
+  params: CreateOutgoingPaymentParams & { redirectUrl?: string }
 ): Promise<PendingGrant> {
   const {
     walletAddress,
@@ -246,9 +255,10 @@ async function createOutgoingPaymentGrant(
     receiveAmount,
     nonce,
     paymentId,
-    opClient
+    opClient,
+    redirectUrl
   } = params
-
+console.log({xxx: `${redirectUrl ?? process.env.OP_REDIRECT_URL}?paymentId=${paymentId}`})
   const grant = await opClient.grant
     .request(
       {
@@ -272,13 +282,14 @@ async function createOutgoingPaymentGrant(
           start: ['redirect'],
           finish: {
             method: 'redirect',
-            uri: `${process.env.REDIRECT_URL}?paymentId=${paymentId}`,
+            uri: `${redirectUrl ?? process.env.OP_REDIRECT_URL}?paymentId=${paymentId}`,
             nonce: nonce || ''
           }
         }
       }
     )
-    .catch(() => {
+    .catch((error) => {
+      console.log({ error })
       throw new Error('Could not retrieve outgoing payment grant.')
     })
 
@@ -437,7 +448,8 @@ export async function getWalletAddress(
     .get({
       url: url
     })
-    .catch(() => {
+    .catch((error) => {
+      console.log({ error })
       throw new Error('Invalid wallet address.')
     })
 
