@@ -19,6 +19,7 @@ import { useEffect, useState } from 'react'
 import stylesheet from '~/tailwind.css?url'
 import { Button, Footer, Header, Snackbar } from './components/index.js'
 import { XCircle } from './components/icons.js'
+import { cx } from 'class-variance-authority'
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url)
@@ -56,7 +57,14 @@ export default function App() {
       </head>
       <body className="h-screen">
         <main className="h-auto min-h-full flex flex-col justify-between">
-          <div className="h-full flex flex-col  bg-[url(/images/bg-tile.svg)] bg-[auto_25em]">
+          <div
+            className={cx(
+              'h-full flex flex-col',
+              !contentOnly
+                ? 'bg-[url(/images/bg-tile.svg)] bg-[auto_25em]'
+                : 'bg-transparent'
+            )}
+          >
             {!contentOnly && <Header />}
             <Outlet />
           </div>

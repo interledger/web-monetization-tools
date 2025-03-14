@@ -13,6 +13,7 @@ type NewVersionModalProps = {
   onClose: () => void
   toolConfig: ElementConfigType
   setToolConfig: React.Dispatch<React.SetStateAction<ElementConfigType>>
+  fullConfig?: Record<string, ElementConfigType>
 }
 
 export const NewVersionModal = ({
@@ -22,7 +23,8 @@ export const NewVersionModal = ({
   errors,
   isSubmitting,
   toolConfig,
-  setToolConfig
+  setToolConfig,
+  fullConfig
 }: NewVersionModalProps) => {
   const [versionName, setVersionName] = useState('')
 
@@ -76,6 +78,11 @@ export const NewVersionModal = ({
                           withBorder
                         />
                       </div>
+                      <input
+                        type="hidden"
+                        name="fullconfig"
+                        value={JSON.stringify(fullConfig)}
+                      />
                     </div>
                     <div className="flex justify-end space-x-4">
                       <Button
