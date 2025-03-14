@@ -95,6 +95,7 @@ export default function Create() {
   const [versionOptions, setVersionOptions] = useState<SelectOption[]>([
     { label: 'Default', value: 'default' }
   ])
+  const [configUpdateTrigger, setConfigUpdateTrigger] = useState(0)
 
   const wa = (toolConfig?.walletAddress || '')
     .replace('$', '')
@@ -149,10 +150,12 @@ export default function Create() {
       setVersionOptions(versionLabels)
       setFullConfig(response.apiResponse.payload)
 
-      const selVersion = response.apiResponse.newversion
-      setSelectedVersion(selVersion)
       setNewVersionModalOpen(false)
       setInfoModalOpen(true)
+      const selVersion = response.apiResponse.newversion
+      setSelectedVersion(selVersion)
+      // make sure the update is triggered
+      setConfigUpdateTrigger((prev) => prev + 1)
     } else if (
       response &&
       response.apiResponse &&
@@ -169,11 +172,13 @@ export default function Create() {
       setVersionOptions(versionLabels)
 
       setFullConfig(response.apiResponse.payload)
-      setSelectedVersion('default')
       setImportModalOpen(false)
       if (response.intent != 'remove') {
         setInfoModalOpen(true)
       }
+      setSelectedVersion('default')
+      // make sure the update is triggered
+      setConfigUpdateTrigger((prev) => prev + 1)
     }
   }, [response])
 
@@ -190,7 +195,7 @@ export default function Create() {
       const config = fullConfig[selectedVersion]
       setToolConfig(config)
     }
-  }, [selectedVersion])
+  }, [selectedVersion, configUpdateTrigger])
 
   return (
     <div className="flex flex-col gap-6 min-w-128 max-w-prose mx-auto my-8">
@@ -270,6 +275,7 @@ export default function Create() {
         errors={response?.errors}
         toolConfig={toolConfig}
         setToolConfig={setToolConfig}
+        fullConfig={fullConfig}
       />
       <InfoModal
         title="Available configs"
@@ -315,7 +321,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     return json({ errors, apiResponse, displayScript, intent }, { status: 200 })
   } else if (intent == 'newversion') {
-    const result = versionSchema.merge(walletSchema).safeParse(formData)
+    const result = versionSchema
+      .merge(walletSchema)
+      .merge(fullConfigSchema)
+      .safeParse(formData)
 
     if (!result.success) {
       errors.fieldErrors = result.error.flatten().fieldErrors
@@ -327,6 +336,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     const payload = result.data
     const versionName = payload.version.replaceAll(' ', '-')
+    const configKeys = Object.keys(JSON.parse(payload.fullconfig))
+    if (configKeys.indexOf(versionName) !== -1) {
+      errors.fieldErrors = { version: ['Already exists'] }
+      return json(
+        { errors, apiResponse, displayScript, intent },
+        { status: 400 }
+      )
+    }
     apiResponse = await ApiClient.createUserConfig(
       versionName,
       payload.walletAddress
