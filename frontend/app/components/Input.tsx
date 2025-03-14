@@ -49,7 +49,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         <div
           className={cx(
-            'flex relative w-full p-2 h-9',
+            'flex relative w-full bg-white p-2 h-9',
             withBorder && 'border rounded-lg'
           )}
         >

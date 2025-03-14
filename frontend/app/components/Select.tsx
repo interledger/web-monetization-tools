@@ -104,7 +104,7 @@ export const Select = ({
               placeholder={placeholder}
             />
           ) : (
-            <Combobox.Button className="w-full max-h-8 h-8 border-none py-2 pl-3 pr-10 text-sm text-left text-gray-900 outline-none overflow-y-hidden">
+            <Combobox.Button className="w-full max-h-8 h-8 border-none py-2 pl-3 pr-10 text-sm text-left text-gray-900 outline-none whitespace-nowrap overflow-hidden text-ellipsis">
               <>{internalValue ? internalValue.label : placeholder}</>
             </Combobox.Button>
           )}
