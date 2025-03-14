@@ -260,23 +260,18 @@ const getWebMonetizationLinkHref = () => {
     !userAgent.includes('Edg') &&
     !userAgent.includes('OPR')
   ) {
-    return 'https://chromewebstore.google.com/detail/web-monetization-extensio/oiabcfomehhigdepbbclppomkhlknpii'
+    return 'https://chromewebstore.google.com/detail/web-monetization/oiabcfomehhigdepbbclppomkhlknpii'
   } else if (userAgent.includes('Edg')) {
-    return 'https://microsoftedge.microsoft.com/addons/detail/web-monetization-extensio/imjgemgmeoioefpmfefmffbboogighjl'
+    return 'https://microsoftedge.microsoft.com/addons/detail/web-monetization/imjgemgmeoioefpmfefmffbboogighjl'
   }
   return 'https://webmonetization.org/'
 }
 
 const getWebMonetizationLinkText = () => {
-  const userAgent = navigator.userAgent
-  if (
-    userAgent.includes('Firefox') ||
-    userAgent.includes('Chrome') ||
-    userAgent.includes('Edg')
-  ) {
-    return 'Get the extension'
-  }
-  return 'Learn more'
+  const href = getWebMonetizationLinkHref()
+  return href === 'https://webmonetization.org/'
+    ? 'Learn more'
+    : 'Get the extension'
 }
 
 const drawWidget = (walletAddress: string, config: Config) => {

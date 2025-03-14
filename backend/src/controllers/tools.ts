@@ -37,9 +37,8 @@ export const createUserConfig = async (req: Request, res: Response) => {
       throw 'Wallet address is required'
     }
     const defaultData = await getDefaultData()
-    const defaultDataContent: ConfigVersions[keyof ConfigVersions] & {
-      walletAddress: string
-    } = JSON.parse(defaultData).default
+    const defaultDataContent: ConfigVersions[keyof ConfigVersions] =
+      JSON.parse(defaultData).default
     defaultDataContent.walletAddress = decodeURIComponent(
       `https://${data.walletAddress}`
     )
@@ -205,11 +204,9 @@ export const getUserConfigByTag = async (req: Request, res: Response) => {
 const sanitizeConfigFields = <T extends Partial<SanitizedFields>>(
   config: T
 ): T => {
-  const fieldsToSanitize: Array<keyof SanitizedFields> = [
+  const textFields: Array<keyof SanitizedFields> = [
     'bannerTitleText',
-    'bannerDescriptionText',
     'widgetTitleText',
-    'widgetDescriptionText',
     'widgetButtonText',
     'buttonText',
     'buttonDescriptionText',
@@ -218,14 +215,39 @@ const sanitizeConfigFields = <T extends Partial<SanitizedFields>>(
     'version'
   ]
 
-  for (const field of fieldsToSanitize) {
+  const htmlFields: Array<keyof SanitizedFields> = [
+    'bannerDescriptionText',
+    'widgetDescriptionText'
+  ]
+
+  for (const field of textFields) {
     const value = config[field]
     if (value) {
       const decoded = he.decode(value)
-      const sanitized = sanitizeHtml(decoded, {
-        allowedAttributes: {}
+      const sanitizedText = sanitizeHtml(value, {
+        allowedTags: [],
+        allowedAttributes: {},
+        textFilter(text) {
+          return he.decode(text)
+        }
       })
-      const decodedSanitized = he.decode(sanitized)
+      if (sanitizedText !== decoded) {
+        throw new Error(`Invalid HTML in field: ${field}`)
+      }
+
+      config[field] = sanitizedText
+    }
+  }
+
+  for (const field of htmlFields) {
+    if (config[field]) {
+      const decoded = he.decode(config[field].replace(/&nbsp;/g, '').trim())
+      const sanitizedHTML = sanitizeHtml(decoded, {
+        allowedTags: [],
+        allowedAttributes: {},
+        allowProtocolRelative: false
+      })
+      const decodedSanitized = he.decode(sanitizedHTML)
       // compare decoded versions to check for malicious content
       if (decodedSanitized !== decoded) {
         throw new Error(`Invalid HTML in field: ${field}`)
