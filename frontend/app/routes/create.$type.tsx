@@ -3,6 +3,7 @@ import {
   Form,
   useActionData,
   useLoaderData,
+  useNavigate,
   useNavigation,
   useSubmit
 } from '@remix-run/react'
@@ -12,7 +13,8 @@ import {
   ImportModal,
   InfoModal,
   NewVersionModal,
-  ScriptModal
+  ScriptModal,
+  WalletOwnershipModal
 } from '~/components/modals/index.js'
 import {
   ErrorPanel,
@@ -23,8 +25,7 @@ import {
   ToolPreview
 } from '~/components/index.js'
 import { ApiClient, ApiResponse } from '~/lib/apiClient.js'
-import { type Message, messageStorage } from '~/lib/message.server.js'
-import { validConfigTypes } from '~/lib/presets.js'
+import { validConfigTypes, ModalType } from '~/lib/presets.js'
 import { tooltips } from '~/lib/tooltips.js'
 import { ElementConfigType, ElementErrors } from '~/lib/types.js'
 import {
@@ -33,7 +34,7 @@ import {
   getIlpayCss
 } from '~/lib/utils.js'
 import { validateForm } from '~/lib/validate.server'
-import { getSession } from '~/lib/session'
+import { commitSession, getSession } from '~/lib/session'
 import {
   fetchQuote,
   getValidWalletAddress,
@@ -46,10 +47,8 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   const url = new URL(request.url)
   const contentOnlyParam = url.searchParams.get('contentOnly')
 
-  const cookies = request.headers.get('cookie')
-
-  const session = await messageStorage.getSession(cookies)
-  const message = session.get('script') as Message
+  const session = await getSession(request.headers.get('Cookie'))
+  const walletAddress = session.get('wallet-address')
 
   // get default config
   const apiResponse: ApiResponse = await ApiClient.getDefaultConfig()
@@ -61,9 +60,9 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   return {
     elementType,
     defaultConfig,
-    message,
     ilpayUrl,
     scriptInitUrl,
+    walletAddress,
     contentOnlyParam
   }
 }
@@ -74,10 +73,12 @@ export default function Create() {
     defaultConfig,
     ilpayUrl,
     scriptInitUrl,
+    walletAddress,
     contentOnlyParam
   } = useLoaderData<typeof loader>()
   const response = useActionData<typeof action>()
   const { state } = useNavigation()
+  const navigate = useNavigate()
   const isSubmitting = state === 'submitting'
   const contentOnly = contentOnlyParam != null
 
@@ -85,11 +86,8 @@ export default function Create() {
   const [toolConfig, setToolConfig] = useState<ElementConfigType>(defaultConfig)
   const [fullConfig, setFullConfig] =
     useState<Record<string, ElementConfigType>>()
-  const [modalOpen, setModalOpen] = useState(false)
-  const [importModalOpen, setImportModalOpen] = useState(false)
-  const [newVersionModalOpen, setNewVersionModalOpen] = useState(false)
-  const [infoModalOpen, setInfoModalOpen] = useState(false)
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false)
+  const [modalOpen, setModalOpen] = useState<ModalType | undefined>()
+
   const [selectedVersion, setSelectedVersion] = useState('default')
   const [versionOptions, setVersionOptions] = useState<SelectOption[]>([
     { label: 'Default', value: 'default' }
@@ -113,7 +111,7 @@ export default function Create() {
       )
       setVersionOptions(filteredOptions)
       setSelectedVersion('default')
-      setConfirmModalOpen(false)
+      setModalOpen('confirm')
 
       const formData = new FormData()
       formData.append('intent', 'remove')
@@ -127,13 +125,19 @@ export default function Create() {
     }
   }
 
+  const onConfirmOwnership = () => {
+    if (response?.grantRequired) {
+      navigate(response.grantRequired)
+    }
+  }
+
   useEffect(() => {
     const errors = Object.keys(response?.errors?.fieldErrors || {})
 
     if (response && !errors.length && response.displayScript) {
-      setModalOpen(true)
+      setModalOpen('script')
     } else if (response && response.grantRequired) {
-      console.log(response.grantRequired)
+      setModalOpen('wallet-ownership')
     } else if (
       response &&
       response.apiResponse &&
@@ -152,8 +156,7 @@ export default function Create() {
 
       const selVersion = response.apiResponse.newversion
       setSelectedVersion(selVersion)
-      setNewVersionModalOpen(false)
-      setInfoModalOpen(true)
+      setModalOpen('info')
     } else if (
       response &&
       response.apiResponse &&
@@ -171,9 +174,9 @@ export default function Create() {
 
       setFullConfig(response.apiResponse.payload)
       setSelectedVersion('default')
-      setImportModalOpen(false)
+      setModalOpen(undefined)
       if (response.intent != 'remove') {
-        setInfoModalOpen(true)
+        setModalOpen('info')
       }
     }
   }, [response])
@@ -198,10 +201,10 @@ export default function Create() {
       <PageHeader
         title={`Create ${elementType}`}
         elementType={elementType}
-        setImportModalOpen={setImportModalOpen}
+        setImportModalOpen={() => setModalOpen('import')}
         link={`/${contentOnly ? '?contentOnly' : ''}`}
-        setNewVersionModalOpen={setNewVersionModalOpen}
-        setConfirmModalOpen={setConfirmModalOpen}
+        setNewVersionModalOpen={() => setModalOpen('new-version')}
+        setConfirmModalOpen={() => setModalOpen('confirm')}
         versionOptions={versionOptions}
         selectedVersion={selectedVersion}
         setSelectedVersion={setSelectedVersion}
@@ -251,23 +254,23 @@ export default function Create() {
         tooltip={tooltips.scriptModal}
         defaultType={elementType}
         scriptForDisplay={scriptToDisplay}
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
+        isOpen={modalOpen == 'script'}
+        onClose={() => setModalOpen(undefined)}
       />
       <ImportModal
         title="Import config from wallet address"
-        isOpen={importModalOpen}
+        isOpen={modalOpen == 'import'}
         isSubmitting={isSubmitting}
-        onClose={() => setImportModalOpen(false)}
+        onClose={() => setModalOpen(undefined)}
         toolConfig={toolConfig}
         setToolConfig={setToolConfig}
         errors={response?.errors}
       />
       <NewVersionModal
         title="Create a new version of your config"
-        isOpen={newVersionModalOpen}
+        isOpen={modalOpen == 'new-version'}
         isSubmitting={isSubmitting}
-        onClose={() => setNewVersionModalOpen(false)}
+        onClose={() => setModalOpen(undefined)}
         errors={response?.errors}
         toolConfig={toolConfig}
         setToolConfig={setToolConfig}
@@ -275,14 +278,21 @@ export default function Create() {
       <InfoModal
         title="Available configs"
         content={versionOptions.map((ver) => ver.value).join(', ')}
-        isOpen={infoModalOpen}
-        onClose={() => setInfoModalOpen(false)}
+        isOpen={modalOpen == 'info'}
+        onClose={() => setModalOpen(undefined)}
       />
       <ConfirmModal
         title={`Are you sure you want to remove ${selectedVersion}?`}
-        isOpen={confirmModalOpen}
-        onClose={() => setConfirmModalOpen(false)}
+        isOpen={modalOpen == 'confirm'}
+        onClose={() => setModalOpen(undefined)}
         onConfirm={onConfirm}
+      />
+      <WalletOwnershipModal
+        title={`Please confirm you are owner of `}
+        walletAddress={walletAddress}
+        isOpen={modalOpen == 'wallet-ownership'}
+        onClose={() => setModalOpen(undefined)}
+        onConfirm={onConfirmOwnership}
       />
     </div>
   )
@@ -321,18 +331,20 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   // no need when importing
   if (intent != 'import') {
+    const ownerWalletAddress: string = payload.walletAddress as string
+
     const session = await getSession(request.headers.get('Cookie'))
+    session.set('wallet-address', ownerWalletAddress)
     opId = session.get('opId')
 
     if (!opId) {
       try {
-        const ownerWalletAddress: string = payload.walletAddress as string
         const walletAddress = await getValidWalletAddress(ownerWalletAddress)
         const quote = await fetchQuote({
           senderAddress: walletAddress,
           receiverAddress: walletAddress,
           amount: 0.1, // 0 value fails on ILP side
-          note: 'Publisher Tools owner verification'
+          note: 'Publisher Tools wallet verification'
         })
 
         const redirectUrl = `${process.env.FRONTEND_URL}create/${elementType}/`
@@ -350,7 +362,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
         actionResponse.errors = errors
       }
 
-      return json(actionResponse, { status: 200 })
+      return json(actionResponse, {
+        status: 200,
+        headers: {
+          'Set-Cookie': await commitSession(session)
+        }
+      })
     }
   }
 

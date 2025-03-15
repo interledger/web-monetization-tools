@@ -9,8 +9,7 @@ const { getSession, commitSession, destroySession } =
       sameSite: 'none',
       secrets: [
         process.env.SESSION_COOKIE_SECRET_KEY || 'supersecretilpaystring'
-      ],
-      maxAge: 300
+      ]
     }
   })
 

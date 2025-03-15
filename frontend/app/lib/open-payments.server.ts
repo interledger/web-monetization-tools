@@ -258,7 +258,7 @@ async function createOutgoingPaymentGrant(
     opClient,
     redirectUrl
   } = params
-console.log({xxx: `${redirectUrl ?? process.env.OP_REDIRECT_URL}?paymentId=${paymentId}`})
+
   const grant = await opClient.grant
     .request(
       {
