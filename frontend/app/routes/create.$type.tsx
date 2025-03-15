@@ -3,7 +3,6 @@ import {
   Form,
   useActionData,
   useLoaderData,
-  useNavigate,
   useNavigation,
   useSubmit
 } from '@remix-run/react'
@@ -78,7 +77,6 @@ export default function Create() {
   } = useLoaderData<typeof loader>()
   const response = useActionData<typeof action>()
   const { state } = useNavigation()
-  const navigate = useNavigate()
   const isSubmitting = state === 'submitting'
   const contentOnly = contentOnlyParam != null
 
@@ -128,7 +126,7 @@ export default function Create() {
 
   const onConfirmOwnership = () => {
     if (response?.grantRequired) {
-      navigate(response.grantRequired)
+      window.location.href = response.grantRequired
     }
   }
 
@@ -313,7 +311,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   let apiResponse: ApiResponse = { isFailure: true, newversion: false }
   const displayScript: boolean = false
-  let grantRequired: string | undefined
+  let grantRequired: string = ''
   let opId: string
   const errors: ElementErrors = {
     fieldErrors: {},
@@ -389,10 +387,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
     const configKeys = Object.keys(JSON.parse(payload.fullconfig))
     if (configKeys.indexOf(versionName) !== -1) {
       errors.fieldErrors = { version: ['Already exists'] }
-      return json(
-        { errors, apiResponse, displayScript, intent },
-        { status: 400 }
-      )
+      actionResponse.errors = errors
+      return json(actionResponse, { status: 400 })
     }
     apiResponse = await ApiClient.createUserConfig(
       versionName,
