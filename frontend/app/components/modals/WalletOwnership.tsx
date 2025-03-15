@@ -42,7 +42,9 @@ export const WalletOwnershipModal = ({
                 className="font-semibold leading-6 text-lg text-center"
               >
                 {title}
-                <span className='flex w-full justify-center text-center'>{walletAddress}</span>
+                <span className="flex w-full justify-center text-center">
+                  {walletAddress}
+                </span>
               </Dialog.Title>
               <div className="mt-2">
                 <Form method="post" replace preventScrollReset>

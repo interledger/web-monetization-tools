@@ -34,7 +34,7 @@ import {
   getIlpayCss
 } from '~/lib/utils.js'
 import { validateForm } from '~/lib/validate.server'
-import { commitSession, getSession } from '~/lib/session'
+import { commitSession, getSession } from '~/lib/session.js'
 import {
   fetchQuote,
   getValidWalletAddress,
@@ -55,7 +55,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   const defaultConfig: ElementConfigType = apiResponse?.payload?.default
 
   const ilpayUrl = process.env.ILPAY_URL || ''
-  const scriptInitUrl = process.env.SCRIPT_EMBED_URL || ''
+  const scriptInitUrl = process.env.INIT_SCRIPT_URL || ''
 
   return {
     elementType,
@@ -92,6 +92,7 @@ export default function Create() {
   const [versionOptions, setVersionOptions] = useState<SelectOption[]>([
     { label: 'Default', value: 'default' }
   ])
+  const [configUpdateTrigger, setConfigUpdateTrigger] = useState(0)
 
   const wa = (toolConfig?.walletAddress || '')
     .replace('$', '')
@@ -154,9 +155,12 @@ export default function Create() {
       setVersionOptions(versionLabels)
       setFullConfig(response.apiResponse.payload)
 
+      setModalOpen('info')
+
       const selVersion = response.apiResponse.newversion
       setSelectedVersion(selVersion)
-      setModalOpen('info')
+      // make sure the update is triggered
+      setConfigUpdateTrigger((prev) => prev + 1)
     } else if (
       response &&
       response.apiResponse &&
@@ -178,6 +182,9 @@ export default function Create() {
       if (response.intent != 'remove') {
         setModalOpen('info')
       }
+      setSelectedVersion('default')
+      // make sure the update is triggered
+      setConfigUpdateTrigger((prev) => prev + 1)
     }
   }, [response])
 
@@ -194,7 +201,7 @@ export default function Create() {
       const config = fullConfig[selectedVersion]
       setToolConfig(config)
     }
-  }, [selectedVersion])
+  }, [selectedVersion, configUpdateTrigger])
 
   return (
     <div className="flex flex-col gap-6 min-w-128 max-w-prose mx-auto my-8">
@@ -274,6 +281,7 @@ export default function Create() {
         errors={response?.errors}
         toolConfig={toolConfig}
         setToolConfig={setToolConfig}
+        fullConfig={fullConfig}
       />
       <InfoModal
         title="Available configs"
@@ -304,7 +312,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const intent = formData?.intent
 
   let apiResponse: ApiResponse = { isFailure: true, newversion: false }
-  let displayScript: boolean = false
+  const displayScript: boolean = false
   let grantRequired: string | undefined
   let opId: string
   const errors: ElementErrors = {
@@ -378,6 +386,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
     return json(actionResponse, { status: 200 })
   } else if (intent == 'newversion') {
     const versionName = payload.version.replaceAll(' ', '-')
+    const configKeys = Object.keys(JSON.parse(payload.fullconfig))
+    if (configKeys.indexOf(versionName) !== -1) {
+      errors.fieldErrors = { version: ['Already exists'] }
+      return json(
+        { errors, apiResponse, displayScript, intent },
+        { status: 400 }
+      )
+    }
     apiResponse = await ApiClient.createUserConfig(
       versionName,
       payload.walletAddress

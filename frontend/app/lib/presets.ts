@@ -2,8 +2,15 @@ import { tooltips } from './tooltips.js'
 import { CornerType, SlideAnimationType, PositionType } from './types.js'
 
 export const validConfigTypes = ['button', 'banner', 'widget']
-export const modalTypes = ['confirm', 'import', 'info', 'new-version', 'script', 'wallet-ownership']
-export type ModalType = (typeof modalTypes)[number];
+export const modalTypes = [
+  'confirm',
+  'import',
+  'info',
+  'new-version',
+  'script',
+  'wallet-ownership'
+]
+export type ModalType = (typeof modalTypes)[number]
 
 export const textColorPresets = ['#ffffff', '#000000']
 export const triggerColorPresets = ['#ffffff', '#000000', '#096b63']

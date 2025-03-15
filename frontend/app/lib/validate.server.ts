@@ -88,7 +88,10 @@ export const validateForm = (
   if (intent == 'import') {
     result = walletSchema.safeParse(formData)
   } else if (intent == 'newversion') {
-    result = versionSchema.merge(walletSchema).safeParse(formData)
+    result = versionSchema
+      .merge(walletSchema)
+      .merge(fullConfigSchema)
+      .safeParse(formData)
   } else {
     let currentSchema
 
@@ -107,6 +110,7 @@ export const validateForm = (
       .merge(fullConfigSchema)
       .safeParse(Object.assign(formData, { ...{ elementType } }))
   }
+  /* eslint-disable  @typescript-eslint/no-explicit-any */
   const payload = result.data as unknown as any
 
   return { result, payload }
