@@ -311,7 +311,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   let apiResponse: ApiResponse = { isFailure: true, newversion: false }
   const displayScript: boolean = false
-  let grantRequired: string = ''
+  const grantRequired: string = ''
   let opId: string
   const errors: ElementErrors = {
     fieldErrors: {},
