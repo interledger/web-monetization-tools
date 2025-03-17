@@ -1,10 +1,34 @@
 import { z } from 'zod'
-import { CornerType, PositionType, SlideAnimationType } from './types.js'
+import {
+  CornerType,
+  PositionType,
+  SlideAnimationType,
+  WalletAddressFormatError
+} from './types.js'
+import { isWalletAddress } from './utils.js'
 
 const rangeError = { message: 'Value has to be between 16 and 24' }
 
 export const walletSchema = z.object({
-  walletAddress: z.string().min(1, { message: 'Wallet address is required' })
+  walletAddress: z
+    .string()
+    .min(1, { message: 'Wallet address is required' })
+    .superRefine(async (url, ctx) => {
+      if (url.length === 0) return
+
+      try {
+        checkHrefFormat(toWalletAddressUrl(url))
+        await isValidWalletAddress(url)
+      } catch (e) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message:
+            e instanceof WalletAddressFormatError
+              ? e.message
+              : 'Invalid wallet address format'
+        })
+      }
+    })
 })
 
 export const versionSchema = z.object({
@@ -114,4 +138,65 @@ export const validateForm = (
   const payload = result.data as unknown as any
 
   return { result, payload }
+}
+
+function toWalletAddressUrl(s: string): string {
+  return s.startsWith('$') ? s.replace('$', 'https://') : s
+}
+
+function checkHrefFormat(href: string): void {
+  let url: URL
+  try {
+    url = new URL(href)
+    if (url.protocol !== 'https:') {
+      throw new WalletAddressFormatError(
+        'Wallet address must use HTTPS protocol'
+      )
+    }
+  } catch (e) {
+    if (e instanceof WalletAddressFormatError) {
+      throw e
+    }
+    throw new WalletAddressFormatError(
+      `Invalid wallet address URL: ${JSON.stringify(href)}`
+    )
+  }
+
+  const { hash, search, port, username, password } = url
+
+  if (hash || search || port || username || password) {
+    throw new WalletAddressFormatError(
+      `Wallet address URL must not contain query/fragment/port/username/password elements.`
+    )
+  }
+}
+
+async function isValidWalletAddress(
+  walletAddressUrl: string
+): Promise<boolean> {
+  const response = await fetch(walletAddressUrl, {
+    headers: {
+      Accept: 'application/json'
+    }
+  })
+
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new WalletAddressFormatError('This wallet address does not exist.')
+    }
+    throw new WalletAddressFormatError('Failed to fetch wallet address.')
+  }
+
+  const msgInvalidWalletAddress = 'Provided URL is not a valid wallet address.'
+  const json = await response.json().catch((error) => {
+    throw new WalletAddressFormatError(msgInvalidWalletAddress, {
+      cause: error
+    })
+  })
+
+  if (!isWalletAddress(json)) {
+    throw new WalletAddressFormatError(msgInvalidWalletAddress)
+  }
+
+  return true
 }
