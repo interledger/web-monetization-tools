@@ -12,8 +12,7 @@ import {
   ImportModal,
   InfoModal,
   NewVersionModal,
-  ScriptModal,
-  WalletOwnershipModal
+  ScriptModal
 } from '~/components/modals/index.js'
 import {
   ErrorPanel,
@@ -30,15 +29,16 @@ import { ElementConfigType, ElementErrors } from '~/lib/types.js'
 import {
   capitalizeFirstLetter,
   encodeAndCompressParameters,
-  getIlpayCss
+  getIlpayCss,
+  toWalletAddressUrl
 } from '~/lib/utils.js'
 import { validateForm } from '~/lib/validate.server'
 import { commitSession, getSession } from '~/lib/session.js'
 import {
   fetchQuote,
   getValidWalletAddress,
-  createValidationPayment,
-  finishValidationPayment
+  createInteractiveGrant,
+  isGrantValidAndAccepted
 } from '~/lib/open-payments.server'
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
@@ -46,25 +46,18 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
   const url = new URL(request.url)
   const contentOnlyParam = url.searchParams.get('contentOnly')
-  const paymentId = url.searchParams.get('paymentId') || ''
   const interactRef = url.searchParams.get('interact_ref') || ''
   const result = url.searchParams.get('result') || ''
 
   const session = await getSession(request.headers.get('Cookie'))
   const walletAddress = session.get('wallet-address')
-  const quote = session.get('quote')
+  const grant = session.get('payment-grant')
 
-  console.log({ walletAddress, interactRef, quote })
-  if (walletAddress && quote && interactRef) {
-    const grant = session.get('payment-grant')
-    const outgoingPayment = await finishValidationPayment(
-      grant,
-      quote,
-      walletAddress,
-      interactRef
-    )
+  // console.log({ walletAddress, interactRef, quote })
+  if (walletAddress && grant && interactRef) {
+    const grantAccepted = await isGrantValidAndAccepted(grant, interactRef)
 
-    console.log({ outgoingPayment })
+    // console.log({ grant })
   }
 
   // get default config
@@ -110,13 +103,11 @@ export default function Create() {
   ])
   const [configUpdateTrigger, setConfigUpdateTrigger] = useState(0)
 
-  const wa = (toolConfig?.walletAddress || '')
-    .replace('$', '')
-    .replace('https://', '')
+  const wa = toWalletAddressUrl(toolConfig?.walletAddress || '')
   const scriptToDisplay = `<script id="wmt-init-script" type="module" src="${scriptInitUrl}init.js?wa=${wa}&tag=[version]&types=[elements]"></script>`
   const submitForm = useSubmit()
 
-  const onConfirm = () => {
+  const onConfirmRemove = () => {
     if (fullConfig) {
       const { [selectedVersion]: _, ...rest } = fullConfig
       setFullConfig(rest)
@@ -128,7 +119,7 @@ export default function Create() {
       )
       setVersionOptions(filteredOptions)
       setSelectedVersion('default')
-      setModalOpen('confirm')
+      setModalOpen(undefined)
 
       const formData = new FormData()
       formData.append('intent', 'remove')
@@ -146,6 +137,30 @@ export default function Create() {
     if (response?.grantRequired) {
       window.location.href = response.grantRequired
     }
+  }
+
+  const getInfoModalContent = (type: string) => {
+    let title = '',
+      description = '',
+      onConfirm = () => {}
+    const onClose = () => setModalOpen(undefined)
+
+    switch (type) {
+      case 'confirm':
+        title = `Are you sure you want to remove ${selectedVersion}?`
+        onConfirm = onConfirmRemove
+        break
+      case 'wallet-ownership':
+        title = `Please confirm you are owner of 
+                <span class="flex w-full justify-center text-center">
+                  ${walletAddress.id}
+                </span>`
+        description =
+          "You will need to confirm a grant to prove that you are the owner of the wallet address. It's value is et to $1 but there will be no funds removed from your wallet"
+        onConfirm = onConfirmOwnership
+        break
+    }
+    return { title, description, onClose, onConfirm }
   }
 
   useEffect(() => {
@@ -306,17 +321,8 @@ export default function Create() {
         onClose={() => setModalOpen(undefined)}
       />
       <ConfirmModal
-        title={`Are you sure you want to remove ${selectedVersion}?`}
-        isOpen={modalOpen == 'confirm'}
-        onClose={() => setModalOpen(undefined)}
-        onConfirm={onConfirm}
-      />
-      <WalletOwnershipModal
-        title={`Please confirm you are owner of `}
-        walletAddress={walletAddress?.id}
-        isOpen={modalOpen == 'wallet-ownership'}
-        onClose={() => setModalOpen(undefined)}
-        onConfirm={onConfirmOwnership}
+        {...getInfoModalContent(modalOpen ?? '')}
+        isOpen={['confirm', 'wallet-ownership'].includes(modalOpen ?? '')}
       />
     </div>
   )
@@ -374,7 +380,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
         session.set('quote', quote)
 
         const redirectUrl = `${process.env.FRONTEND_URL}create/${elementType}/`
-        const grant = await createValidationPayment({
+        const grant = await createInteractiveGrant({
           walletAddress: walletAddress,
           quote: quote,
           redirectUrl

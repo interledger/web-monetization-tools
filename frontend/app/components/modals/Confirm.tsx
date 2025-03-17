@@ -6,6 +6,7 @@ import { Button } from '~/components/index.js'
 
 type ConfirmModalProps = {
   title: string
+  description: string
   isOpen: boolean
   errors?: ElementErrors
   onClose: () => void
@@ -14,6 +15,7 @@ type ConfirmModalProps = {
 
 export const ConfirmModal = ({
   title,
+  description,
   isOpen,
   onClose,
   onConfirm
@@ -38,19 +40,21 @@ export const ConfirmModal = ({
               <Dialog.Title
                 as="h3"
                 className="font-semibold leading-6 text-lg text-center"
-              >
-                {title}
-              </Dialog.Title>
+                dangerouslySetInnerHTML={{ __html: title }}
+              ></Dialog.Title>
               <div className="mt-2">
                 <Form method="post" replace preventScrollReset>
                   <fieldset>
+                    <div className="flex justify-center p-4 mx-2">
+                      {description}
+                    </div>
                     <div className="flex justify-center space-x-4">
                       <Button
                         className="mx-0"
                         aria-label={`confirm`}
                         onClick={onConfirm}
                       >
-                        Yes
+                        Continue
                       </Button>
                       <Button aria-label={`close`} onClick={onClose}>
                         Cancel
