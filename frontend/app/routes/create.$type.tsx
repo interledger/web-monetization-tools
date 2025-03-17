@@ -37,7 +37,8 @@ import { commitSession, getSession } from '~/lib/session.js'
 import {
   fetchQuote,
   getValidWalletAddress,
-  initializePayment
+  createValidationPayment,
+  finishValidationPayment
 } from '~/lib/open-payments.server'
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
@@ -45,9 +46,26 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
   const url = new URL(request.url)
   const contentOnlyParam = url.searchParams.get('contentOnly')
+  const paymentId = url.searchParams.get('paymentId') || ''
+  const interactRef = url.searchParams.get('interact_ref') || ''
+  const result = url.searchParams.get('result') || ''
 
   const session = await getSession(request.headers.get('Cookie'))
   const walletAddress = session.get('wallet-address')
+  const quote = session.get('quote')
+
+  console.log({ walletAddress, interactRef, quote })
+  if (walletAddress && quote && interactRef) {
+    const grant = session.get('payment-grant')
+    const outgoingPayment = await finishValidationPayment(
+      grant,
+      quote,
+      walletAddress,
+      interactRef
+    )
+
+    console.log({ outgoingPayment })
+  }
 
   // get default config
   const apiResponse: ApiResponse = await ApiClient.getDefaultConfig()
@@ -295,7 +313,7 @@ export default function Create() {
       />
       <WalletOwnershipModal
         title={`Please confirm you are owner of `}
-        walletAddress={walletAddress}
+        walletAddress={walletAddress?.id}
         isOpen={modalOpen == 'wallet-ownership'}
         onClose={() => setModalOpen(undefined)}
         onConfirm={onConfirmOwnership}
@@ -340,25 +358,29 @@ export async function action({ request, params }: ActionFunctionArgs) {
     const ownerWalletAddress: string = payload.walletAddress as string
 
     const session = await getSession(request.headers.get('Cookie'))
-    session.set('wallet-address', ownerWalletAddress)
     opId = session.get('opId')
 
     if (!opId) {
       try {
         const walletAddress = await getValidWalletAddress(ownerWalletAddress)
+        session.set('wallet-address', walletAddress)
+
         const quote = await fetchQuote({
           senderAddress: walletAddress,
           receiverAddress: walletAddress,
-          amount: 0.1, // 0 value fails on ILP side
+          amount: 0.02, // 0 value fails and fee must be deducted from this
           note: 'Publisher Tools wallet verification'
         })
+        session.set('quote', quote)
 
         const redirectUrl = `${process.env.FRONTEND_URL}create/${elementType}/`
-        const grant = await initializePayment({
-          walletAddress: walletAddress.id,
+        const grant = await createValidationPayment({
+          walletAddress: walletAddress,
           quote: quote,
           redirectUrl
         })
+        session.set('payment-grant', grant)
+
         actionResponse.grantRequired = grant.interact.redirect
       } catch (err) {
         console.log({ err })
