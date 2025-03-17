@@ -345,7 +345,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 
   // validate form data
-  const { result, payload } = validateForm(formData, elementType)
+  const { result, payload } = await validateForm(formData, elementType)
   if (!result.success || !payload) {
     errors.fieldErrors = result.error?.flatten().fieldErrors || {
       walletAddress: undefined

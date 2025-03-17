@@ -100,7 +100,7 @@ export const getElementSchema = (type: string) => {
   }
 }
 
-export const validateForm = (
+export const validateForm = async (
   formData: {
     [k: string]: FormDataEntryValue
   },
@@ -110,12 +110,12 @@ export const validateForm = (
   let result
 
   if (intent == 'import') {
-    result = walletSchema.safeParse(formData)
+    result = await walletSchema.safeParseAsync(formData)
   } else if (intent == 'newversion') {
-    result = versionSchema
+    result = await versionSchema
       .merge(walletSchema)
       .merge(fullConfigSchema)
-      .safeParse(formData)
+      .safeParseAsync(formData)
   } else {
     let currentSchema
 
@@ -130,9 +130,9 @@ export const validateForm = (
       default:
         currentSchema = createBannerSchema
     }
-    result = currentSchema
+    result = await currentSchema
       .merge(fullConfigSchema)
-      .safeParse(Object.assign(formData, { ...{ elementType } }))
+      .safeParseAsync(Object.assign(formData, { ...{ elementType } }))
   }
   /* eslint-disable  @typescript-eslint/no-explicit-any */
   const payload = result.data as unknown as any
