@@ -37,7 +37,7 @@ export const createUserConfig = async (req: Request, res: Response) => {
       throw 'Wallet address is required'
     }
     const defaultData = await getDefaultData()
-    const defaultDataContent: ConfigVersions[keyof ConfigVersions] =
+    const defaultDataContent: ConfigVersions['default'] =
       JSON.parse(defaultData).default
     defaultDataContent.walletAddress = decodeURIComponent(
       `https://${data.walletAddress}`
@@ -222,7 +222,7 @@ const sanitizeConfigFields = <T extends Partial<SanitizedFields>>(
 
   for (const field of textFields) {
     const value = config[field]
-    if (value) {
+    if (typeof value === 'string' && value) {
       const decoded = he.decode(value)
       const sanitizedText = sanitizeHtml(value, {
         allowedTags: [],
@@ -232,7 +232,7 @@ const sanitizeConfigFields = <T extends Partial<SanitizedFields>>(
         }
       })
       if (sanitizedText !== decoded) {
-        throw new Error(`Invalid HTML in field: ${field}`)
+        throw new Error(`HTML not allowed in field: ${field}`)
       }
 
       config[field] = sanitizedText
@@ -240,7 +240,7 @@ const sanitizeConfigFields = <T extends Partial<SanitizedFields>>(
   }
 
   for (const field of htmlFields) {
-    if (config[field]) {
+    if (typeof config[field] === 'string' && config[field]) {
       const decoded = he.decode(config[field].replace(/&nbsp;/g, '').trim())
       const sanitizedHTML = sanitizeHtml(decoded, {
         allowedTags: [],
