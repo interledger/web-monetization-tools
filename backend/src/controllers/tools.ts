@@ -1,6 +1,8 @@
+import sanitizeHtml from 'sanitize-html'
 import type { Request, Response } from 'express'
 import { PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
 import _ from 'underscore'
+import he from 'he'
 import {
   filterDeepProperties,
   getDefaultData,
@@ -8,6 +10,12 @@ import {
   streamToString
 } from '../services/utils.js'
 import { S3FileNotFoundError } from '../services/errors.js'
+import {
+  ConfigVersions,
+  CreateConfigRequest,
+  SanitizedFields,
+  SaveUserConfigRequest
+} from './types.js'
 
 export const getDefault = async (_: Request, res: Response) => {
   try {
@@ -22,17 +30,20 @@ export const getDefault = async (_: Request, res: Response) => {
 
 export const createUserConfig = async (req: Request, res: Response) => {
   try {
-    const data = req.body
+    const data: CreateConfigRequest = req.body
     const tag = data.version || data.tag
 
     if (!data.walletAddress) {
       throw 'Wallet address is required'
     }
     const defaultData = await getDefaultData()
-    const defaultDataContent = JSON.parse(defaultData).default
+    const defaultDataContent: ConfigVersions['default'] =
+      JSON.parse(defaultData).default
     defaultDataContent.walletAddress = decodeURIComponent(
       `https://${data.walletAddress}`
     )
+
+    sanitizeConfigFields({ ...defaultDataContent, tag })
 
     const { s3, params } = getS3AndParams(data.walletAddress)
 
@@ -85,7 +96,7 @@ export const createUserConfig = async (req: Request, res: Response) => {
 
 export const saveUserConfig = async (req: Request, res: Response) => {
   try {
-    const data = req.body
+    const data: SaveUserConfigRequest = req.body
 
     if (!data.walletAddress) {
       throw 'Wallet address is required'
@@ -93,14 +104,20 @@ export const saveUserConfig = async (req: Request, res: Response) => {
 
     const { s3, params } = getS3AndParams(data.walletAddress)
 
-    // filter data so we are saving only config and none of the extra params received
-    const fullConfig = JSON.parse(data?.fullconfig)
+    const fullConfig: ConfigVersions = JSON.parse(data?.fullconfig)
+
+    // sanitize all versions/tags in the config
+    Object.keys(fullConfig).forEach((key) => {
+      if (typeof fullConfig[key] === 'object') {
+        fullConfig[key] = sanitizeConfigFields(fullConfig[key])
+      }
+    })
+
     const filteredData = filterDeepProperties(fullConfig)
     const fileContent = JSON.stringify(filteredData)
     const extendedParams = { ...params, Body: fileContent }
 
     await s3.send(new PutObjectCommand(extendedParams))
-
     res.status(200).send(filteredData)
   } catch (err) {
     console.log(err)
@@ -182,6 +199,64 @@ export const getUserConfigByTag = async (req: Request, res: Response) => {
       res.status(500).send('An error occurred while fetching data')
     }
   }
+}
+
+const sanitizeConfigFields = <T extends Partial<SanitizedFields>>(
+  config: T
+): T => {
+  const textFields: Array<keyof SanitizedFields> = [
+    'bannerTitleText',
+    'widgetTitleText',
+    'widgetButtonText',
+    'buttonText',
+    'buttonDescriptionText',
+    'walletAddress',
+    'tag',
+    'version'
+  ]
+
+  const htmlFields: Array<keyof SanitizedFields> = [
+    'bannerDescriptionText',
+    'widgetDescriptionText'
+  ]
+
+  for (const field of textFields) {
+    const value = config[field]
+    if (typeof value === 'string' && value) {
+      const decoded = he.decode(value)
+      const sanitizedText = sanitizeHtml(value, {
+        allowedTags: [],
+        allowedAttributes: {},
+        textFilter(text) {
+          return he.decode(text)
+        }
+      })
+      if (sanitizedText !== decoded) {
+        throw new Error(`HTML not allowed in field: ${field}`)
+      }
+
+      config[field] = sanitizedText
+    }
+  }
+
+  for (const field of htmlFields) {
+    if (typeof config[field] === 'string' && config[field]) {
+      const decoded = he.decode(config[field].replace(/&nbsp;/g, '').trim())
+      const sanitizedHTML = sanitizeHtml(decoded, {
+        allowedTags: [],
+        allowedAttributes: {},
+        allowProtocolRelative: false
+      })
+      const decodedSanitized = he.decode(sanitizedHTML)
+      // compare decoded versions to check for malicious content
+      if (decodedSanitized !== decoded) {
+        throw new Error(`Invalid HTML in field: ${field}`)
+      }
+
+      config[field] = decodedSanitized
+    }
+  }
+  return config
 }
 
 export default {

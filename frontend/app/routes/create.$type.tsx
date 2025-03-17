@@ -306,7 +306,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 
   if (intent == 'import') {
-    const result = walletSchema.safeParse(formData)
+    const result = await walletSchema.safeParseAsync(formData)
 
     if (!result.success) {
       errors.fieldErrors = result.error.flatten().fieldErrors
@@ -321,10 +321,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     return json({ errors, apiResponse, displayScript, intent }, { status: 200 })
   } else if (intent == 'newversion') {
-    const result = versionSchema
+    const result = await versionSchema
       .merge(walletSchema)
       .merge(fullConfigSchema)
-      .safeParse(formData)
+      .safeParseAsync(formData)
 
     if (!result.success) {
       errors.fieldErrors = result.error.flatten().fieldErrors
@@ -365,9 +365,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
       default:
         currentSchema = createBannerSchema
     }
-    const result = currentSchema
+    const result = await currentSchema
       .merge(fullConfigSchema)
-      .safeParse(Object.assign(formData, { ...{ elementType } }))
+      .safeParseAsync(Object.assign(formData, { ...{ elementType } }))
 
     if (!result.success) {
       errors.fieldErrors = result.error.flatten().fieldErrors
