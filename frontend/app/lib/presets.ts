@@ -8,7 +8,8 @@ export const modalTypes = [
   'info',
   'new-version',
   'script',
-  'wallet-ownership'
+  'wallet-ownership',
+  'grant-response'
 ]
 export type ModalType = (typeof modalTypes)[number]
 

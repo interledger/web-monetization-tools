@@ -49,15 +49,23 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   const interactRef = url.searchParams.get('interact_ref') || ''
   const result = url.searchParams.get('result') || ''
 
+  const cleanUrl = `//${url.host}${url.pathname}`
+
   const session = await getSession(request.headers.get('Cookie'))
   const walletAddress = session.get('wallet-address')
   const grant = session.get('payment-grant')
+  const lastAction = session.get('last-action')
+  let grantResponse = result === 'grant_rejected' ? 'Grant was declined' : ''
+  let isGrantAccepted = false
+  let isGrantResponse = false
 
-  // console.log({ walletAddress, interactRef, quote })
   if (walletAddress && grant && interactRef) {
-    const grantAccepted = await isGrantValidAndAccepted(grant, interactRef)
-
-    // console.log({ grant })
+    isGrantResponse = true
+    isGrantAccepted = await isGrantValidAndAccepted(grant, interactRef)
+    if (isGrantAccepted) {
+      grantResponse = 'Wallet ownership confirmed!'
+      session.set('validForWallet', walletAddress.id)
+    }
   }
 
   // get default config
@@ -67,14 +75,26 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   const ilpayUrl = process.env.ILPAY_URL || ''
   const scriptInitUrl = process.env.INIT_SCRIPT_URL || ''
 
-  return {
-    elementType,
-    defaultConfig,
-    ilpayUrl,
-    scriptInitUrl,
-    walletAddress,
-    contentOnlyParam
-  }
+  return json(
+    {
+      elementType,
+      defaultConfig,
+      ilpayUrl,
+      scriptInitUrl,
+      walletAddress,
+      contentOnlyParam,
+      grantResponse,
+      isGrantResponse,
+      isGrantAccepted,
+      lastAction,
+      cleanUrl
+    },
+    {
+      headers: {
+        'Set-Cookie': await commitSession(session) // Commit session changes
+      }
+    }
+  )
 }
 
 export default function Create() {
@@ -84,7 +104,12 @@ export default function Create() {
     ilpayUrl,
     scriptInitUrl,
     walletAddress,
-    contentOnlyParam
+    contentOnlyParam,
+    isGrantAccepted,
+    grantResponse,
+    isGrantResponse,
+    lastAction,
+    cleanUrl
   } = useLoaderData<typeof loader>()
   const response = useActionData<typeof action>()
   const { state } = useNavigation()
@@ -107,6 +132,23 @@ export default function Create() {
   const scriptToDisplay = `<script id="wmt-init-script" type="module" src="${scriptInitUrl}init.js?wa=${wa}&tag=[version]&types=[elements]"></script>`
   const submitForm = useSubmit()
 
+  const getFormData = (
+    configArray: Record<string, ElementConfigType>,
+    intent: string,
+    version: string
+  ) => {
+    const formData = new FormData()
+    formData.append('intent', intent)
+    formData.append('version', version)
+    formData.append('fullconfig', JSON.stringify(configArray))
+    const defaultSet = configArray.default as unknown as Record<string, string>
+    Object.keys(defaultSet).map((key) => {
+      formData.append(key, defaultSet[key])
+    })
+
+    return formData
+  }
+
   const onConfirmRemove = () => {
     if (fullConfig) {
       const { [selectedVersion]: _, ...rest } = fullConfig
@@ -121,14 +163,7 @@ export default function Create() {
       setSelectedVersion('default')
       setModalOpen(undefined)
 
-      const formData = new FormData()
-      formData.append('intent', 'remove')
-      formData.append('version', 'default')
-      formData.append('fullconfig', JSON.stringify(rest))
-      const defaultSet = rest.default as unknown as Record<string, string>
-      Object.keys(defaultSet).map((key) => {
-        formData.append(key, defaultSet[key])
-      })
+      const formData = getFormData(rest, 'remove', 'default')
       submitForm(formData, { method: 'post' })
     }
   }
@@ -139,7 +174,12 @@ export default function Create() {
     }
   }
 
-  const getInfoModalContent = (type: string) => {
+  const onResubmit = () => {
+    const formData = getFormData(fullConfig || {}, lastAction, selectedVersion)
+    submitForm(formData, { method: 'post' })
+  }
+
+  const getConfirmModalContent = (type: string) => {
     let title = '',
       description = '',
       onConfirm = () => {}
@@ -156,12 +196,45 @@ export default function Create() {
                   ${walletAddress.id}
                 </span>`
         description =
-          "You will need to confirm a grant to prove that you are the owner of the wallet address. It's value is et to $1 but there will be no funds removed from your wallet"
+          "You will need to confirm a grant to prove that you are the owner of the wallet address. It's value is set to 1 but there will be no funds removed from your wallet"
         onConfirm = onConfirmOwnership
+        break
+      case 'grant-response':
+        title = grantResponse
+        onConfirm = isGrantAccepted ? onResubmit : onClose
         break
     }
     return { title, description, onClose, onConfirm }
   }
+
+  useEffect(() => {
+    const UrlWProtocol = `${window.location.protocol}${cleanUrl}`
+    if (window.location.href !== UrlWProtocol) {
+      window.history.replaceState(null, '', UrlWProtocol)
+    }
+  }, [cleanUrl])
+
+  useEffect(() => {
+    if (isGrantResponse) {
+      let newVersion, userFullconfig
+      if (lastAction == 'newversion') {
+        newVersion = sessionStorage.getItem('new-version')
+      } else {
+        newVersion = sessionStorage.getItem('new-version')
+        userFullconfig = JSON.parse(
+          sessionStorage.getItem('fullconfig') || '{}'
+        )
+      }
+
+      if (userFullconfig) {
+        setFullConfig(userFullconfig)
+      }
+      if (newVersion) {
+        setSelectedVersion(newVersion)
+      }
+      setModalOpen('grant-response')
+    }
+  }, [isGrantResponse, lastAction])
 
   useEffect(() => {
     const errors = Object.keys(response?.errors?.fieldErrors || {})
@@ -225,12 +298,19 @@ export default function Create() {
       [selectedVersion]: toolConfig
     }
     setFullConfig(updatedFullConfig)
+
+    //preserve data for page redirect
+    sessionStorage.setItem('new-version', selectedVersion)
+    sessionStorage.setItem('fullconfig', JSON.stringify(updatedFullConfig))
   }, [toolConfig])
 
   useEffect(() => {
     if (fullConfig) {
       const config = fullConfig[selectedVersion]
       setToolConfig(config)
+
+      //preserve data for page redirect
+      sessionStorage.setItem('new-version', selectedVersion)
     }
   }, [selectedVersion, configUpdateTrigger])
 
@@ -321,8 +401,10 @@ export default function Create() {
         onClose={() => setModalOpen(undefined)}
       />
       <ConfirmModal
-        {...getInfoModalContent(modalOpen ?? '')}
-        isOpen={['confirm', 'wallet-ownership'].includes(modalOpen ?? '')}
+        {...getConfirmModalContent(modalOpen ?? '')}
+        isOpen={['confirm', 'wallet-ownership', 'grant-response'].includes(
+          modalOpen ?? ''
+        )}
       />
     </div>
   )
@@ -333,10 +415,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = Object.fromEntries(await request.formData())
   const intent = formData?.intent
 
+  const session = await getSession(request.headers.get('Cookie'))
+  session.set('last-action', intent as string)
+
   let apiResponse: ApiResponse = { isFailure: true, newversion: false }
   const displayScript: boolean = false
   const grantRequired: string = ''
-  let opId: string
+  let validForWallet: string
   const errors: ElementErrors = {
     fieldErrors: {},
     message: []
@@ -362,11 +447,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
   // no need when importing
   if (intent != 'import') {
     const ownerWalletAddress: string = payload.walletAddress as string
+    validForWallet = session.get('validForWallet')
 
-    const session = await getSession(request.headers.get('Cookie'))
-    opId = session.get('opId')
-
-    if (!opId) {
+    if (!validForWallet || validForWallet !== ownerWalletAddress) {
       try {
         const walletAddress = await getValidWalletAddress(ownerWalletAddress)
         session.set('wallet-address', walletAddress)
@@ -374,10 +457,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
         const quote = await fetchQuote({
           senderAddress: walletAddress,
           receiverAddress: walletAddress,
-          amount: 0.02, // 0 value fails and fee must be deducted from this
+          amount: 1, // 0 value fails and fee is calculated from this
           note: 'Publisher Tools wallet verification'
         })
-        session.set('quote', quote)
 
         const redirectUrl = `${process.env.FRONTEND_URL}create/${elementType}/`
         const grant = await createInteractiveGrant({
@@ -406,10 +488,16 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 
   if (intent == 'import') {
+    session.set('last-action', '')
     apiResponse = await ApiClient.getUserConfig(payload.walletAddress)
 
     actionResponse.apiResponse = apiResponse
-    return json(actionResponse, { status: 200 })
+    return json(actionResponse, {
+      status: 200,
+      headers: {
+        'Set-Cookie': await commitSession(session)
+      }
+    })
   } else if (intent == 'newversion') {
     const versionName = payload.version.replaceAll(' ', '-')
     const configKeys = Object.keys(JSON.parse(payload.fullconfig))
@@ -425,7 +513,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
     apiResponse.newversion = versionName
 
     actionResponse.apiResponse = apiResponse
-    return json(actionResponse, { status: 200 })
+    return json(actionResponse, {
+      status: 200,
+      headers: {
+        'Set-Cookie': await commitSession(session)
+      }
+    })
   } else {
     if (payload.elementType == 'widget') {
       const css = await encodeAndCompressParameters(
@@ -439,6 +532,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     actionResponse.apiResponse = apiResponse
     actionResponse.displayScript = intent != 'remove' ? true : displayScript
-    return json(actionResponse, { status: 200 })
+    return json(actionResponse, {
+      status: 200,
+      headers: {
+        'Set-Cookie': await commitSession(session)
+      }
+    })
   }
 }
