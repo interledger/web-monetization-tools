@@ -56,7 +56,9 @@ export class ApiClient {
     const wa = encodeURIComponent(
       walletAddress.replace('$', '').replace('https://', '')
     )
-    const response = await axios.get(`${apiUrl}tools/${wa}`, { httpsAgent })
+    const response = await axios.get(`${apiUrl}tools/${wa}`, {
+      httpsAgent
+    })
 
     if (response.status === 200) {
       return {
@@ -83,7 +85,8 @@ export class ApiClient {
       `${apiUrl}tools`,
       { walletAddress: wa, tag },
       {
-        httpsAgent
+        httpsAgent,
+        withCredentials: true
       }
     )
 
@@ -105,7 +108,8 @@ export class ApiClient {
     configData: Partial<ElementConfigType>
   ): Promise<ApiResponse> {
     const response = await axios.put(`${apiUrl}tools`, configData, {
-      httpsAgent
+      httpsAgent,
+      withCredentials: true
     })
 
     if (response.status === 200) {

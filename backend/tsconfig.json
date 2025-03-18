@@ -10,5 +10,6 @@
     }
   },
   "include": ["src/**/*", "tests/**/*"],
-  "exclude": ["node_modules", "**/node_modules/*"]
+  "exclude": ["node_modules", "**/node_modules/*"],
+  "files": ["src/types/index.ts"]
 }

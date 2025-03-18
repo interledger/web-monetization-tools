@@ -33,9 +33,15 @@ export const createUserConfig = async (req: Request, res: Response) => {
     const data: CreateConfigRequest = req.body
     const tag = data.version || data.tag
 
+    const validForWallet = req.session?.validForWallet
+
     if (!data.walletAddress) {
       throw 'Wallet address is required'
     }
+    if (validForWallet !== data.walletAddress) {
+      throw new MissingGrantError('Grant confirmation is required')
+    }
+
     const defaultData = await getDefaultData()
     const defaultDataContent: ConfigVersions['default'] =
       JSON.parse(defaultData).default
@@ -52,11 +58,6 @@ export const createUserConfig = async (req: Request, res: Response) => {
       // existing config
       const s3data = await s3.send(new GetObjectCommand(params))
 
-      // if file exists, we need to verify ownership
-      if (!data.variableHoldingSomeConfirmation) {
-        throw new MissingGrantError('Grant confirmation is required')
-      }
-
       // Convert the file stream to a string
       fileContentString = await streamToString(
         s3data.Body as NodeJS.ReadableStream
@@ -65,12 +66,6 @@ export const createUserConfig = async (req: Request, res: Response) => {
       const err = error as Error
       if (err.name === 'NoSuchKey') {
         // file / config not found, continue with defaults
-      } else if (err.name === 'MissingGrant') {
-        res.status(200).send({
-          grantRequired: true,
-          message: 'Grant confirmation is required'
-        })
-        return
       } else {
         console.log(error)
         res.status(500).send('An error occurred while fetching data')
@@ -109,9 +104,13 @@ export const createUserConfig = async (req: Request, res: Response) => {
 export const saveUserConfig = async (req: Request, res: Response) => {
   try {
     const data: SaveUserConfigRequest = req.body
+    const validForWallet = req.session?.validForWallet
 
     if (!data.walletAddress) {
       throw 'Wallet address is required'
+    }
+    if (validForWallet !== data.walletAddress) {
+      throw new MissingGrantError('Grant confirmation is required')
     }
 
     const { s3, params } = getS3AndParams(data.walletAddress)
