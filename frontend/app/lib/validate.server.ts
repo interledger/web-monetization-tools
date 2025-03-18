@@ -5,7 +5,7 @@ import {
   SlideAnimationType,
   WalletAddressFormatError
 } from './types.js'
-import { isWalletAddress } from './utils.js'
+import { isWalletAddress, toWalletAddressUrl } from './utils.js'
 
 const rangeError = { message: 'Value has to be between 16 and 24' }
 
@@ -17,9 +17,11 @@ export const walletSchema = z.object({
       if (url.length === 0) return
 
       try {
-        checkHrefFormat(toWalletAddressUrl(url))
-        await isValidWalletAddress(url)
+        const updatedUrl = toWalletAddressUrl(url)
+        checkHrefFormat(updatedUrl)
+        await isValidWalletAddress(updatedUrl)
       } catch (e) {
+        console.log({ e })
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message:
@@ -138,10 +140,6 @@ export const validateForm = async (
   const payload = result.data as unknown as any
 
   return { result, payload }
-}
-
-function toWalletAddressUrl(s: string): string {
-  return s.startsWith('$') ? s.replace('$', 'https://') : s
 }
 
 function checkHrefFormat(href: string): void {

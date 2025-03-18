@@ -9,6 +9,7 @@ import {
 } from '@interledger/open-payments'
 import { createId } from '@paralleldrive/cuid2'
 import { randomUUID } from 'crypto'
+import { toWalletAddressUrl } from './utils.js'
 
 async function createClient() {
   return await createAuthenticatedClient({
@@ -130,7 +131,7 @@ async function createIncomingPayment({
     })
 }
 
-export async function createValidationPayment(args: {
+export async function createInteractiveGrant(args: {
   walletAddress: WalletAddress
   quote: Quote
   redirectUrl?: string
@@ -221,12 +222,10 @@ async function createOutgoingPaymentGrant(
   return grant
 }
 
-export async function finishValidationPayment(
+export async function isGrantValidAndAccepted(
   payment: PendingGrant,
-  quote: Quote,
-  walletAddress: WalletAddress,
   interactRef: string
-): Promise<{ url: string; accessToken: string }> {
+): Promise<boolean> {
   const opClient = await createClient()
 
   const continuation = await opClient.grant.continue(
@@ -240,34 +239,11 @@ export async function finishValidationPayment(
   )
 
   if (!isFinalizedGrant(continuation)) {
-    throw new Error('Expected finalized grant. Received non-finalized grant.')
+    return false
   }
 
-  const url = new URL(walletAddress.id).origin
-
-  const outgoingPayment = await opClient.outgoingPayment
-    .create(
-      {
-        url: url,
-        accessToken: continuation.access_token.value
-      },
-      {
-        walletAddress: walletAddress.id,
-        quoteId: quote.id,
-        metadata: {
-          description: 'Publisher Tools wallet validated'
-        }
-      }
-    )
-    .catch((error) => {
-      console.log({ error })
-      throw new Error('Could not create outgoing payment.')
-    })
-
-  return {
-    url: outgoingPayment.id,
-    accessToken: continuation.access_token.value
-  }
+  // when continuation has access_token value it has been accepted by user
+  return continuation?.access_token?.value ? true : false
 }
 
 export async function getWalletAddress(
@@ -277,7 +253,7 @@ export async function getWalletAddress(
   opClient = opClient ? opClient : await createClient()
   const walletAddress = await opClient.walletAddress
     .get({
-      url: url
+      url: toWalletAddressUrl(url)
     })
     .catch((error) => {
       console.log({ error })
