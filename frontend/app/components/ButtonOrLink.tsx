@@ -49,7 +49,7 @@ export const ButtonOrLink = forwardRef<
   const isLink = typeof to !== 'undefined' || typeof href !== 'undefined'
 
   if (isLink) {
-    return <AnchorOrLink href={href} to={to} ref={ref} {...props} />
+    return <AnchorOrLink href={href} to={to} ref={ref} {...props}  />
   }
 
   return <button ref={ref} {...props} type={props.type ?? 'button'} />
