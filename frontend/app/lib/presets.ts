@@ -153,7 +153,7 @@ export const availableTools = [
     link: `https://webmonetization.org/tools/prob-revshare/`,
     tooltip: tooltips.revShareGenerator,
     description:
-      "Probabilistic revenue sharing (revshare) is one way to share a portion of a web monetized page's earnings between multiple payment pointers"
+      "Probabilistic revenue sharing (revshare) is one way to share a portion of a web monetized page's earnings between multiple payment pointers and wallet addresses."
   },
   {
     enabled: false,

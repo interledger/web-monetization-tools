@@ -8,8 +8,8 @@ export const tooltips = {
   scriptModal:
     'Copy your script and insert it just before the closing </body> tag on your website, or place it within a script type element if you\'re using a site management software (ex: WordPress, etc). <br />Be sure to review and select all the options in the "Include" section, that you want to display on your website.',
   linkTagGenerator:
-    'Generate and customize your Web Monetization <link> tag to monetize your web pages. The generator helps you create the correct tag with your payment pointer and validates the syntax, ensuring proper implementation of Web Monetization in your HTML documents.',
+    'Generate your Web Monetization tag to monetize your web pages. The generator helps you create a tag from your payment pointer or wallet address and validates the syntax.',
   revShareGenerator:
-    'Create a customized revenue sharing configuration that distributes Web Monetization earnings between multiple payment pointers. The generator helps you set weighted percentages for each recipient and validates the payment pointer format, ensuring fair distribution of streaming payments.',
+    'Split Web Monetization revenue between multiple payment pointers and wallet addresses. Assign a weight to each recipient, then add the generated link tag to your HTML documents.<br />As you assign weights, the generator will calculate percentages.<br />The percentages represent how often a given wallet address or payment pointer will receive payments each time a web monetized visitor views your content.',
   font: 'Setting the Font to Inherit, will make the component use the font from the website it is added to.'
 }
