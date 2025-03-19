@@ -142,7 +142,8 @@ export const availableTools = [
     bgColor: 'from-wm-red to-wm-red-fade',
     link: `https://webmonetization.org/tools/link-tag/`,
     tooltip: tooltips.linkTagGenerator,
-    description: 'Use the link element generator to create a monetization <link> element for your HTML documents'
+    description:
+      'Use the link element generator to create a monetization <link> element for your HTML documents'
   },
   {
     enabled: true,
@@ -151,7 +152,8 @@ export const availableTools = [
     bgColor: 'from-wm-red to-wm-green-fade',
     link: `https://webmonetization.org/tools/prob-revshare/`,
     tooltip: tooltips.revShareGenerator,
-    description: 'Probabilistic revenue sharing (revshare) is one way to share a portion of a web monetized page\'s earnings between multiple payment pointers'
+    description:
+      "Probabilistic revenue sharing (revshare) is one way to share a portion of a web monetized page's earnings between multiple payment pointers"
   },
   {
     enabled: false,
