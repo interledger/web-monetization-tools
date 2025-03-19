@@ -605,17 +605,22 @@ export const ToolConfig = ({
         />
       </div>
       <div className="flex justify-end items-end">
-        <div className="flex">
+        <div className="flex w-full">
           <Button
             intent="reset"
-            className="mr-2"
+            className="mr-2 ml-0"
             aria-label="reset config"
             disabled={isSubmiting}
             onClick={() => setToolConfig(defaultConfig)}
           >
             Reset
           </Button>
-          <Button aria-label="save config" type="submit" disabled={isSubmiting}>
+          <Button
+            className="mr-0"
+            aria-label="save config"
+            type="submit"
+            disabled={isSubmiting}
+          >
             <img
               className={cx(
                 'flex max-h-24 mr-2',
