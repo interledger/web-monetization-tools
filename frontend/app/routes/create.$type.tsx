@@ -3,6 +3,7 @@ import {
   Form,
   useActionData,
   useLoaderData,
+  useLocation,
   useNavigation,
   useSubmit
 } from '@remix-run/react'
@@ -66,6 +67,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
       grantResponse = 'Wallet ownership confirmed!'
       session.set('validForWallet', walletAddress.id)
     }
+    session.set('payment-grant', undefined)
   }
 
   // get default config
@@ -113,6 +115,7 @@ export default function Create() {
   } = useLoaderData<typeof loader>()
   const response = useActionData<typeof action>()
   const { state } = useNavigation()
+  const location = useLocation()
   const isSubmitting = state === 'submitting'
   const contentOnly = contentOnlyParam != null
 
@@ -131,6 +134,14 @@ export default function Create() {
   const wa = toWalletAddressUrl(toolConfig?.walletAddress || '')
   const scriptToDisplay = `<script id="wmt-init-script" type="module" src="${scriptInitUrl}init.js?wa=${wa}&tag=[version]&types=[elements]"></script>`
   const submitForm = useSubmit()
+
+  // remove url query parameters, prevent from resubmition
+  if(typeof window !== 'undefined') {
+    const urlWProtocol = `${window.location.protocol}${cleanUrl}`
+    if (window.location.href !== urlWProtocol) {
+      window.history.replaceState(null, '', urlWProtocol)
+    }
+  }
 
   const getFormData = (
     configArray: Record<string, ElementConfigType>,
@@ -175,8 +186,9 @@ export default function Create() {
   }
 
   const onResubmit = () => {
+    setModalOpen(undefined)
     const formData = getFormData(fullConfig || {}, lastAction, selectedVersion)
-    submitForm(formData, { method: 'post' })
+    submitForm(formData, { method: 'post', action: location.pathname })
   }
 
   const getConfirmModalContent = (type: string) => {
@@ -206,13 +218,6 @@ export default function Create() {
     }
     return { title, description, onClose, onConfirm }
   }
-
-  useEffect(() => {
-    const UrlWProtocol = `${window.location.protocol}${cleanUrl}`
-    if (window.location.href !== UrlWProtocol) {
-      window.history.replaceState(null, '', UrlWProtocol)
-    }
-  }, [cleanUrl])
 
   useEffect(() => {
     if (isGrantResponse) {
@@ -329,7 +334,12 @@ export default function Create() {
       />
       {toolConfig && validConfigTypes.includes(String(elementType)) ? (
         <div className="flex flex-col">
-          <Form id="config-form" method="post" replace>
+          <Form
+            id="config-form"
+            method="post"
+            action={location.pathname}
+            replace
+          >
             <fieldset disabled={isSubmitting}>
               <ToolPreview
                 type={elementType}
