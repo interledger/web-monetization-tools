@@ -136,6 +136,24 @@ export const availableTools = [
       'You can place a custom button with a short tooltip on your site that triggers a payment option in a full-page overlay, offering a convenient way for visitors to support your work or content.'
   },
   {
+    enabled: true,
+    title: 'Link',
+    image: 'link_representation.svg',
+    bgColor: 'from-wm-red to-wm-red-fade',
+    link: `https://webmonetization.org/tools/link-tag/`,
+    tooltip: tooltips.linkTagGenerator,
+    description: 'Use the link element generator to create a monetization <link> element for your HTML documents'
+  },
+  {
+    enabled: true,
+    title: 'Revenue Share',
+    image: 'widget_representation.svg',
+    bgColor: 'from-wm-red to-wm-green-fade',
+    link: `https://webmonetization.org/tools/prob-revshare/`,
+    tooltip: tooltips.revShareGenerator,
+    description: 'Probabilistic revenue sharing (revshare) is one way to share a portion of a web monetized page\'s earnings between multiple payment pointers'
+  },
+  {
     enabled: false,
     title: 'Exclusive content',
     image: 'exclusive_representation.svg',
