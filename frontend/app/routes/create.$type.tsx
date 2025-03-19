@@ -58,7 +58,6 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
   const ilpayUrl = process.env.ILPAY_URL || ''
   const scriptInitUrl = process.env.VITE_SCRIPT_EMBED_URL || ''
-  console.log('test ->>>>>', process.env)
 
   return {
     elementType,
