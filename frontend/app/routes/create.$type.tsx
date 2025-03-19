@@ -36,7 +36,6 @@ import {
 import { validateForm } from '~/lib/validate.server'
 import { commitSession, getSession } from '~/lib/session.js'
 import {
-  fetchQuote,
   getValidWalletAddress,
   createInteractiveGrant,
   isGrantValidAndAccepted
@@ -136,7 +135,7 @@ export default function Create() {
   const submitForm = useSubmit()
 
   // remove url query parameters, prevent from resubmition
-  if(typeof window !== 'undefined') {
+  if (typeof window !== 'undefined') {
     const urlWProtocol = `${window.location.protocol}${cleanUrl}`
     if (window.location.href !== urlWProtocol) {
       window.history.replaceState(null, '', urlWProtocol)
@@ -465,17 +464,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
         const walletAddress = await getValidWalletAddress(ownerWalletAddress)
         session.set('wallet-address', walletAddress)
 
-        const quote = await fetchQuote({
-          senderAddress: walletAddress,
-          receiverAddress: walletAddress,
-          amount: 1, // 0 value fails and fee is calculated from this
-          note: 'Publisher Tools wallet verification'
-        })
-
         const redirectUrl = `${process.env.FRONTEND_URL}create/${elementType}/`
         const grant = await createInteractiveGrant({
           walletAddress: walletAddress,
-          quote: quote,
           redirectUrl
         })
         session.set('payment-grant', grant)

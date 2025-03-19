@@ -133,7 +133,6 @@ async function createIncomingPayment({
 
 export async function createInteractiveGrant(args: {
   walletAddress: WalletAddress
-  quote: Quote
   redirectUrl?: string
 }) {
   const opClient = await createClient()
@@ -142,8 +141,11 @@ export async function createInteractiveGrant(args: {
 
   const outgoingPaymentGrant = await createOutgoingPaymentGrant({
     walletAddress: args.walletAddress,
-    debitAmount: args.quote.debitAmount,
-    receiveAmount: args.quote.receiveAmount,
+    debitAmount: {
+      value: String(1 * 10 ** args.walletAddress.assetScale),
+      assetCode: args.walletAddress.assetCode,
+      assetScale: args.walletAddress.assetScale
+    },
     nonce: clientNonce,
     paymentId: paymentId,
     opClient,
