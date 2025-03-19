@@ -33,13 +33,13 @@ import {
   getIlpayCss,
   toWalletAddressUrl
 } from '~/lib/utils.js'
-import { validateForm } from '~/lib/validate.server'
-import { commitSession, getSession } from '~/lib/session.js'
+import { validateForm } from '~/lib/server/validate.server'
+import { commitSession, getSession } from '~/lib/server/session.server'
 import {
   getValidWalletAddress,
   createInteractiveGrant,
   isGrantValidAndAccepted
-} from '~/lib/open-payments.server'
+} from '~/lib/server/open-payments.server'
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const elementType = params.type

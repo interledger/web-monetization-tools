@@ -3,7 +3,7 @@ import {
   createBannerSchema,
   createButtonSchema,
   createWidgetSchema
-} from './validate.server.js'
+} from './server/validate.server.js'
 
 export enum CornerType {
   None = 'None',

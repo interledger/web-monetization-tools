@@ -9,7 +9,7 @@ import {
 } from '@interledger/open-payments'
 import { createId } from '@paralleldrive/cuid2'
 import { randomUUID } from 'crypto'
-import { toWalletAddressUrl } from './utils.js'
+import { toWalletAddressUrl } from '../utils.js'
 
 async function createClient() {
   return await createAuthenticatedClient({
