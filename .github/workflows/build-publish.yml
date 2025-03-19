@@ -43,7 +43,7 @@ jobs:
             script_api_url: https://wmtools-backend.interledger-test.dev/
             script_frontend_url: https://wmtools.interledger-test.dev/
             script_ilpay_url: https://interledgerpay.com/extension/
-            script_embed_url: https://wmtools.interledger-test.dev/
+            script_embed_url: https://cdn.webmonetization.org/
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
