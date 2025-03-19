@@ -43,7 +43,7 @@ jobs:
             script_api_url: https://wmtools-backend.interledger-test.dev/
             script_frontend_url: https://wmtools.interledger-test.dev/
             script_ilpay_url: https://interledgerpay.com/extension/
-            script_embed_url: https://cdn.webmonetization.org/
+            script_init_url: https://cdn.webmonetization.org/
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -67,5 +67,5 @@ jobs:
             ${{ matrix.package.identifier == 'frontend' && format('VITE_SCRIPT_API_URL={0}', matrix.package.script_api_url) || '' }}
             ${{ matrix.package.identifier == 'frontend' && format('VITE_SCRIPT_FRONTEND_URL={0}', matrix.package.script_frontend_url) || '' }}
             ${{ matrix.package.identifier == 'frontend' && format('VITE_SCRIPT_ILPAY_URL={0}', matrix.package.script_ilpay_url) || '' }}
-            ${{ matrix.package.identifier == 'frontend' && format('VITE_SCRIPT_EMBED_URL={0}', matrix.package.script_embed_url) || '' }}
+            ${{ matrix.package.identifier == 'frontend' && format('VITE_INIT_SCRIPT_URL={0}', matrix.package.script_init_url) || '' }}
           tags: ghcr.io/${{ github.repository_owner }}/${{ matrix.package.name }}:${{ github.ref_name }},ghcr.io/${{ github.repository_owner }}/${{ matrix.package.name }}:latest
