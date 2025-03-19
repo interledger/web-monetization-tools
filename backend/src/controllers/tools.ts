@@ -33,16 +33,17 @@ export const createUserConfig = async (req: Request, res: Response) => {
   try {
     const data: CreateConfigRequest = req.body
     const tag = data.version || data.tag
-    const walletAddress = decodeURIComponent(`https://${data?.walletAddress}`)
+
+    if (!data?.walletAddress) {
+      throw 'Wallet address is required'
+    }
+    const walletAddress = decodeURIComponent(`https://${data.walletAddress}`)
 
     const cookieHeader = req.headers.cookie
     const session = await getSession(cookieHeader)
 
     const validForWallet = session?.get('validForWallet')
 
-    if (!data?.walletAddress) {
-      throw 'Wallet address is required'
-    }
     if (!session || validForWallet !== walletAddress) {
       throw 'Grant confirmation is required'
     }
