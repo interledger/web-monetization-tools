@@ -33,7 +33,12 @@ export const TypeCard = ({
         <InfoWithTooltip tooltip={tooltip} />
       </span>
       <p className="text-center text-sm min-h-36 p-4 mb-4">{description}</p>
-      <Button intent="default" aria-label={title} to={link} target="_parent">
+      <Button
+        intent="default"
+        aria-label={title}
+        to={link}
+        target={!link.toString().startsWith('create/') ? '_parent' : undefined}
+      >
         Generate
       </Button>
     </div>
