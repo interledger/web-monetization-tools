@@ -415,7 +415,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = Object.fromEntries(await request.formData())
   const intent = formData?.intent
 
-  const session = await getSession(request.headers.get('Cookie'))
+  const theCookie = request.headers.get('Cookie')
+  const session = await getSession(theCookie)
   session.set('last-action', intent as string)
 
   let apiResponse: ApiResponse = { isFailure: true, newversion: false }
@@ -508,7 +509,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }
     apiResponse = await ApiClient.createUserConfig(
       versionName,
-      payload.walletAddress
+      payload.walletAddress,
+      theCookie || ''
     )
     apiResponse.newversion = versionName
 
@@ -528,7 +530,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       Object.assign(payload, { css })
     }
 
-    apiResponse = await ApiClient.saveUserConfig(payload)
+    apiResponse = await ApiClient.saveUserConfig(payload, theCookie || '')
 
     actionResponse.apiResponse = apiResponse
     actionResponse.displayScript = intent != 'remove' ? true : displayScript

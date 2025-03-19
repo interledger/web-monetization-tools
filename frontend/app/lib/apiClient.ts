@@ -75,7 +75,8 @@ export class ApiClient {
 
   public static async createUserConfig(
     version: string,
-    walletAddress: string
+    walletAddress: string,
+    cookieHeader: string
   ): Promise<ApiResponse> {
     const tag = encodeURIComponent(version)
     const wa = encodeURIComponent(
@@ -86,7 +87,10 @@ export class ApiClient {
       { walletAddress: wa, tag },
       {
         httpsAgent,
-        withCredentials: true
+        withCredentials: true,
+        headers: {
+          Cookie: cookieHeader // Manually attach the session cookie
+        }
       }
     )
 
@@ -105,11 +109,15 @@ export class ApiClient {
   }
 
   public static async saveUserConfig(
-    configData: Partial<ElementConfigType>
+    configData: Partial<ElementConfigType>,
+    cookieHeader: string
   ): Promise<ApiResponse> {
     const response = await axios.put(`${apiUrl}tools`, configData, {
       httpsAgent,
-      withCredentials: true
+      withCredentials: true,
+      headers: {
+        Cookie: cookieHeader // Manually attach the session cookie
+      }
     })
 
     if (response.status === 200) {

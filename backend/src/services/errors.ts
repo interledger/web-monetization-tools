@@ -5,10 +5,3 @@ export class S3FileNotFoundError extends Error {
     this.name = 'NoSuchKey' // Set the error name
   }
 }
-
-export class MissingGrantError extends Error {
-  constructor(message: string) {
-    super(message)
-    this.name = 'MissingGrant'
-  }
-}

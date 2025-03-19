@@ -9,13 +9,14 @@ import {
   getS3AndParams,
   streamToString
 } from '../services/utils.js'
-import { MissingGrantError, S3FileNotFoundError } from '../services/errors.js'
+import { S3FileNotFoundError } from '../services/errors.js'
 import {
   ConfigVersions,
   CreateConfigRequest,
   SanitizedFields,
   SaveUserConfigRequest
 } from './types.js'
+import { getSession } from '@/services/session.js'
 
 export const getDefault = async (_: Request, res: Response) => {
   try {
@@ -32,22 +33,24 @@ export const createUserConfig = async (req: Request, res: Response) => {
   try {
     const data: CreateConfigRequest = req.body
     const tag = data.version || data.tag
+    const walletAddress = decodeURIComponent(`https://${data?.walletAddress}`)
 
-    const validForWallet = req.session?.validForWallet
+    const cookieHeader = req.headers.cookie
+    const session = await getSession(cookieHeader)
 
-    if (!data.walletAddress) {
+    const validForWallet = session?.get('validForWallet')
+
+    if (!data?.walletAddress) {
       throw 'Wallet address is required'
     }
-    if (validForWallet !== data.walletAddress) {
-      throw new MissingGrantError('Grant confirmation is required')
+    if (!session || validForWallet !== walletAddress) {
+      throw 'Grant confirmation is required'
     }
 
     const defaultData = await getDefaultData()
     const defaultDataContent: ConfigVersions['default'] =
       JSON.parse(defaultData).default
-    defaultDataContent.walletAddress = decodeURIComponent(
-      `https://${data.walletAddress}`
-    )
+    defaultDataContent.walletAddress = walletAddress
 
     sanitizeConfigFields({ ...defaultDataContent, tag })
 
@@ -104,13 +107,16 @@ export const createUserConfig = async (req: Request, res: Response) => {
 export const saveUserConfig = async (req: Request, res: Response) => {
   try {
     const data: SaveUserConfigRequest = req.body
-    const validForWallet = req.session?.validForWallet
+    const cookieHeader = req.headers.cookie
+    const session = await getSession(cookieHeader)
+
+    const validForWallet = session?.get('validForWallet')
 
     if (!data.walletAddress) {
       throw 'Wallet address is required'
     }
-    if (validForWallet !== data.walletAddress) {
-      throw new MissingGrantError('Grant confirmation is required')
+    if (!session || validForWallet !== data.walletAddress) {
+      throw 'Grant confirmation is required'
     }
 
     const { s3, params } = getS3AndParams(data.walletAddress)

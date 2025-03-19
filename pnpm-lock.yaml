@@ -41,6 +41,9 @@ importers:
       '@aws-sdk/client-s3':
         specifier: ^3.645.0
         version: 3.682.0
+      '@remix-run/node':
+        specifier: ^2.14.0
+        version: 2.14.0(typescript@5.6.3)
       '@smithy/node-http-handler':
         specifier: ^3.2.3
         version: 3.2.5
@@ -50,6 +53,9 @@ importers:
       '@types/underscore':
         specifier: ^1.11.15
         version: 1.13.0
+      cookie-parser:
+        specifier: ^1.4.7
+        version: 1.4.7
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
@@ -1720,6 +1726,10 @@ packages:
 
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
+
+  cookie-parser@1.4.7:
+    resolution: {integrity: sha512-nGUvgXnotP3BsjiLX2ypbQnWoGUPIIfHQNZkkC668ntrzGWEZVW70HDEB1qnNGMicPje6EttlIgzo51YSwNQGw==}
+    engines: {node: '>= 0.8.0'}
 
   cookie-signature@1.0.6:
     resolution: {integrity: sha512-QADzlaHc8icV8I7vbaJXJwod9HWYp8uCqf1xa4OfNu1T7JVxQIrUgOWtHdNDtPiywmFbiS12VjotIXLrKM3orQ==}
@@ -5406,6 +5416,18 @@ snapshots:
     optionalDependencies:
       typescript: 5.1.6
 
+  '@remix-run/node@2.14.0(typescript@5.6.3)':
+    dependencies:
+      '@remix-run/server-runtime': 2.14.0(typescript@5.6.3)
+      '@remix-run/web-fetch': 4.4.2
+      '@web3-storage/multipart-parser': 1.0.0
+      cookie-signature: 1.2.2
+      source-map-support: 0.5.21
+      stream-slice: 0.1.2
+      undici: 6.20.1
+    optionalDependencies:
+      typescript: 5.6.3
+
   '@remix-run/react@2.14.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.1.6)':
     dependencies:
       '@remix-run/router': 1.21.0
@@ -5445,6 +5467,18 @@ snapshots:
       turbo-stream: 2.4.0
     optionalDependencies:
       typescript: 5.1.6
+
+  '@remix-run/server-runtime@2.14.0(typescript@5.6.3)':
+    dependencies:
+      '@remix-run/router': 1.21.0
+      '@types/cookie': 0.6.0
+      '@web3-storage/multipart-parser': 1.0.0
+      cookie: 0.6.0
+      set-cookie-parser: 2.7.1
+      source-map: 0.7.4
+      turbo-stream: 2.4.0
+    optionalDependencies:
+      typescript: 5.6.3
 
   '@remix-run/web-blob@3.1.0':
     dependencies:
@@ -6532,6 +6566,11 @@ snapshots:
   content-type@1.0.5: {}
 
   convert-source-map@2.0.0: {}
+
+  cookie-parser@1.4.7:
+    dependencies:
+      cookie: 0.7.2
+      cookie-signature: 1.0.6
 
   cookie-signature@1.0.6: {}
 
