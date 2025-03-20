@@ -6,7 +6,7 @@ import {
   useNavigation,
   useSubmit
 } from '@remix-run/react'
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import {
   ConfirmModal,
   ImportModal,
@@ -190,7 +190,7 @@ export default function Create() {
   }
 
   const getConfirmModalContent = (type: string) => {
-    let title = '',
+    let title: string | ReactElement = '',
       description = '',
       onConfirm = () => {}
     const onClose = () => setModalOpen(undefined)
@@ -201,10 +201,14 @@ export default function Create() {
         onConfirm = onConfirmRemove
         break
       case 'wallet-ownership':
-        title = `Please confirm you are owner of 
-                <span class="flex w-full justify-center text-center">
-                  ${walletAddress?.id || ''}
-                </span>`
+        title = (
+          <span>
+            Please confirm you are owner of
+            <span className="flex w-full justify-center text-center">
+              ${walletAddress?.id || ''}
+            </span>
+          </span>
+        )
         description =
           "You will need to confirm a grant to prove that you are the owner of the wallet address. It's value is set to 1 but there will be no funds removed from your wallet"
         onConfirm = onConfirmOwnership

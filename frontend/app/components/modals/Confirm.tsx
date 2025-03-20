@@ -3,10 +3,11 @@ import { Form } from '@remix-run/react'
 import { ElementErrors } from '~/lib/types.js'
 import { XIcon } from '~/components/icons.js'
 import { Button } from '~/components/index.js'
+import { ReactElement } from 'react'
 
 type ConfirmModalProps = {
-  title: string
-  description: string
+  title: string | ReactElement
+  description: string | ReactElement
   isOpen: boolean
   errors?: ElementErrors
   onClose: () => void
@@ -40,8 +41,9 @@ export const ConfirmModal = ({
               <Dialog.Title
                 as="h3"
                 className="font-semibold leading-6 text-lg text-center"
-                dangerouslySetInnerHTML={{ __html: title }}
-              ></Dialog.Title>
+              >
+                {title}
+              </Dialog.Title>
               <div className="mt-2">
                 <Form method="post" replace preventScrollReset>
                   <fieldset>
