@@ -49,8 +49,6 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   const interactRef = url.searchParams.get('interact_ref') || ''
   const result = url.searchParams.get('result') || ''
 
-  const cleanUrl = `//${url.host}${url.pathname}`
-
   const session = await getSession(request.headers.get('Cookie'))
   const walletAddress = session.get('wallet-address')
   const grant = session.get('payment-grant')
@@ -66,7 +64,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
       grantResponse = 'Wallet ownership confirmed!'
       session.set('validForWallet', walletAddress.id)
     }
-    session.set('payment-grant', undefined)
+    session.unset('payment-grant')
   }
 
   // get default config
@@ -87,8 +85,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
       grantResponse,
       isGrantResponse,
       isGrantAccepted,
-      lastAction,
-      cleanUrl
+      lastAction
     },
     {
       headers: {
@@ -109,8 +106,7 @@ export default function Create() {
     isGrantAccepted,
     grantResponse,
     isGrantResponse,
-    lastAction,
-    cleanUrl
+    lastAction
   } = useLoaderData<typeof loader>()
   const response = useActionData<typeof action>()
   const { state } = useNavigation()
@@ -133,14 +129,6 @@ export default function Create() {
   const wa = toWalletAddressUrl(toolConfig?.walletAddress || '')
   const scriptToDisplay = `<script id="wmt-init-script" type="module" src="${scriptInitUrl}init.js?wa=${wa}&tag=[version]&types=[elements]"></script>`
   const submitForm = useSubmit()
-
-  // remove url query parameters, prevent from resubmition
-  if (typeof window !== 'undefined') {
-    const urlWProtocol = `${window.location.protocol}${cleanUrl}`
-    if (window.location.href !== urlWProtocol) {
-      window.history.replaceState(null, '', urlWProtocol)
-    }
-  }
 
   const getFormData = (
     configArray: Record<string, ElementConfigType>,

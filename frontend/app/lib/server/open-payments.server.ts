@@ -8,7 +8,6 @@ import {
   isPendingGrant
 } from '@interledger/open-payments'
 import { createId } from '@paralleldrive/cuid2'
-import { randomUUID } from 'crypto'
 import { toWalletAddressUrl } from '../utils.js'
 
 async function createClient() {
@@ -136,7 +135,7 @@ export async function createInteractiveGrant(args: {
   redirectUrl?: string
 }) {
   const opClient = await createClient()
-  const clientNonce = randomUUID()
+  const clientNonce = crypto.randomUUID()
   const paymentId = createId()
 
   const outgoingPaymentGrant = await createOutgoingPaymentGrant({
