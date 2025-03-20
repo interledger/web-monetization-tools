@@ -125,13 +125,14 @@ export default function Create() {
     version: string
   ) => {
     const formData = new FormData()
-    formData.append('intent', intent)
-    formData.append('version', version)
-    formData.append('fullconfig', JSON.stringify(configArray))
     const defaultSet = configArray.default as unknown as Record<string, string>
     Object.keys(defaultSet).map((key) => {
-      formData.append(key, defaultSet[key])
+      formData.set(key, defaultSet[key])
     })
+
+    formData.set('intent', intent)
+    formData.set('version', version)
+    formData.set('fullconfig', JSON.stringify(configArray))
 
     return formData
   }
@@ -222,13 +223,10 @@ export default function Create() {
   }
 
   useEffect(() => {
-    let newVersion, userFullconfig
-    if (lastAction == 'newversion') {
-      newVersion = sessionStorage.getItem('new-version')
-    } else {
-      newVersion = sessionStorage.getItem('new-version')
-      userFullconfig = JSON.parse(sessionStorage.getItem('fullconfig') || '{}')
-    }
+    const newVersion = sessionStorage.getItem('new-version')
+    const userFullconfig = JSON.parse(
+      sessionStorage.getItem('fullconfig') || '{}'
+    )
 
     setConfigs(userFullconfig, newVersion || 'default')
 
