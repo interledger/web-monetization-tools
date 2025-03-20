@@ -10,14 +10,12 @@ import {
 import { createId } from '@paralleldrive/cuid2'
 import { toWalletAddressUrl } from '../utils.js'
 
-let client
 async function createClient() {
-  client ??= await createAuthenticatedClient({
+  return await createAuthenticatedClient({
     keyId: process.env.OP_KEY_ID!,
     privateKey: Buffer.from(process.env.OP_PRIVATE_KEY!, 'base64'),
     walletAddressUrl: process.env.OP_WALLET_ADDRESS!
   })
-  return client
 }
 
 export async function getValidWalletAddress(walletAddress: string) {
