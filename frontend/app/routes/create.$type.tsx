@@ -3,7 +3,6 @@ import {
   Form,
   useActionData,
   useLoaderData,
-  useLocation,
   useNavigation,
   useSubmit
 } from '@remix-run/react'
@@ -37,8 +36,7 @@ import { validateForm } from '~/lib/server/validate.server'
 import { commitSession, getSession } from '~/lib/server/session.server'
 import {
   getValidWalletAddress,
-  createInteractiveGrant,
-  isGrantValidAndAccepted
+  createInteractiveGrant
 } from '~/lib/server/open-payments.server'
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
@@ -46,26 +44,18 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
   const url = new URL(request.url)
   const contentOnlyParam = url.searchParams.get('contentOnly')
-  const interactRef = url.searchParams.get('interact_ref') || ''
-  const result = url.searchParams.get('result') || ''
 
   const session = await getSession(request.headers.get('Cookie'))
   const walletAddress = session.get('wallet-address')
-  const grant = session.get('payment-grant')
   const lastAction = session.get('last-action')
-  let grantResponse = result === 'grant_rejected' ? 'Grant was declined' : ''
-  let isGrantAccepted = false
-  let isGrantResponse = false
+  const grantResponse = session.get('grant-response')
+  const isGrantAccepted = session.get('is-grant-accepted')
+  const isGrantResponse = session.get('is-grant-response')
 
-  if (walletAddress && grant && interactRef) {
-    isGrantResponse = true
-    isGrantAccepted = await isGrantValidAndAccepted(grant, interactRef)
-    if (isGrantAccepted) {
-      grantResponse = 'Wallet ownership confirmed!'
-      session.set('validForWallet', walletAddress.id)
-    }
-    session.unset('payment-grant')
-  }
+  // removed unneeded data
+  session.unset('grant-response')
+  session.unset('is-grant-accepted')
+  session.unset('is-grant-response')
 
   // get default config
   const apiResponse: ApiResponse = await ApiClient.getDefaultConfig()
@@ -110,7 +100,6 @@ export default function Create() {
   } = useLoaderData<typeof loader>()
   const response = useActionData<typeof action>()
   const { state } = useNavigation()
-  const location = useLocation()
   const isSubmitting = state === 'submitting'
   const contentOnly = contentOnlyParam != null
 
@@ -147,6 +136,28 @@ export default function Create() {
     return formData
   }
 
+  const setConfigs = (
+    fullConfigObject: Record<string, ElementConfigType>,
+    versionName: string
+  ) => {
+    if (fullConfigObject?.default) {
+      const versionLabels = Object.keys(fullConfigObject).map((key) => {
+        return {
+          label: capitalizeFirstLetter(key.replaceAll('-', ' ')),
+          value: key
+        }
+      })
+      setVersionOptions(versionLabels)
+      setFullConfig(fullConfigObject)
+    }
+    if (versionName) {
+      const selVersion = versionName
+      setSelectedVersion(selVersion)
+    }
+    // make sure the update is triggered
+    setConfigUpdateTrigger((prev) => prev + 1)
+  }
+
   const onConfirmRemove = () => {
     if (fullConfig) {
       const { [selectedVersion]: _, ...rest } = fullConfig
@@ -175,7 +186,7 @@ export default function Create() {
   const onResubmit = () => {
     setModalOpen(undefined)
     const formData = getFormData(fullConfig || {}, lastAction, selectedVersion)
-    submitForm(formData, { method: 'post', action: location.pathname })
+    submitForm(formData, { method: 'post' })
   }
 
   const getConfirmModalContent = (type: string) => {
@@ -192,7 +203,7 @@ export default function Create() {
       case 'wallet-ownership':
         title = `Please confirm you are owner of 
                 <span class="flex w-full justify-center text-center">
-                  ${walletAddress.id}
+                  ${walletAddress?.id || ''}
                 </span>`
         description =
           "You will need to confirm a grant to prove that you are the owner of the wallet address. It's value is set to 1 but there will be no funds removed from your wallet"
@@ -207,26 +218,20 @@ export default function Create() {
   }
 
   useEffect(() => {
-    if (isGrantResponse) {
-      let newVersion, userFullconfig
-      if (lastAction == 'newversion') {
-        newVersion = sessionStorage.getItem('new-version')
-      } else {
-        newVersion = sessionStorage.getItem('new-version')
-        userFullconfig = JSON.parse(
-          sessionStorage.getItem('fullconfig') || '{}'
-        )
-      }
+    let newVersion, userFullconfig
+    if (lastAction == 'newversion') {
+      newVersion = sessionStorage.getItem('new-version')
+    } else {
+      newVersion = sessionStorage.getItem('new-version')
+      userFullconfig = JSON.parse(sessionStorage.getItem('fullconfig') || '{}')
+    }
 
-      if (userFullconfig) {
-        setFullConfig(userFullconfig)
-      }
-      if (newVersion) {
-        setSelectedVersion(newVersion)
-      }
+    setConfigs(userFullconfig, newVersion || 'default')
+
+    if (isGrantResponse) {
       setModalOpen('grant-response')
     }
-  }, [isGrantResponse, lastAction])
+  }, [])
 
   useEffect(() => {
     const errors = Object.keys(response?.errors?.fieldErrors || {})
@@ -240,60 +245,34 @@ export default function Create() {
       response.apiResponse &&
       response.apiResponse.newversion
     ) {
-      const versionLabels = Object.keys(response.apiResponse?.payload).map(
-        (key) => {
-          return {
-            label: capitalizeFirstLetter(key.replaceAll('-', ' ')),
-            value: key
-          }
-        }
-      )
-      setVersionOptions(versionLabels)
-      setFullConfig(response.apiResponse.payload)
-
+      setConfigs(response.apiResponse?.payload, response.apiResponse.newversion)
       setModalOpen('info')
-
-      const selVersion = response.apiResponse.newversion
-      setSelectedVersion(selVersion)
-      // make sure the update is triggered
-      setConfigUpdateTrigger((prev) => prev + 1)
     } else if (
       response &&
       response.apiResponse &&
       response.apiResponse.isFailure == false
     ) {
-      const versionLabels = Object.keys(response.apiResponse?.payload).map(
-        (key) => {
-          return {
-            label: capitalizeFirstLetter(key.replaceAll('-', ' ')),
-            value: key
-          }
-        }
-      )
-      setVersionOptions(versionLabels)
+      setConfigs(response.apiResponse?.payload, 'default')
 
-      setFullConfig(response.apiResponse.payload)
-      setSelectedVersion('default')
       setModalOpen(undefined)
       if (response.intent != 'remove') {
         setModalOpen('info')
       }
-      setSelectedVersion('default')
-      // make sure the update is triggered
-      setConfigUpdateTrigger((prev) => prev + 1)
     }
   }, [response])
 
   useEffect(() => {
-    const updatedFullConfig = {
-      ...fullConfig,
-      [selectedVersion]: toolConfig
-    }
-    setFullConfig(updatedFullConfig)
+    if (fullConfig) {
+      const updatedFullConfig = {
+        ...fullConfig,
+        [selectedVersion]: toolConfig
+      }
+      setFullConfig(updatedFullConfig)
 
-    //preserve data for page redirect
-    sessionStorage.setItem('new-version', selectedVersion)
-    sessionStorage.setItem('fullconfig', JSON.stringify(updatedFullConfig))
+      //preserve data for page redirect
+      sessionStorage.setItem('new-version', selectedVersion)
+      sessionStorage.setItem('fullconfig', JSON.stringify(updatedFullConfig))
+    }
   }, [toolConfig])
 
   useEffect(() => {
@@ -321,12 +300,7 @@ export default function Create() {
       />
       {toolConfig && validConfigTypes.includes(String(elementType)) ? (
         <div className="flex flex-col">
-          <Form
-            id="config-form"
-            method="post"
-            action={location.pathname}
-            replace
-          >
+          <Form id="config-form" method="post" replace>
             <fieldset disabled={isSubmitting}>
               <ToolPreview
                 type={elementType}
@@ -452,7 +426,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
         const walletAddress = await getValidWalletAddress(ownerWalletAddress)
         session.set('wallet-address', walletAddress)
 
-        const redirectUrl = `${process.env.FRONTEND_URL}create/${elementType}/`
+        const redirectUrl = `${process.env.FRONTEND_URL}grant/${elementType}/`
         const grant = await createInteractiveGrant({
           walletAddress: walletAddress,
           redirectUrl
