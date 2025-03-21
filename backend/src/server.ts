@@ -4,6 +4,7 @@ import fs from 'fs'
 import express, { Express } from 'express'
 import session from 'express-session'
 import routes from './routes/index.js'
+import { SESSION_COOKIE_SECRET_KEY } from './services/session.js'
 
 const router: Express = express()
 
@@ -25,7 +26,7 @@ router.use(express.json())
 // Session middleware
 router.use(
   session({
-    secret: process.env.SESSION_COOKIE_SECRET_KEY || 'supersecretilpaystring',
+    secret: SESSION_COOKIE_SECRET_KEY,
     resave: false,
     saveUninitialized: true, // Only save the session if it is modified
     cookie: {
