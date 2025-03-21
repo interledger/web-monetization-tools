@@ -13,11 +13,11 @@ export const walletSchema = z.object({
   walletAddress: z
     .string()
     .min(1, { message: 'Wallet address is required' })
-    .superRefine(async (url, ctx) => {
-      if (url.length === 0) return
+    .transform((url) => toWalletAddressUrl(url))
+    .superRefine(async (updatedUrl, ctx) => {
+      if (updatedUrl.length === 0) return
 
       try {
-        const updatedUrl = toWalletAddressUrl(url)
         checkHrefFormat(updatedUrl)
         await isValidWalletAddress(updatedUrl)
       } catch (e) {
