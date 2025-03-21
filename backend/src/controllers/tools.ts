@@ -150,11 +150,14 @@ export const getUserConfig = async (req: Request, res: Response) => {
     if (!id) {
       throw new S3FileNotFoundError('Wallet address is required')
     }
+    const walletAddress = decodeURIComponent(`https://${id}`)
 
     // ensure we have all keys w default values, user config will overwrite values that exist in saved json
     const defaultData = await getDefaultData()
+    const parsedDefaultData = JSON.parse(defaultData)
+    parsedDefaultData.default.walletAddress = walletAddress
 
-    const { s3, params } = getS3AndParams(id)
+    const { s3, params } = getS3AndParams(walletAddress)
     const data = await s3.send(new GetObjectCommand(params))
     // Convert the file stream to a string
     const fileContentString = await streamToString(
@@ -162,7 +165,7 @@ export const getUserConfig = async (req: Request, res: Response) => {
     )
 
     let fileContent = Object.assign(
-      JSON.parse(defaultData),
+      parsedDefaultData,
       ...[JSON.parse(fileContentString)]
     )
     fileContent = filterDeepProperties(fileContent)
