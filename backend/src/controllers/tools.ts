@@ -16,6 +16,7 @@ import {
   SanitizedFields,
   SaveUserConfigRequest
 } from './types.js'
+import { getSession } from '@/services/session.js'
 
 export const getDefault = async (_: Request, res: Response) => {
   try {
@@ -33,15 +34,24 @@ export const createUserConfig = async (req: Request, res: Response) => {
     const data: CreateConfigRequest = req.body
     const tag = data.version || data.tag
 
-    if (!data.walletAddress) {
+    if (!data?.walletAddress) {
       throw 'Wallet address is required'
     }
+    const walletAddress = decodeURIComponent(`https://${data.walletAddress}`)
+
+    const cookieHeader = req.headers.cookie
+    const session = await getSession(cookieHeader)
+
+    const validForWallet = session?.get('validForWallet')
+
+    if (!session || validForWallet !== walletAddress) {
+      throw 'Grant confirmation is required'
+    }
+
     const defaultData = await getDefaultData()
     const defaultDataContent: ConfigVersions['default'] =
       JSON.parse(defaultData).default
-    defaultDataContent.walletAddress = decodeURIComponent(
-      `https://${data.walletAddress}`
-    )
+    defaultDataContent.walletAddress = walletAddress
 
     sanitizeConfigFields({ ...defaultDataContent, tag })
 
@@ -51,6 +61,7 @@ export const createUserConfig = async (req: Request, res: Response) => {
     try {
       // existing config
       const s3data = await s3.send(new GetObjectCommand(params))
+
       // Convert the file stream to a string
       fileContentString = await streamToString(
         s3data.Body as NodeJS.ReadableStream
@@ -97,9 +108,16 @@ export const createUserConfig = async (req: Request, res: Response) => {
 export const saveUserConfig = async (req: Request, res: Response) => {
   try {
     const data: SaveUserConfigRequest = req.body
+    const cookieHeader = req.headers.cookie
+    const session = await getSession(cookieHeader)
+
+    const validForWallet = session?.get('validForWallet')
 
     if (!data.walletAddress) {
       throw 'Wallet address is required'
+    }
+    if (!session || validForWallet !== data.walletAddress) {
+      throw 'Grant confirmation is required'
     }
 
     const { s3, params } = getS3AndParams(data.walletAddress)
@@ -132,11 +150,14 @@ export const getUserConfig = async (req: Request, res: Response) => {
     if (!id) {
       throw new S3FileNotFoundError('Wallet address is required')
     }
+    const walletAddress = decodeURIComponent(`https://${id}`)
 
     // ensure we have all keys w default values, user config will overwrite values that exist in saved json
     const defaultData = await getDefaultData()
+    const parsedDefaultData = JSON.parse(defaultData)
+    parsedDefaultData.default.walletAddress = walletAddress
 
-    const { s3, params } = getS3AndParams(id)
+    const { s3, params } = getS3AndParams(walletAddress)
     const data = await s3.send(new GetObjectCommand(params))
     // Convert the file stream to a string
     const fileContentString = await streamToString(
@@ -144,7 +165,7 @@ export const getUserConfig = async (req: Request, res: Response) => {
     )
 
     let fileContent = Object.assign(
-      JSON.parse(defaultData),
+      parsedDefaultData,
       ...[JSON.parse(fileContentString)]
     )
     fileContent = filterDeepProperties(fileContent)

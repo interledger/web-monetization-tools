@@ -50,6 +50,10 @@ services:
       ILPAY_URL: ${SCRIPT_ILPAY_URL}
       FRONTEND_URL: ${SCRIPT_FRONTEND_URL}
       INIT_SCRIPT_URL: ${SCRIPT_EMBED_URL}
+      OP_KEY_ID: ${OP_KEY_ID}
+      OP_PRIVATE_KEY: ${OP_PRIVATE_KEY}
+      OP_WALLET_ADDRESS: ${OP_WALLET_ADDRESS}
+      OP_REDIRECT_URL: ${OP_REDIRECT_URL}
     networks:
       - wm-tools
     command: pnpm run dev

@@ -6,7 +6,7 @@ import {
   useNavigation,
   useSubmit
 } from '@remix-run/react'
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import {
   ConfirmModal,
   ImportModal,
@@ -23,23 +23,21 @@ import {
   ToolPreview
 } from '~/components/index.js'
 import { ApiClient, ApiResponse } from '~/lib/apiClient.js'
-import { type Message, messageStorage } from '~/lib/message.server.js'
-import { validConfigTypes } from '~/lib/presets.js'
+import { validConfigTypes, ModalType } from '~/lib/presets.js'
 import { tooltips } from '~/lib/tooltips.js'
 import { ElementConfigType, ElementErrors } from '~/lib/types.js'
 import {
   capitalizeFirstLetter,
   encodeAndCompressParameters,
-  getIlpayCss
+  getIlpayCss,
+  toWalletAddressUrl
 } from '~/lib/utils.js'
+import { validateForm } from '~/lib/server/validate.server'
+import { commitSession, getSession } from '~/lib/server/session.server'
 import {
-  createBannerSchema,
-  createButtonSchema,
-  createWidgetSchema,
-  fullConfigSchema,
-  versionSchema,
-  walletSchema
-} from '~/lib/validate.server'
+  getValidWalletAddress,
+  createInteractiveGrant
+} from '~/lib/server/open-payments.server'
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const elementType = params.type
@@ -47,10 +45,17 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   const url = new URL(request.url)
   const contentOnlyParam = url.searchParams.get('contentOnly')
 
-  const cookies = request.headers.get('cookie')
+  const session = await getSession(request.headers.get('Cookie'))
+  const walletAddress = session.get('wallet-address')
+  const lastAction = session.get('last-action')
+  const grantResponse = session.get('grant-response')
+  const isGrantAccepted = session.get('is-grant-accepted')
+  const isGrantResponse = session.get('is-grant-response')
 
-  const session = await messageStorage.getSession(cookies)
-  const message = session.get('script') as Message
+  // removed unneeded data
+  session.unset('grant-response')
+  session.unset('is-grant-accepted')
+  session.unset('is-grant-response')
 
   // get default config
   const apiResponse: ApiResponse = await ApiClient.getDefaultConfig()
@@ -59,14 +64,25 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   const ilpayUrl = process.env.ILPAY_URL || ''
   const scriptInitUrl = process.env.INIT_SCRIPT_URL || ''
 
-  return {
-    elementType,
-    defaultConfig,
-    message,
-    ilpayUrl,
-    scriptInitUrl,
-    contentOnlyParam
-  }
+  return json(
+    {
+      elementType,
+      defaultConfig,
+      ilpayUrl,
+      scriptInitUrl,
+      walletAddress,
+      contentOnlyParam,
+      grantResponse,
+      isGrantResponse,
+      isGrantAccepted,
+      lastAction
+    },
+    {
+      headers: {
+        'Set-Cookie': await commitSession(session) // Commit session changes
+      }
+    }
+  )
 }
 
 export default function Create() {
@@ -75,7 +91,12 @@ export default function Create() {
     defaultConfig,
     ilpayUrl,
     scriptInitUrl,
-    contentOnlyParam
+    walletAddress,
+    contentOnlyParam,
+    isGrantAccepted,
+    grantResponse,
+    isGrantResponse,
+    lastAction
   } = useLoaderData<typeof loader>()
   const response = useActionData<typeof action>()
   const { state } = useNavigation()
@@ -86,24 +107,60 @@ export default function Create() {
   const [toolConfig, setToolConfig] = useState<ElementConfigType>(defaultConfig)
   const [fullConfig, setFullConfig] =
     useState<Record<string, ElementConfigType>>()
-  const [modalOpen, setModalOpen] = useState(false)
-  const [importModalOpen, setImportModalOpen] = useState(false)
-  const [newVersionModalOpen, setNewVersionModalOpen] = useState(false)
-  const [infoModalOpen, setInfoModalOpen] = useState(false)
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false)
+  const [modalOpen, setModalOpen] = useState<ModalType | undefined>()
+
+  const [versionName, setVersionName] = useState('')
   const [selectedVersion, setSelectedVersion] = useState('default')
   const [versionOptions, setVersionOptions] = useState<SelectOption[]>([
     { label: 'Default', value: 'default' }
   ])
   const [configUpdateTrigger, setConfigUpdateTrigger] = useState(0)
 
-  const wa = (toolConfig?.walletAddress || '')
-    .replace('$', '')
-    .replace('https://', '')
+  const wa = toWalletAddressUrl(toolConfig?.walletAddress || '')
   const scriptToDisplay = `<script id="wmt-init-script" type="module" src="${scriptInitUrl}init.js?wa=${wa}&tag=[version]&types=[elements]"></script>`
   const submitForm = useSubmit()
 
-  const onConfirm = () => {
+  const getFormData = (
+    configArray: Record<string, ElementConfigType>,
+    intent: string,
+    version: string
+  ) => {
+    const formData = new FormData()
+    const defaultSet = configArray.default as unknown as Record<string, string>
+    Object.keys(defaultSet).map((key) => {
+      formData.set(key, defaultSet[key])
+    })
+
+    formData.set('intent', intent)
+    formData.set('version', version)
+    formData.set('fullconfig', JSON.stringify(configArray))
+
+    return formData
+  }
+
+  const setConfigs = (
+    fullConfigObject: Record<string, ElementConfigType>,
+    versionName: string
+  ) => {
+    if (fullConfigObject?.default) {
+      const versionLabels = Object.keys(fullConfigObject).map((key) => {
+        return {
+          label: capitalizeFirstLetter(key.replaceAll('-', ' ')),
+          value: key
+        }
+      })
+      setVersionOptions(versionLabels)
+      setFullConfig(fullConfigObject)
+    }
+    if (versionName) {
+      const selVersion = versionName
+      setSelectedVersion(selVersion)
+    }
+    // make sure the update is triggered
+    setConfigUpdateTrigger((prev) => prev + 1)
+  }
+
+  const onConfirmRemove = () => {
     if (fullConfig) {
       const { [selectedVersion]: _, ...rest } = fullConfig
       setFullConfig(rest)
@@ -115,85 +172,126 @@ export default function Create() {
       )
       setVersionOptions(filteredOptions)
       setSelectedVersion('default')
-      setConfirmModalOpen(false)
+      setModalOpen(undefined)
 
-      const formData = new FormData()
-      formData.append('intent', 'remove')
-      formData.append('version', 'default')
-      formData.append('fullconfig', JSON.stringify(rest))
-      const defaultSet = rest.default as unknown as Record<string, string>
-      Object.keys(defaultSet).map((key) => {
-        formData.append(key, defaultSet[key])
-      })
+      const formData = getFormData(rest, 'remove', 'default')
       submitForm(formData, { method: 'post' })
     }
   }
+
+  const onConfirmOwnership = () => {
+    if (response?.grantRequired) {
+      window.location.href = response.grantRequired
+    }
+  }
+
+  const onResubmit = () => {
+    setModalOpen(undefined)
+    const formData = getFormData(fullConfig || {}, lastAction, selectedVersion)
+    submitForm(formData, { method: 'post' })
+  }
+
+  const getConfirmModalContent = (type: string) => {
+    let title: string | ReactElement = '',
+      description = '',
+      onConfirm = () => {}
+    const onClose = () => setModalOpen(undefined)
+
+    switch (type) {
+      case 'confirm':
+        title = `Are you sure you want to remove ${selectedVersion}?`
+        onConfirm = onConfirmRemove
+        break
+      case 'wallet-ownership':
+        title = (
+          <span>
+            Please confirm you are owner of
+            <span className="flex w-full justify-center text-center">
+              {walletAddress?.id || ''}
+            </span>
+          </span>
+        )
+        description =
+          "You will need to confirm a grant to prove that you are the owner of the wallet address. It's value is set to 1 but there will be no funds removed from your wallet"
+        onConfirm = onConfirmOwnership
+        break
+      case 'grant-response':
+        title = grantResponse
+        onConfirm = isGrantAccepted ? onResubmit : onClose
+        break
+    }
+    return { title, description, onClose, onConfirm }
+  }
+
+  useEffect(() => {
+    const newVersion = sessionStorage.getItem('new-version')
+    const userFullconfig = JSON.parse(
+      sessionStorage.getItem('fullconfig') || '{}'
+    )
+    // make sure newly created version has config value
+    if (newVersion && !userFullconfig[newVersion]) {
+      userFullconfig[newVersion] = userFullconfig['default']
+    }
+
+    setConfigs(userFullconfig, newVersion || 'default')
+
+    if (isGrantResponse) {
+      setModalOpen('grant-response')
+    }
+  }, [])
 
   useEffect(() => {
     const errors = Object.keys(response?.errors?.fieldErrors || {})
 
     if (response && !errors.length && response.displayScript) {
-      setModalOpen(true)
+      setModalOpen('script')
+    } else if (response && response.grantRequired) {
+      setModalOpen('wallet-ownership')
     } else if (
       response &&
       response.apiResponse &&
       response.apiResponse.newversion
     ) {
-      const versionLabels = Object.keys(response.apiResponse?.payload).map(
-        (key) => {
-          return {
-            label: capitalizeFirstLetter(key.replaceAll('-', ' ')),
-            value: key
-          }
-        }
-      )
-      setVersionOptions(versionLabels)
-      setFullConfig(response.apiResponse.payload)
+      const newVersion = response.apiResponse.newversion
+      const userFullconfig = response.apiResponse?.payload
 
-      setNewVersionModalOpen(false)
-      setInfoModalOpen(true)
-      const selVersion = response.apiResponse.newversion
-      setSelectedVersion(selVersion)
-      // make sure the update is triggered
-      setConfigUpdateTrigger((prev) => prev + 1)
+      setConfigs(userFullconfig, newVersion)
+      setModalOpen('info')
     } else if (
       response &&
       response.apiResponse &&
       response.apiResponse.isFailure == false
     ) {
-      const versionLabels = Object.keys(response.apiResponse?.payload).map(
-        (key) => {
-          return {
-            label: capitalizeFirstLetter(key.replaceAll('-', ' ')),
-            value: key
-          }
-        }
-      )
-      setVersionOptions(versionLabels)
+      setConfigs(response.apiResponse?.payload, 'default')
 
-      setFullConfig(response.apiResponse.payload)
-      setImportModalOpen(false)
+      setModalOpen(undefined)
       if (response.intent != 'remove') {
-        setInfoModalOpen(true)
+        setModalOpen('info')
       }
-      setSelectedVersion('default')
-      // make sure the update is triggered
-      setConfigUpdateTrigger((prev) => prev + 1)
     }
   }, [response])
 
   useEffect(() => {
-    const updatedFullConfig = {
-      ...fullConfig,
-      [selectedVersion]: toolConfig
+    if (fullConfig) {
+      const updatedFullConfig = {
+        ...fullConfig,
+        [selectedVersion]: toolConfig
+      }
+      setFullConfig(updatedFullConfig)
+
+      //preserve data for page redirect
+      sessionStorage.setItem('new-version', selectedVersion)
+      sessionStorage.setItem('fullconfig', JSON.stringify(updatedFullConfig))
     }
-    setFullConfig(updatedFullConfig)
   }, [toolConfig])
 
   useEffect(() => {
     if (fullConfig) {
       const config = fullConfig[selectedVersion]
       setToolConfig(config)
+
+      //preserve data for page redirect
+      sessionStorage.setItem('new-version', selectedVersion)
     }
   }, [selectedVersion, configUpdateTrigger])
 
@@ -202,10 +300,10 @@ export default function Create() {
       <PageHeader
         title={`Create ${elementType}`}
         elementType={elementType}
-        setImportModalOpen={setImportModalOpen}
+        setImportModalOpen={() => setModalOpen('import')}
         link={`/${contentOnly ? '?contentOnly' : ''}`}
-        setNewVersionModalOpen={setNewVersionModalOpen}
-        setConfirmModalOpen={setConfirmModalOpen}
+        setNewVersionModalOpen={() => setModalOpen('new-version')}
+        setConfirmModalOpen={() => setModalOpen('confirm')}
         versionOptions={versionOptions}
         selectedVersion={selectedVersion}
         setSelectedVersion={setSelectedVersion}
@@ -255,39 +353,44 @@ export default function Create() {
         tooltip={tooltips.scriptModal}
         defaultType={elementType}
         scriptForDisplay={scriptToDisplay}
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
+        isOpen={modalOpen == 'script'}
+        onClose={() => setModalOpen(undefined)}
       />
       <ImportModal
         title="Import config from wallet address"
-        isOpen={importModalOpen}
+        isOpen={modalOpen == 'import'}
         isSubmitting={isSubmitting}
-        onClose={() => setImportModalOpen(false)}
+        onClose={() => setModalOpen(undefined)}
         toolConfig={toolConfig}
         setToolConfig={setToolConfig}
         errors={response?.errors}
       />
       <NewVersionModal
         title="Create a new version of your config"
-        isOpen={newVersionModalOpen}
+        isOpen={modalOpen == 'new-version'}
         isSubmitting={isSubmitting}
-        onClose={() => setNewVersionModalOpen(false)}
+        onClose={() => setModalOpen(undefined)}
         errors={response?.errors}
         toolConfig={toolConfig}
         setToolConfig={setToolConfig}
         fullConfig={fullConfig}
+        versionName={versionName}
+        setVersionName={(v) => {
+          setVersionName(v)
+          sessionStorage.setItem('new-version', v)
+        }}
       />
       <InfoModal
         title="Available configs"
         content={versionOptions.map((ver) => ver.value).join(', ')}
-        isOpen={infoModalOpen}
-        onClose={() => setInfoModalOpen(false)}
+        isOpen={modalOpen == 'info'}
+        onClose={() => setModalOpen(undefined)}
       />
       <ConfirmModal
-        title={`Are you sure you want to remove ${selectedVersion}?`}
-        isOpen={confirmModalOpen}
-        onClose={() => setConfirmModalOpen(false)}
-        onConfirm={onConfirm}
+        {...getConfirmModalContent(modalOpen ?? '')}
+        isOpen={['confirm', 'wallet-ownership', 'grant-response'].includes(
+          modalOpen ?? ''
+        )}
       />
     </div>
   )
@@ -298,87 +401,113 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = Object.fromEntries(await request.formData())
   const intent = formData?.intent
 
+  const theCookie = request.headers.get('Cookie')
+  const session = await getSession(theCookie)
+  session.set('last-action', intent as string)
+
   let apiResponse: ApiResponse = { isFailure: true, newversion: false }
-  let displayScript: boolean = false
+  const displayScript: boolean = false
+  const grantRequired: string = ''
+  let validForWallet: string
   const errors: ElementErrors = {
     fieldErrors: {},
     message: []
   }
 
-  if (intent == 'import') {
-    const result = await walletSchema.safeParseAsync(formData)
+  const actionResponse = {
+    errors,
+    apiResponse,
+    displayScript,
+    intent,
+    grantRequired
+  }
 
-    if (!result.success) {
-      errors.fieldErrors = result.error.flatten().fieldErrors
-      return json(
-        { errors, apiResponse, displayScript, intent },
-        { status: 400 }
-      )
+  // validate form data
+  const { result, payload } = await validateForm(formData, elementType)
+  if (!result.success || !payload) {
+    errors.fieldErrors = result.error?.flatten().fieldErrors || {
+      walletAddress: undefined
     }
+    return json(actionResponse, { status: 400 })
+  }
+  // additional check for newversion
+  if (intent == 'newversion') {
+    // get existing keys
+    const apiData = await ApiClient.getUserConfig(payload.walletAddress)
+    const currentConfig = apiData.payload || {}
 
-    const payload = result.data
-    apiResponse = await ApiClient.getUserConfig(payload.walletAddress)
-
-    return json({ errors, apiResponse, displayScript, intent }, { status: 200 })
-  } else if (intent == 'newversion') {
-    const result = await versionSchema
-      .merge(walletSchema)
-      .merge(fullConfigSchema)
-      .safeParseAsync(formData)
-
-    if (!result.success) {
-      errors.fieldErrors = result.error.flatten().fieldErrors
-      return json(
-        { errors, apiResponse, displayScript, intent },
-        { status: 400 }
-      )
-    }
-
-    const payload = result.data
     const versionName = payload.version.replaceAll(' ', '-')
-    const configKeys = Object.keys(JSON.parse(payload.fullconfig))
+    const configKeys = Object.keys(currentConfig)
     if (configKeys.indexOf(versionName) !== -1) {
       errors.fieldErrors = { version: ['Already exists'] }
-      return json(
-        { errors, apiResponse, displayScript, intent },
-        { status: 400 }
-      )
+      actionResponse.errors = errors
+      return json(actionResponse, { status: 400 })
     }
+  }
+
+  // no need when importing
+  if (intent != 'import') {
+    const ownerWalletAddress: string = payload.walletAddress as string
+    validForWallet = session.get('validForWallet')
+
+    if (!validForWallet || validForWallet !== ownerWalletAddress) {
+      try {
+        const walletAddress = await getValidWalletAddress(ownerWalletAddress)
+        session.set('wallet-address', walletAddress)
+
+        const redirectUrl = `${process.env.FRONTEND_URL}grant/${elementType}/`
+        const grant = await createInteractiveGrant({
+          walletAddress: walletAddress,
+          redirectUrl
+        })
+        session.set('payment-grant', grant)
+
+        actionResponse.grantRequired = grant.interact.redirect
+      } catch (err) {
+        console.log({ err })
+        errors.fieldErrors = {
+          walletAddress: ['Could not verify ownership of wallet address']
+        }
+        actionResponse.errors = errors
+      }
+
+      return json(actionResponse, {
+        status: 200,
+        headers: {
+          'Set-Cookie': await commitSession(session)
+        }
+      })
+    }
+  }
+
+  if (intent == 'import') {
+    session.set('last-action', '')
+    apiResponse = await ApiClient.getUserConfig(payload.walletAddress)
+
+    actionResponse.apiResponse = apiResponse
+    return json(actionResponse, {
+      status: 200,
+      headers: {
+        'Set-Cookie': await commitSession(session)
+      }
+    })
+  } else if (intent == 'newversion') {
+    const versionName = payload.version.replaceAll(' ', '-')
     apiResponse = await ApiClient.createUserConfig(
       versionName,
-      payload.walletAddress
+      payload.walletAddress,
+      theCookie || ''
     )
     apiResponse.newversion = versionName
 
-    return json({ errors, apiResponse, displayScript, intent }, { status: 200 })
+    actionResponse.apiResponse = apiResponse
+    return json(actionResponse, {
+      status: 200,
+      headers: {
+        'Set-Cookie': await commitSession(session)
+      }
+    })
   } else {
-    let currentSchema
-
-    switch (elementType) {
-      case 'button':
-        currentSchema = createButtonSchema
-        break
-      case 'widget':
-        currentSchema = createWidgetSchema
-        break
-      case 'banner':
-      default:
-        currentSchema = createBannerSchema
-    }
-    const result = await currentSchema
-      .merge(fullConfigSchema)
-      .safeParseAsync(Object.assign(formData, { ...{ elementType } }))
-
-    if (!result.success) {
-      errors.fieldErrors = result.error.flatten().fieldErrors
-      return json(
-        { errors, apiResponse, displayScript, intent },
-        { status: 400 }
-      )
-    }
-
-    const payload = result.data
-
     if (payload.elementType == 'widget') {
       const css = await encodeAndCompressParameters(
         getIlpayCss(payload as unknown as ElementConfigType)
@@ -387,11 +516,15 @@ export async function action({ request, params }: ActionFunctionArgs) {
       Object.assign(payload, { css })
     }
 
-    apiResponse = await ApiClient.saveUserConfig(payload)
-    if (intent != 'remove') {
-      displayScript = true
-    }
+    apiResponse = await ApiClient.saveUserConfig(payload, theCookie || '')
 
-    return json({ errors, apiResponse, displayScript, intent }, { status: 200 })
+    actionResponse.apiResponse = apiResponse
+    actionResponse.displayScript = intent != 'remove' ? true : displayScript
+    return json(actionResponse, {
+      status: 200,
+      headers: {
+        'Set-Cookie': await commitSession(session)
+      }
+    })
   }
 }

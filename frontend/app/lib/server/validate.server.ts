@@ -4,8 +4,8 @@ import {
   PositionType,
   SlideAnimationType,
   WalletAddressFormatError
-} from './types.js'
-import { isWalletAddress } from './utils.js'
+} from '../types.js'
+import { isWalletAddress, toWalletAddressUrl } from '../utils.js'
 
 const rangeError = { message: 'Value has to be between 16 and 24' }
 
@@ -13,13 +13,15 @@ export const walletSchema = z.object({
   walletAddress: z
     .string()
     .min(1, { message: 'Wallet address is required' })
-    .superRefine(async (url, ctx) => {
-      if (url.length === 0) return
+    .transform((url) => toWalletAddressUrl(url))
+    .superRefine(async (updatedUrl, ctx) => {
+      if (updatedUrl.length === 0) return
 
       try {
-        checkHrefFormat(toWalletAddressUrl(url))
-        await isValidWalletAddress(url)
+        checkHrefFormat(updatedUrl)
+        await isValidWalletAddress(updatedUrl)
       } catch (e) {
+        console.log({ e })
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message:
@@ -100,8 +102,44 @@ export const getElementSchema = (type: string) => {
   }
 }
 
-function toWalletAddressUrl(s: string): string {
-  return s.startsWith('$') ? s.replace('$', 'https://') : s
+export const validateForm = async (
+  formData: {
+    [k: string]: FormDataEntryValue
+  },
+  elementType?: string
+) => {
+  const intent = formData?.intent
+  let result
+
+  if (intent == 'import') {
+    result = await walletSchema.safeParseAsync(formData)
+  } else if (intent == 'newversion') {
+    result = await versionSchema
+      .merge(walletSchema)
+      .merge(fullConfigSchema)
+      .safeParseAsync(formData)
+  } else {
+    let currentSchema
+
+    switch (elementType) {
+      case 'button':
+        currentSchema = createButtonSchema
+        break
+      case 'widget':
+        currentSchema = createWidgetSchema
+        break
+      case 'banner':
+      default:
+        currentSchema = createBannerSchema
+    }
+    result = await currentSchema
+      .merge(fullConfigSchema)
+      .safeParseAsync(Object.assign(formData, { ...{ elementType } }))
+  }
+  /* eslint-disable  @typescript-eslint/no-explicit-any */
+  const payload = result.data as unknown as any
+
+  return { result, payload }
 }
 
 function checkHrefFormat(href: string): void {

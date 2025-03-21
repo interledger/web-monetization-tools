@@ -3,7 +3,6 @@ import { Form } from '@remix-run/react'
 import { ElementConfigType, ElementErrors } from '~/lib/types.js'
 import { XIcon } from '~/components/icons.js'
 import { Button, Input, WalletAddress } from '~/components/index.js'
-import { useState } from 'react'
 
 type NewVersionModalProps = {
   title: string
@@ -14,6 +13,8 @@ type NewVersionModalProps = {
   toolConfig: ElementConfigType
   setToolConfig: React.Dispatch<React.SetStateAction<ElementConfigType>>
   fullConfig?: Record<string, ElementConfigType>
+  versionName: string
+  setVersionName: (value: string) => void
 }
 
 export const NewVersionModal = ({
@@ -24,10 +25,10 @@ export const NewVersionModal = ({
   isSubmitting,
   toolConfig,
   setToolConfig,
-  fullConfig
+  fullConfig,
+  versionName,
+  setVersionName
 }: NewVersionModalProps) => {
-  const [versionName, setVersionName] = useState('')
-
   return (
     <Dialog as="div" className="relative z-10" onClose={onClose} open={isOpen}>
       <div className="fixed inset-0 bg-slate-500 bg-opacity-75 transition-opacity" />
@@ -81,7 +82,9 @@ export const NewVersionModal = ({
                       <input
                         type="hidden"
                         name="fullconfig"
-                        value={JSON.stringify(fullConfig)}
+                        value={JSON.stringify(
+                          fullConfig || { default: toolConfig }
+                        )}
                       />
                     </div>
                     <div className="flex justify-end space-x-4">

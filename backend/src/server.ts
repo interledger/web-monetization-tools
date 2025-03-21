@@ -2,7 +2,9 @@ import https from 'https'
 import http from 'http'
 import fs from 'fs'
 import express, { Express } from 'express'
+import session from 'express-session'
 import routes from './routes/index.js'
+import { SESSION_COOKIE_SECRET_KEY } from './services/session.js'
 
 const router: Express = express()
 
@@ -21,10 +23,24 @@ if (isDevelopment) {
 router.use(express.urlencoded({ extended: true }))
 router.use(express.json())
 
+// Session middleware
+router.use(
+  session({
+    secret: SESSION_COOKIE_SECRET_KEY,
+    resave: false,
+    saveUninitialized: true, // Only save the session if it is modified
+    cookie: {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none'
+    }
+  })
+)
+
 router.use((req, res, next) => {
   // set the CORS policy
   res.header('Access-Control-Allow-Origin', '*')
-  // set the CORS headers
+  res.header('Access-Control-Allow-Credentials', 'true')
   res.header(
     'Access-Control-Allow-Headers',
     'origin,X-Requested-With,Content-Type,Accept,Authorization'

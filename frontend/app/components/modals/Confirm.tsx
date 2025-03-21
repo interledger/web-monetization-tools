@@ -3,9 +3,11 @@ import { Form } from '@remix-run/react'
 import { ElementErrors } from '~/lib/types.js'
 import { XIcon } from '~/components/icons.js'
 import { Button } from '~/components/index.js'
+import { ReactElement } from 'react'
 
 type ConfirmModalProps = {
-  title: string
+  title: string | ReactElement
+  description: string | ReactElement
   isOpen: boolean
   errors?: ElementErrors
   onClose: () => void
@@ -14,6 +16,7 @@ type ConfirmModalProps = {
 
 export const ConfirmModal = ({
   title,
+  description,
   isOpen,
   onClose,
   onConfirm
@@ -44,13 +47,16 @@ export const ConfirmModal = ({
               <div className="mt-2">
                 <Form method="post" replace preventScrollReset>
                   <fieldset>
+                    <div className="flex justify-center p-4 mx-2">
+                      {description}
+                    </div>
                     <div className="flex justify-center space-x-4">
                       <Button
                         className="mx-0"
                         aria-label={`confirm`}
                         onClick={onConfirm}
                       >
-                        Yes
+                        Continue
                       </Button>
                       <Button aria-label={`close`} onClick={onClose}>
                         Cancel

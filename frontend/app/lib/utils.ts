@@ -338,3 +338,7 @@ export const isWalletAddress = (o: WalletAddress): o is WalletAddress => {
     typeof o.resourceServer === 'string'
   )
 }
+
+export function toWalletAddressUrl(s: string): string {
+  return s.startsWith('$') ? s.replace('$', 'https://') : s
+}
