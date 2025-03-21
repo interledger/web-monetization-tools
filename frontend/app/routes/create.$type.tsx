@@ -207,7 +207,7 @@ export default function Create() {
           <span>
             Please confirm you are owner of
             <span className="flex w-full justify-center text-center">
-              ${walletAddress?.id || ''}
+              {walletAddress?.id || ''}
             </span>
           </span>
         )
