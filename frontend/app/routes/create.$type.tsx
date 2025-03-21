@@ -229,6 +229,11 @@ export default function Create() {
       sessionStorage.getItem('fullconfig') || '{}'
     )
 
+    // make sure newly created version has config value
+    if (newVersion && !userFullconfig[newVersion]) {
+      userFullconfig[newVersion] = userFullconfig['default']
+    }
+
     setConfigs(userFullconfig, newVersion || 'default')
 
     if (isGrantResponse) {
