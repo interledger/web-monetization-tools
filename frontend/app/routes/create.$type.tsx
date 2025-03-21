@@ -229,11 +229,6 @@ export default function Create() {
       sessionStorage.getItem('fullconfig') || '{}'
     )
 
-    // make sure newly created version has config value
-    if (newVersion && !userFullconfig[newVersion]) {
-      userFullconfig[newVersion] = userFullconfig['default']
-    }
-
     setConfigs(userFullconfig, newVersion || 'default')
 
     if (isGrantResponse) {
@@ -253,7 +248,13 @@ export default function Create() {
       response.apiResponse &&
       response.apiResponse.newversion
     ) {
-      setConfigs(response.apiResponse?.payload, response.apiResponse.newversion)
+      const newVersion = response.apiResponse.newversion
+      const userFullconfig = response.apiResponse?.payload
+      // make sure newly created version has config value
+      if (newVersion && !userFullconfig[newVersion]) {
+        userFullconfig[newVersion] = userFullconfig['default']
+      }
+      setConfigs(userFullconfig, newVersion)
       setModalOpen('info')
     } else if (
       response &&
