@@ -81,7 +81,9 @@ export const NewVersionModal = ({
                       <input
                         type="hidden"
                         name="fullconfig"
-                        value={JSON.stringify(fullConfig)}
+                        value={JSON.stringify(
+                          fullConfig || { default: toolConfig }
+                        )}
                       />
                     </div>
                     <div className="flex justify-end space-x-4">
