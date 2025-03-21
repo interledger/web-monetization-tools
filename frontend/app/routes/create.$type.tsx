@@ -109,6 +109,7 @@ export default function Create() {
     useState<Record<string, ElementConfigType>>()
   const [modalOpen, setModalOpen] = useState<ModalType | undefined>()
 
+  const [versionName, setVersionName] = useState('')
   const [selectedVersion, setSelectedVersion] = useState('default')
   const [versionOptions, setVersionOptions] = useState<SelectOption[]>([
     { label: 'Default', value: 'default' }
@@ -366,6 +367,11 @@ export default function Create() {
         toolConfig={toolConfig}
         setToolConfig={setToolConfig}
         fullConfig={fullConfig}
+        versionName={versionName}
+        setVersionName={(v) => {
+          setVersionName(v)
+          sessionStorage.setItem('new-version', v)
+        }}
       />
       <InfoModal
         title="Available configs"
