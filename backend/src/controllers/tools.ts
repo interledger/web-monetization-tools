@@ -122,16 +122,24 @@ export const saveUserConfig = async (req: Request, res: Response) => {
 
     const { s3, params } = getS3AndParams(data.walletAddress)
 
-    const fullConfig: ConfigVersions = JSON.parse(data?.fullconfig)
+    // get existing config from S3
+    const existingData = await s3.send(new GetObjectCommand(params))
+    const existingContentString = await streamToString(
+      existingData.Body as NodeJS.ReadableStream
+    )
+    let existingConfig: ConfigVersions = JSON.parse(existingContentString)
 
-    // sanitize all versions/tags in the config
-    Object.keys(fullConfig).forEach((key) => {
-      if (typeof fullConfig[key] === 'object') {
-        fullConfig[key] = sanitizeConfigFields(fullConfig[key])
+    // parse and sanitize new config data
+    const newConfigData: ConfigVersions = JSON.parse(data?.fullconfig)
+
+    // only update the specific version/key received
+    Object.keys(newConfigData).forEach((key) => {
+      if (typeof newConfigData[key] === 'object') {
+        existingConfig[key] = sanitizeConfigFields(newConfigData[key])
       }
     })
 
-    const filteredData = filterDeepProperties(fullConfig)
+    const filteredData = filterDeepProperties(existingConfig)
     const fileContent = JSON.stringify(filteredData)
     const extendedParams = { ...params, Body: fileContent }
 
