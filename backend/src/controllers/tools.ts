@@ -127,7 +127,7 @@ export const saveUserConfig = async (req: Request, res: Response) => {
     const existingContentString = await streamToString(
       existingData.Body as NodeJS.ReadableStream
     )
-    let existingConfig: ConfigVersions = JSON.parse(existingContentString)
+    const existingConfig: ConfigVersions = JSON.parse(existingContentString)
 
     // parse and sanitize new config data
     const newConfigData: ConfigVersions = JSON.parse(data?.fullconfig)
