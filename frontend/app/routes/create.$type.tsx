@@ -228,6 +228,10 @@ export default function Create() {
     const userFullconfig = JSON.parse(
       sessionStorage.getItem('fullconfig') || '{}'
     )
+    // make sure newly created version has config value
+    if (newVersion && !userFullconfig[newVersion]) {
+      userFullconfig[newVersion] = userFullconfig['default']
+    }
 
     setConfigs(userFullconfig, newVersion || 'default')
 
@@ -250,10 +254,7 @@ export default function Create() {
     ) {
       const newVersion = response.apiResponse.newversion
       const userFullconfig = response.apiResponse?.payload
-      // make sure newly created version has config value
-      if (newVersion && !userFullconfig[newVersion]) {
-        userFullconfig[newVersion] = userFullconfig['default']
-      }
+
       setConfigs(userFullconfig, newVersion)
       setModalOpen('info')
     } else if (
@@ -429,6 +430,20 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }
     return json(actionResponse, { status: 400 })
   }
+  // additional check for newversion
+  if (intent == 'newversion') {
+    // get existing keys
+    const apiData = await ApiClient.getUserConfig(payload.walletAddress)
+    const currentConfig = apiData.payload || {}
+
+    const versionName = payload.version.replaceAll(' ', '-')
+    const configKeys = Object.keys(currentConfig)
+    if (configKeys.indexOf(versionName) !== -1) {
+      errors.fieldErrors = { version: ['Already exists'] }
+      actionResponse.errors = errors
+      return json(actionResponse, { status: 400 })
+    }
+  }
 
   // no need when importing
   if (intent != 'import') {
@@ -478,12 +493,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
     })
   } else if (intent == 'newversion') {
     const versionName = payload.version.replaceAll(' ', '-')
-    const configKeys = Object.keys(JSON.parse(payload.fullconfig))
-    if (configKeys.indexOf(versionName) !== -1) {
-      errors.fieldErrors = { version: ['Already exists'] }
-      actionResponse.errors = errors
-      return json(actionResponse, { status: 400 })
-    }
     apiResponse = await ApiClient.createUserConfig(
       versionName,
       payload.walletAddress,
