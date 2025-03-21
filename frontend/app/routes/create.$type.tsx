@@ -272,7 +272,8 @@ export default function Create() {
   }, [response])
 
   useEffect(() => {
-    if (fullConfig) {
+    // ensure fullconfig always has the current version's data, even for 'default
+    if (fullConfig || selectedVersion === 'default') {
       const updatedFullConfig = {
         ...fullConfig,
         [selectedVersion]: toolConfig
