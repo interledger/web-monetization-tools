@@ -112,7 +112,6 @@ export const saveUserConfig = async (req: Request, res: Response) => {
     const session = await getSession(cookieHeader)
 
     const validForWallet = session?.get('validForWallet')
-
     if (!data.walletAddress) {
       throw 'Wallet address is required'
     }
@@ -121,18 +120,21 @@ export const saveUserConfig = async (req: Request, res: Response) => {
     }
 
     const { s3, params } = getS3AndParams(data.walletAddress)
+    let existingConfig: ConfigVersions = {}
+    try {
+      const existingData = await s3.send(new GetObjectCommand(params))
+      const existingContentString = await streamToString(
+        existingData.Body as NodeJS.ReadableStream
+      )
+      existingConfig = JSON.parse(existingContentString)
+    } catch (error) {
+      const err = error as Error
+      if (err.name !== 'NoSuchKey') {
+        throw error
+      }
+    }
 
-    // get existing config from S3
-    const existingData = await s3.send(new GetObjectCommand(params))
-    const existingContentString = await streamToString(
-      existingData.Body as NodeJS.ReadableStream
-    )
-    const existingConfig: ConfigVersions = JSON.parse(existingContentString)
-
-    // parse and sanitize new config data
     const newConfigData: ConfigVersions = JSON.parse(data?.fullconfig)
-
-    // only update the specific version/key received
     Object.keys(newConfigData).forEach((key) => {
       if (typeof newConfigData[key] === 'object') {
         existingConfig[key] = sanitizeConfigFields(newConfigData[key])
