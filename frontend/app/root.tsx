@@ -86,8 +86,7 @@ export default function App() {
 
 export function ErrorBoundary() {
   const error = useRouteError()
-  const { contentOnlyParam } = useLoaderData<typeof loader>()
-  const contentOnly = contentOnlyParam != null
+  const contentOnly = new URL(window.location.href).searchParams.get('contentOnly') !== null
 
   const ErrorPage = ({ children }: { children: ReactNode }) => {
     return (
