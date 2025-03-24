@@ -401,6 +401,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = Object.fromEntries(await request.formData())
   const intent = formData?.intent
 
+  const url = new URL(request.url)
+  const contentOnly = url.searchParams.get('contentOnly') != null
+
   const theCookie = request.headers.get('Cookie')
   const session = await getSession(theCookie)
   session.set('last-action', intent as string)
@@ -455,6 +458,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
         const walletAddress = await getValidWalletAddress(ownerWalletAddress)
         session.set('wallet-address', walletAddress)
 
+        // store contentonly in session for grant loader use
+        session.set('content-only', contentOnly)
         const redirectUrl = `${process.env.FRONTEND_URL}grant/${elementType}/`
         const grant = await createInteractiveGrant({
           walletAddress: walletAddress,

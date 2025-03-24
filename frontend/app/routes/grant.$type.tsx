@@ -9,8 +9,9 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   const url = new URL(request.url)
   const interactRef = url.searchParams.get('interact_ref') || ''
   const result = url.searchParams.get('result') || ''
-
+  
   const session = await getSession(request.headers.get('Cookie'))
+  const contentOnly = session.get('content-only')
   const walletAddress = session.get('wallet-address')
   const grant = session.get('payment-grant')
 
@@ -34,8 +35,9 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   session.set('is-grant-accepted', isGrantAccepted)
   session.set('is-grant-response', isGrantResponse)
   session.set('grant-response', grantResponse)
+  console.log('contentOnly --------------------3', contentOnly)
 
-  return redirect(`/create/${elementType}`, {
+  return redirect(`/create/${elementType}/${contentOnly ? '?contentOnly' : ''}`, {
     headers: {
       'Set-Cookie': await commitSession(session)
     }
