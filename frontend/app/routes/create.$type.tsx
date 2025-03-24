@@ -497,7 +497,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
       }
     })
   } else if (intent === 'remove') {
-    console.log('REMOVE ----------------------------------   ', payload)
     apiResponse = await ApiClient.deleteConfigVersion(
       payload.walletAddress,
       payload.version,
