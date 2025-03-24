@@ -14,7 +14,7 @@ const userRoutes = (router: Router) => {
   router.get('/tools/:id/:tag', getUserConfigByTag)
   router.post('/tools', createUserConfig)
   router.put('/tools', saveUserConfig)
-  router.delete('/config/:walletAddress/:version', deleteUserConfigVersion)
+  router.delete('/tools/:walletAddress/:version', deleteUserConfigVersion)
 
   return router
 }

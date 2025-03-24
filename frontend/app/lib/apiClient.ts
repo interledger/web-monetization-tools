@@ -139,7 +139,7 @@ export class ApiClient {
     cookieHeader: string
   ): Promise<ApiResponse> {
     const wa = encodeURIComponent(walletAddress)
-    const response = await axios.delete(`${apiUrl}config/${wa}/${version}`, {
+    const response = await axios.delete(`${apiUrl}tools/${wa}/${version}`, {
       httpsAgent,
       withCredentials: true,
       headers: {
