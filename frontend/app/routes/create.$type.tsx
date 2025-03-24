@@ -272,8 +272,9 @@ export default function Create() {
   }, [response])
 
   useEffect(() => {
-    // ensure fullconfig always has the current version's data, even for 'default
-    if (fullConfig || selectedVersion === 'default') {
+    // ensure fullconfig always has the current version's data, even for 'default'
+    // with no wa import beforehand
+    if (fullConfig || (selectedVersion === 'default' && toolConfig.walletAddress)) {
       const updatedFullConfig = {
         ...fullConfig,
         [selectedVersion]: toolConfig
