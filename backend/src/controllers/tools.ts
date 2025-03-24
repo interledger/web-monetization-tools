@@ -112,7 +112,6 @@ export const saveUserConfig = async (req: Request, res: Response) => {
     const session = await getSession(cookieHeader)
 
     const validForWallet = session?.get('validForWallet')
-
     if (!data.walletAddress) {
       throw 'Wallet address is required'
     }
@@ -121,17 +120,28 @@ export const saveUserConfig = async (req: Request, res: Response) => {
     }
 
     const { s3, params } = getS3AndParams(data.walletAddress)
+    let existingConfig: ConfigVersions = {}
+    try {
+      const existingData = await s3.send(new GetObjectCommand(params))
+      const existingContentString = await streamToString(
+        existingData.Body as NodeJS.ReadableStream
+      )
+      existingConfig = JSON.parse(existingContentString)
+    } catch (error) {
+      const err = error as Error
+      if (err.name !== 'NoSuchKey') {
+        throw error
+      }
+    }
 
-    const fullConfig: ConfigVersions = JSON.parse(data?.fullconfig)
-
-    // sanitize all versions/tags in the config
-    Object.keys(fullConfig).forEach((key) => {
-      if (typeof fullConfig[key] === 'object') {
-        fullConfig[key] = sanitizeConfigFields(fullConfig[key])
+    const newConfigData: ConfigVersions = JSON.parse(data?.fullconfig)
+    Object.keys(newConfigData).forEach((key) => {
+      if (typeof newConfigData[key] === 'object') {
+        existingConfig[key] = sanitizeConfigFields(newConfigData[key])
       }
     })
 
-    const filteredData = filterDeepProperties(fullConfig)
+    const filteredData = filterDeepProperties(existingConfig)
     const fileContent = JSON.stringify(filteredData)
     const extendedParams = { ...params, Body: fileContent }
 
