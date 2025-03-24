@@ -162,20 +162,10 @@ export default function Create() {
 
   const onConfirmRemove = () => {
     if (fullConfig) {
-      const { [selectedVersion]: _, ...rest } = fullConfig
-      setFullConfig(rest)
-      const config = fullConfig['default']
-      setToolConfig(config)
-
-      const filteredOptions = versionOptions.filter(
-        (ver) => ver.value != selectedVersion
-      )
-      setVersionOptions(filteredOptions)
-      setSelectedVersion('default')
-      setModalOpen(undefined)
-
-      const formData = getFormData(rest, 'remove', 'default')
+      // only create and submit form data
+      const formData = getFormData(fullConfig, 'remove', selectedVersion)
       submitForm(formData, { method: 'post' })
+      setModalOpen(undefined)
     }
   }
 
@@ -243,30 +233,29 @@ export default function Create() {
   useEffect(() => {
     const errors = Object.keys(response?.errors?.fieldErrors || {})
 
-    if (response && !errors.length && response.displayScript) {
-      setModalOpen('script')
-    } else if (response && response.grantRequired) {
-      setModalOpen('wallet-ownership')
-    } else if (
-      response &&
-      response.apiResponse &&
-      response.apiResponse.newversion
-    ) {
-      const newVersion = response.apiResponse.newversion
-      const userFullconfig = response.apiResponse?.payload
+    if (response && !errors.length) {
+      if (response.displayScript) {
+        setModalOpen('script')
+      } else if (response.grantRequired) {
+        setModalOpen('wallet-ownership')
+      } else if (response.apiResponse?.isFailure === false) {
+        if (response.intent === 'remove') {
+          // update state only after successful deletion
+          const { [selectedVersion]: _, ...rest } = fullConfig || {}
+          setFullConfig(rest)
+          setToolConfig(rest['default'])
 
-      setConfigs(userFullconfig, newVersion)
-      setModalOpen('info')
-    } else if (
-      response &&
-      response.apiResponse &&
-      response.apiResponse.isFailure == false
-    ) {
-      setConfigs(response.apiResponse?.payload, 'default')
-
-      setModalOpen(undefined)
-      if (response.intent != 'remove') {
-        setModalOpen('info')
+          const filteredOptions = versionOptions.filter(
+            (ver) => ver.value !== selectedVersion
+          )
+          setVersionOptions(filteredOptions)
+          setSelectedVersion('default')
+        } else {
+          setConfigs(response.apiResponse?.payload, 'default')
+          if (response.intent !== 'remove') {
+            setModalOpen('info')
+          }
+        }
       }
     }
   }, [response])
@@ -509,6 +498,20 @@ export async function action({ request, params }: ActionFunctionArgs) {
       theCookie || ''
     )
     apiResponse.newversion = versionName
+
+    actionResponse.apiResponse = apiResponse
+    return json(actionResponse, {
+      status: 200,
+      headers: {
+        'Set-Cookie': await commitSession(session)
+      }
+    })
+  } else if (intent === 'remove') {
+    apiResponse = await ApiClient.deleteConfigVersion(
+      payload.walletAddress,
+      payload.version,
+      theCookie || ''
+    )
 
     actionResponse.apiResponse = apiResponse
     return json(actionResponse, {

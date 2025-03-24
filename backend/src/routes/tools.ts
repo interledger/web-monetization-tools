@@ -4,7 +4,8 @@ import {
   getUserConfig,
   createUserConfig,
   saveUserConfig,
-  getUserConfigByTag
+  getUserConfigByTag,
+  deleteUserConfigVersion
 } from '../controllers/tools.js'
 
 const userRoutes = (router: Router) => {
@@ -13,6 +14,7 @@ const userRoutes = (router: Router) => {
   router.get('/tools/:id/:tag', getUserConfigByTag)
   router.post('/tools', createUserConfig)
   router.put('/tools', saveUserConfig)
+  router.delete('/tools/:walletAddress/:version', deleteUserConfigVersion)
 
   return router
 }

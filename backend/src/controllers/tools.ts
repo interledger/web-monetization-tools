@@ -232,6 +232,50 @@ export const getUserConfigByTag = async (req: Request, res: Response) => {
   }
 }
 
+export const deleteUserConfigVersion = async (req: Request, res: Response) => {
+  try {
+    const { walletAddress, version } = req.params
+    const cookieHeader = req.headers.cookie
+    const session = await getSession(cookieHeader)
+
+    const validForWallet = session?.get('validForWallet')
+    if (!walletAddress) {
+      throw 'Wallet address is required'
+    }
+    if (!session || validForWallet !== walletAddress) {
+      throw 'Grant confirmation is required'
+    }
+    if (version === 'default') {
+      throw 'Cannot delete default version'
+    }
+
+    const { s3, params } = getS3AndParams(walletAddress)
+
+    const existingData = await s3.send(new GetObjectCommand(params))
+    const existingContentString = await streamToString(
+      existingData.Body as NodeJS.ReadableStream
+    )
+    const existingConfig: ConfigVersions = JSON.parse(existingContentString)
+
+    if (existingConfig[version]) {
+      delete existingConfig[version]
+
+      const fileContent = JSON.stringify(existingConfig)
+      const extendedParams = { ...params, Body: fileContent }
+      await s3.send(new PutObjectCommand(extendedParams))
+    }
+
+    res.status(200).send(existingConfig)
+  } catch (err) {
+    console.log(err)
+    const message =
+      err === 'Cannot delete default version'
+        ? err
+        : 'An error occurred when deleting config version'
+    res.status(500).send(message)
+  }
+}
+
 const sanitizeConfigFields = <T extends Partial<SanitizedFields>>(
   config: T
 ): T => {
