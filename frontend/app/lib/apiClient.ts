@@ -132,4 +132,31 @@ export class ApiClient {
       }
     }
   }
+
+  public static async deleteConfigVersion(
+    walletAddress: string,
+    version: string,
+    cookieHeader: string
+  ): Promise<ApiResponse> {
+    const wa = encodeURIComponent(walletAddress)
+    const response = await axios.delete(`${apiUrl}config/${wa}/${version}`, {
+      httpsAgent,
+      withCredentials: true,
+      headers: {
+        Cookie: cookieHeader
+      }
+    })
+
+    if (response.status === 200) {
+      return {
+        isFailure: false,
+        payload: response.data
+      }
+    } else {
+      return {
+        errors: [`status ${response.status}: ${response.statusText}`],
+        isFailure: true
+      }
+    }
+  }
 }
