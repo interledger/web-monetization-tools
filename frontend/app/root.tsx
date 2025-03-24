@@ -86,6 +86,8 @@ export default function App() {
 
 export function ErrorBoundary() {
   const error = useRouteError()
+  const contentOnly =
+    new URL(window.location.href).searchParams.get('contentOnly') !== null
 
   const ErrorPage = ({ children }: { children: ReactNode }) => {
     return (
@@ -117,7 +119,10 @@ export function ErrorBoundary() {
             {error.status}
           </h4>
           <h2 className="text-xl">{error.statusText}</h2>
-          <Button to="/" aria-label="go to homepage">
+          <Button
+            to={`/${contentOnly ? '?contentOnly' : ''}`}
+            aria-label="go to homepage"
+          >
             Go to homepage
           </Button>
         </div>
@@ -142,7 +147,10 @@ export function ErrorBoundary() {
         <div>
           <span className="font-light">Cause:</span> <span>{errorMessage}</span>
         </div>
-        <Button to="/" aria-label="go to homepage">
+        <Button
+          to={`/${contentOnly ? '?contentOnly' : ''}`}
+          aria-label="go to homepage"
+        >
           Go to homepage
         </Button>
       </div>
