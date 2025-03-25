@@ -63,6 +63,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
   const ilpayUrl = process.env.ILPAY_URL || ''
   const scriptInitUrl = process.env.INIT_SCRIPT_URL || ''
+  const frontendUrl = process.env.FRONTEND_URL || ''
 
   return json(
     {
@@ -70,6 +71,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
       defaultConfig,
       ilpayUrl,
       scriptInitUrl,
+      frontendUrl,
       walletAddress,
       contentOnlyParam,
       grantResponse,
@@ -91,6 +93,7 @@ export default function Create() {
     defaultConfig,
     ilpayUrl,
     scriptInitUrl,
+    frontendUrl,
     walletAddress,
     contentOnlyParam,
     isGrantAccepted,
@@ -295,7 +298,7 @@ export default function Create() {
         title={`Create ${elementType}`}
         elementType={elementType}
         setImportModalOpen={() => setModalOpen('import')}
-        link={`/${contentOnly ? '?contentOnly' : ''}`}
+        link={`${frontendUrl}/tools/${contentOnly ? '?contentOnly' : ''}`}
         setNewVersionModalOpen={() => setModalOpen('new-version')}
         setConfirmModalOpen={() => setModalOpen('confirm')}
         versionOptions={versionOptions}

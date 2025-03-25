@@ -37,7 +37,7 @@ export const TypeCard = ({
         intent="default"
         aria-label={title}
         to={link}
-        target={!link.toString().startsWith('create/') ? '_parent' : undefined}
+        target={link.toString().startsWith('create/') ? '_blank' : '_parent'}
       >
         Generate
       </Button>
