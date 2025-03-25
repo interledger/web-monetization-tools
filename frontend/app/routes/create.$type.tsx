@@ -63,6 +63,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
   const ilpayUrl = process.env.ILPAY_URL || ''
   const scriptInitUrl = process.env.INIT_SCRIPT_URL || ''
+  const frontendUrl = process.env.FRONTEND_URL || ''
 
   return json(
     {
@@ -70,6 +71,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
       defaultConfig,
       ilpayUrl,
       scriptInitUrl,
+      frontendUrl,
       walletAddress,
       contentOnlyParam,
       grantResponse,
@@ -91,6 +93,7 @@ export default function Create() {
     defaultConfig,
     ilpayUrl,
     scriptInitUrl,
+    frontendUrl,
     walletAddress,
     contentOnlyParam,
     isGrantAccepted,
@@ -295,7 +298,7 @@ export default function Create() {
         title={`Create ${elementType}`}
         elementType={elementType}
         setImportModalOpen={() => setModalOpen('import')}
-        link={`/${contentOnly ? '?contentOnly' : ''}`}
+        link={`${frontendUrl}/tools/${contentOnly ? '?contentOnly' : ''}`}
         setNewVersionModalOpen={() => setModalOpen('new-version')}
         setConfirmModalOpen={() => setModalOpen('confirm')}
         versionOptions={versionOptions}
@@ -395,9 +398,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = Object.fromEntries(await request.formData())
   const intent = formData?.intent
 
-  const url = new URL(request.url)
-  const contentOnly = url.searchParams.get('contentOnly') != null
-
   const theCookie = request.headers.get('Cookie')
   const session = await getSession(theCookie)
   session.set('last-action', intent as string)
@@ -452,8 +452,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
         const walletAddress = await getValidWalletAddress(ownerWalletAddress)
         session.set('wallet-address', walletAddress)
 
-        // store contentonly in session for grant loader use
-        session.set('content-only', contentOnly)
         const redirectUrl = `${process.env.FRONTEND_URL}grant/${elementType}/`
         const grant = await createInteractiveGrant({
           walletAddress: walletAddress,
