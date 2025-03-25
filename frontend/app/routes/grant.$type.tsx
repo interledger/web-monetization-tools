@@ -11,7 +11,6 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   const result = url.searchParams.get('result') || ''
 
   const session = await getSession(request.headers.get('Cookie'))
-  const contentOnly = session.get('content-only')
   const walletAddress = session.get('wallet-address')
   const grant = session.get('payment-grant')
 
@@ -36,12 +35,9 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   session.set('is-grant-response', isGrantResponse)
   session.set('grant-response', grantResponse)
 
-  return redirect(
-    `/create/${elementType}/${contentOnly ? '?contentOnly' : ''}`,
-    {
-      headers: {
-        'Set-Cookie': await commitSession(session)
-      }
+  return redirect(`/create/${elementType}`, {
+    headers: {
+      'Set-Cookie': await commitSession(session)
     }
-  )
+  })
 }
