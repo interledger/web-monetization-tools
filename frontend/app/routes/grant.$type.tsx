@@ -3,6 +3,7 @@ import { redirect } from '@remix-run/react'
 import { commitSession, getSession } from '~/lib/server/session.server'
 import { isGrantValidAndAccepted } from '~/lib/server/open-payments.server'
 import { toWalletAddressUrl } from '~/lib/utils'
+import { type WalletAddress } from '@interledger/open-payments'
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const elementType = params.type
@@ -43,7 +44,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   })
 }
 
-export function normalizeWalletAddress(walletAddress: any) {
+export function normalizeWalletAddress(walletAddress: WalletAddress) {
   const IS_INTERLEDGER_CARDS =
     walletAddress.authServer === 'https://auth.interledger.cards'
   const url = new URL(toWalletAddressUrl(walletAddress.id))
