@@ -2,7 +2,7 @@ import { LoaderFunctionArgs } from '@remix-run/node'
 import { redirect } from '@remix-run/react'
 import { commitSession, getSession } from '~/lib/server/session.server'
 import { isGrantValidAndAccepted } from '~/lib/server/open-payments.server'
-import { toWalletAddressUrl } from '~/lib/utils'
+import { toWalletAddressUrl } from '../lib/utils'
 import { type WalletAddress } from '@interledger/open-payments'
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
