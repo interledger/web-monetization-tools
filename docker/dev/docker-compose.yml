@@ -41,6 +41,7 @@ services:
         VITE_INIT_SCRIPT_URL: ${SCRIPT_EMBED_URL}
     ports:
       - '5100:5100'
+      - '9229:9229'
     expose:
       - '5100'
     environment:
@@ -54,6 +55,7 @@ services:
       OP_PRIVATE_KEY: ${OP_PRIVATE_KEY}
       OP_WALLET_ADDRESS: ${OP_WALLET_ADDRESS}
       OP_REDIRECT_URL: ${OP_REDIRECT_URL}
+      NODE_OPTIONS: "--inspect=0.0.0.0:9229"
     networks:
       - wm-tools
     command: pnpm run dev

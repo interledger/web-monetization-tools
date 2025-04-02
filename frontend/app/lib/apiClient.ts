@@ -19,7 +19,7 @@ let httpsAgent: https.Agent | undefined
 if (!isProd) {
   try {
     // Load self-signed certificate
-    const backendCert = fs.readFileSync('/app/certs/cert.pem')
+    const backendCert = fs.readFileSync(path.resolve('..', 'certs', 'cert.pem'))
 
     // Create an HTTPS agent with the certificate
     httpsAgent = isProd
