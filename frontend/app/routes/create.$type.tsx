@@ -447,7 +447,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const ownerWalletAddress: string = payload.walletAddress as string
   const walletAddress = await getValidWalletAddress(ownerWalletAddress)
   if (intent != 'import') {
-
     validForWallet = session.get('validForWallet')
     session.set('wallet-address', walletAddress)
     if (!validForWallet || validForWallet !== walletAddress.id) {
@@ -477,8 +476,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }
   }
 
-    // normalize wallet address KEY
-    payload.walletAddress = normalizeWalletAddress(walletAddress)
+  // normalize wallet address KEY
+  payload.walletAddress = normalizeWalletAddress(walletAddress)
 
   if (intent == 'import') {
     session.set('last-action', '')

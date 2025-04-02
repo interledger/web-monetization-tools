@@ -2,6 +2,7 @@ import axios from 'axios'
 import https from 'https'
 import fs from 'fs'
 import { ElementConfigType } from './types.js'
+import path from 'path'
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 export type ApiResponse<T = any> = {

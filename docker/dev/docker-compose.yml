@@ -55,7 +55,7 @@ services:
       OP_PRIVATE_KEY: ${OP_PRIVATE_KEY}
       OP_WALLET_ADDRESS: ${OP_WALLET_ADDRESS}
       OP_REDIRECT_URL: ${OP_REDIRECT_URL}
-      NODE_OPTIONS: "--inspect=0.0.0.0:9229"
+      NODE_OPTIONS: '--inspect=0.0.0.0:9229'
     networks:
       - wm-tools
     command: pnpm run dev

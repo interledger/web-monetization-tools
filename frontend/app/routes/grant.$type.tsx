@@ -44,9 +44,10 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 }
 
 export function normalizeWalletAddress(walletAddress: any) {
-  const IS_INTERLEDGER_CARDS = walletAddress.authServer === 'https://auth.interledger.cards'
+  const IS_INTERLEDGER_CARDS =
+    walletAddress.authServer === 'https://auth.interledger.cards'
   const url = new URL(toWalletAddressUrl(walletAddress.id))
-  if ( IS_INTERLEDGER_CARDS && url.host === 'ilp.dev') {
+  if (IS_INTERLEDGER_CARDS && url.host === 'ilp.dev') {
     // For Interledger Cards we can have two types of wallet addresses:
     //  - ilp.interledger.cards
     //  - ilp.dev (just a proxy behind ilp.interledger.cards for certain wallet addresses)
@@ -58,9 +59,9 @@ export function normalizeWalletAddress(walletAddress: any) {
     //
     // Not all `ilp.interledger.cards` wallet addresses can be used with `ilp.dev`.
     // Manually created wallet addresses cannot be used with `ilp.dev`.
-    return walletAddress.id.replace('ilp.dev', 'ilp.interledger.cards');
+    return walletAddress.id.replace('ilp.dev', 'ilp.interledger.cards')
   }
-  return walletAddress.id;
+  return walletAddress.id
 }
 
 //
