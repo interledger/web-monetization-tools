@@ -108,6 +108,9 @@ importers:
 
   frontend:
     dependencies:
+      '@aws-sdk/client-s3':
+        specifier: ^3.645.0
+        version: 3.682.0
       '@headlessui/react':
         specifier: ^1.7.19
         version: 1.7.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -117,6 +120,9 @@ importers:
       '@paralleldrive/cuid2':
         specifier: ^2.2.2
         version: 2.2.2
+      '@remix-run/cloudflare-pages':
+        specifier: ^2.16.4
+        version: 2.16.4(@cloudflare/workers-types@4.20250403.0)(typescript@5.1.6)
       '@remix-run/node':
         specifier: ^2.14.0
         version: 2.14.0(typescript@5.1.6)
@@ -138,9 +144,15 @@ importers:
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
+      he:
+        specifier: ^1.2.0
+        version: 1.2.0
       isbot:
         specifier: ^4.4.0
         version: 4.4.0
+      itty-router:
+        specifier: ^5.0.18
+        version: 5.0.18
       postcss:
         specifier: ^8.4.49
         version: 8.4.49
@@ -156,6 +168,9 @@ importers:
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
+      sanitize-html:
+        specifier: ^2.14.0
+        version: 2.14.0
       tailwindcss:
         specifier: ^3.4.14
         version: 3.4.14(ts-node@10.9.2(@types/node@22.9.0)(typescript@5.1.6))
@@ -181,12 +196,18 @@ importers:
       '@tailwindcss/forms':
         specifier: ^0.5.9
         version: 0.5.9(tailwindcss@3.4.14(ts-node@10.9.2(@types/node@22.9.0)(typescript@5.1.6)))
+      '@types/he':
+        specifier: ^1.2.3
+        version: 1.2.3
       '@types/react':
         specifier: ^18.3.12
         version: 18.3.12
       '@types/react-dom':
         specifier: ^18.3.1
         version: 18.3.1
+      '@types/sanitize-html':
+        specifier: ^2.13.0
+        version: 2.13.0
       '@types/uuid':
         specifier: ^9.0.8
         version: 9.0.8
@@ -519,6 +540,12 @@ packages:
     resolution: {integrity: sha512-Z/yiTPj+lDVnF7lWeKCIJzaIkI0vYO87dMpZ4bg4TDrFe4XXLFWL1TbXU27gBP3QccxV9mZICCrnjnYlJjXHOA==}
     engines: {node: '>=6.9.0'}
 
+  '@cloudflare/kv-asset-handler@0.1.3':
+    resolution: {integrity: sha512-FNcunDuTmEfQTLRLtA6zz+buIXUHj1soPvSWzzQFBC+n2lsy+CGf/NIrR3SEPCmsVNQj70/Jx2lViCpq+09YpQ==}
+
+  '@cloudflare/workers-types@4.20250403.0':
+    resolution: {integrity: sha512-wLsXNfxBPsV+PPUInCCFeoXTZMHNEAFHvVe1E0/S0Cp9JrKTsSEeIMY4zUvR5ULxNAQkeDVqPjYRaKFkzpkX3w==}
+
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
@@ -797,6 +824,26 @@ packages:
   '@popperjs/core@2.11.8':
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
 
+  '@remix-run/cloudflare-pages@2.16.4':
+    resolution: {integrity: sha512-FC+pwDZsxE1iQf2BiS0b/8FIitls0DiklBgUACZhqzNqA+UnBll/qyqI0nfePlpRmGYAslIKvdE1LNYkLYZ83w==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      '@cloudflare/workers-types': ^4.0.0
+      typescript: ^5.1.0
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+
+  '@remix-run/cloudflare@2.16.4':
+    resolution: {integrity: sha512-KhIbbXQjxUxX+2x0EvC1DhEOuaSmkjCz0oCP7vRoN+Dx0pa6BPcQZrPF/vzR5uOlYKY0YLmeriubSr69KILAzA==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      '@cloudflare/workers-types': ^4.0.0
+      typescript: ^5.1.0
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+
   '@remix-run/dev@2.14.0':
     resolution: {integrity: sha512-WMun4fy0ANh92WecufUNb3IV/R02uyfBslM7g7nCO1/lzDII+XmfEkZY5CWPaLmnkoAc1DR2G60+eTHRo480Ug==}
     engines: {node: '>=18.0.0'}
@@ -851,6 +898,10 @@ packages:
     resolution: {integrity: sha512-xfSkCAchbdG5PnbrKqFWwia4Bi61nH+wm8wLEqfHDyp7Y3dZzgqS2itV8i4gAq9pC2HsTpwyBC6Ds8VHZ96JlA==}
     engines: {node: '>=14.0.0'}
 
+  '@remix-run/router@1.23.0':
+    resolution: {integrity: sha512-O3rHJzAQKamUz1fvE0Qaw0xSFqsA/yafi2iqeE0pvdFtCO1viYx8QL6f3Ln/aCCTLxs68SLf0KPM9eSeM8yBnA==}
+    engines: {node: '>=14.0.0'}
+
   '@remix-run/serve@2.14.0':
     resolution: {integrity: sha512-Bu8zIxmq0/3NIRIWos/qXb3U1Zx6rpV5W96Vg/8h5q6u7tXHdU2Ot2VmvlWRTsQF6jZhjeW21MogNvdSAb1new==}
     engines: {node: '>=18.0.0'}
@@ -858,6 +909,15 @@ packages:
 
   '@remix-run/server-runtime@2.14.0':
     resolution: {integrity: sha512-9Th9UzDaoFFBD7zA5mRI1KT8JktFLN4ij9jPygrKBhG/kYmNIvhcMtq9VyjcbMvFK5natTyhOhrrKRIHtijD4w==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      typescript: ^5.1.0
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+
+  '@remix-run/server-runtime@2.16.4':
+    resolution: {integrity: sha512-6M1Lq2mrH5zfGN++ay+a2KzdPqOh2TB7n6wYPPXA0rxQan8c5NZCvDFF635KS65LSzZDB+2VfFTgoPBERdYkYg==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       typescript: ^5.1.0
@@ -2660,6 +2720,9 @@ packages:
     resolution: {integrity: sha512-FW5iMbeQ6rBGm/oKgzq2aW4KvAGpxPzYES8N4g4xNXUKpL1mclMvOe+76AcLDTvD+Ze+sOpVhgdAQEKF4L9iGQ==}
     engines: {node: '>= 0.4'}
 
+  itty-router@5.0.18:
+    resolution: {integrity: sha512-mK3ReOt4ARAGy0V0J7uHmArG2USN2x0zprZ+u+YgmeRjXTDbaowDy3kPcsmQY6tH+uHhDgpWit9Vqmv/4rTXwA==}
+
   jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
 
@@ -2970,6 +3033,11 @@ packages:
   mime@1.6.0:
     resolution: {integrity: sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==}
     engines: {node: '>=4'}
+    hasBin: true
+
+  mime@2.6.0:
+    resolution: {integrity: sha512-USPkMeET31rOMiarsBNIHZKLGgvKc/LrjofAnBlOttf5ajRvqiRA8QsenbcooctK6d6Ts6aqZXBA+XbkKthiQg==}
+    engines: {node: '>=4.0.0'}
     hasBin: true
 
   mimic-fn@2.1.0:
@@ -5051,6 +5119,12 @@ snapshots:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
 
+  '@cloudflare/kv-asset-handler@0.1.3':
+    dependencies:
+      mime: 2.6.0
+
+  '@cloudflare/workers-types@4.20250403.0': {}
+
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
@@ -5319,6 +5393,21 @@ snapshots:
 
   '@popperjs/core@2.11.8': {}
 
+  '@remix-run/cloudflare-pages@2.16.4(@cloudflare/workers-types@4.20250403.0)(typescript@5.1.6)':
+    dependencies:
+      '@cloudflare/workers-types': 4.20250403.0
+      '@remix-run/cloudflare': 2.16.4(@cloudflare/workers-types@4.20250403.0)(typescript@5.1.6)
+    optionalDependencies:
+      typescript: 5.1.6
+
+  '@remix-run/cloudflare@2.16.4(@cloudflare/workers-types@4.20250403.0)(typescript@5.1.6)':
+    dependencies:
+      '@cloudflare/kv-asset-handler': 0.1.3
+      '@cloudflare/workers-types': 4.20250403.0
+      '@remix-run/server-runtime': 2.16.4(typescript@5.1.6)
+    optionalDependencies:
+      typescript: 5.1.6
+
   '@remix-run/dev@2.14.0(@remix-run/react@2.14.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.1.6))(@remix-run/serve@2.14.0(typescript@5.1.6))(@types/node@22.9.0)(ts-node@10.9.2(@types/node@22.9.0)(typescript@5.1.6))(typescript@5.1.6)(vite@5.4.11(@types/node@22.9.0))':
     dependencies:
       '@babel/core': 7.26.0
@@ -5442,6 +5531,8 @@ snapshots:
 
   '@remix-run/router@1.21.0': {}
 
+  '@remix-run/router@1.23.0': {}
+
   '@remix-run/serve@2.14.0(typescript@5.1.6)':
     dependencies:
       '@remix-run/express': 2.14.0(express@4.21.1)(typescript@5.1.6)
@@ -5479,6 +5570,18 @@ snapshots:
       turbo-stream: 2.4.0
     optionalDependencies:
       typescript: 5.6.3
+
+  '@remix-run/server-runtime@2.16.4(typescript@5.1.6)':
+    dependencies:
+      '@remix-run/router': 1.23.0
+      '@types/cookie': 0.6.0
+      '@web3-storage/multipart-parser': 1.0.0
+      cookie: 0.7.2
+      set-cookie-parser: 2.7.1
+      source-map: 0.7.4
+      turbo-stream: 2.4.0
+    optionalDependencies:
+      typescript: 5.1.6
 
   '@remix-run/web-blob@3.1.0':
     dependencies:
@@ -7639,6 +7742,8 @@ snapshots:
       reflect.getprototypeof: 1.0.6
       set-function-name: 2.0.2
 
+  itty-router@5.0.18: {}
+
   jackspeak@3.4.3:
     dependencies:
       '@isaacs/cliui': 8.0.2
@@ -8136,6 +8241,8 @@ snapshots:
       mime-db: 1.52.0
 
   mime@1.6.0: {}
+
+  mime@2.6.0: {}
 
   mimic-fn@2.1.0: {}
 

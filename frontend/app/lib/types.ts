@@ -21,7 +21,28 @@ export enum PositionType {
   Bottom = 'Bottom'
 }
 
+export interface CreateConfigRequest {
+  walletAddress: string
+  tag: string
+  version?: string
+}
+
+export interface SaveUserConfigRequest {
+  walletAddress: string
+  fullconfig: string // JSON stringified object containing all versions
+  version: string
+  // ... other fields
+}
+
+export interface ConfigVersions {
+  [key: string]: ElementConfigType
+}
+
 export interface ElementConfigType {
+  // general config
+  css: string
+  version?: string
+  tag?: string // when creating a new config
   walletAddress?: string
 
   // button specific
@@ -30,6 +51,7 @@ export interface ElementConfigType {
   buttonBorder: CornerType
   buttonTextColor: string
   buttonBackgroundColor: string
+  buttonDescriptionText?: string
 
   // banner specific
   bannerFontName: string
@@ -57,6 +79,21 @@ export interface ElementConfigType {
   widgetTriggerBackgroundColor: string
   widgetTriggerIcon: string
 }
+
+export type SanitizedFields = Pick<
+  ElementConfigType,
+  | 'bannerTitleText'
+  | 'bannerDescriptionText'
+  | 'widgetTitleText'
+  | 'widgetDescriptionText'
+  | 'widgetButtonText'
+  | 'buttonText'
+  | 'buttonDescriptionText'
+  | 'walletAddress'
+  | 'version'
+  | 'tag'
+>
+
 
 export type JSONError<T extends z.ZodTypeAny> = {
   errors: z.typeToFlattenedError<z.infer<T>>

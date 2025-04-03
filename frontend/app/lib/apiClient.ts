@@ -35,7 +35,7 @@ if (!isProd) {
 
 export class ApiClient {
   public static async getDefaultConfig(): Promise<ApiResponse> {
-    const response = await axios.get(`${apiUrl}tools/default`, { httpsAgent })
+    const response = await axios.get(`/api/tools/default`, { httpsAgent })
 
     if (response.status === 200) {
       return {
@@ -56,7 +56,7 @@ export class ApiClient {
     const wa = encodeURIComponent(
       walletAddress.replace('$', '').replace('https://', '')
     )
-    const response = await axios.get(`${apiUrl}tools/${wa}`, {
+    const response = await axios.get(`/api/tools/${wa}`, {
       httpsAgent
     })
 
@@ -138,25 +138,28 @@ export class ApiClient {
     version: string,
     cookieHeader: string
   ): Promise<ApiResponse> {
-    const wa = encodeURIComponent(walletAddress)
-    const response = await axios.delete(`${apiUrl}tools/${wa}/${version}`, {
-      httpsAgent,
-      withCredentials: true,
-      headers: {
-        Cookie: cookieHeader
-      }
-    })
+    const wa = encodeURIComponent(
+      walletAddress.replace('$', '').replace('https://', '')
+    )
 
-    if (response.status === 200) {
+      const response = await axios.delete(`/api/tools/${wa}/${version}`, {
+        httpsAgent,
+        withCredentials: true,
+        headers: {
+          Cookie: cookieHeader
+        }
+      })
+
+      if (response.status === 200) {
       return {
         isFailure: false,
         payload: response.data
       }
-    } else {
+    }
+
       return {
         errors: [`status ${response.status}: ${response.statusText}`],
         isFailure: true
       }
-    }
   }
 }
