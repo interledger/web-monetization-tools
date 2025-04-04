@@ -1,5 +1,4 @@
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
-import { streamToString } from './utils.server'
+import { S3Client } from '@aws-sdk/client-s3'
 
 const s3Client = new S3Client({
   region: process.env.AWS_REGION,
@@ -16,14 +15,4 @@ export function getS3AndParams(walletAddress: string) {
   }
 
   return { s3: s3Client, params }
-}
-
-export async function getDefaultData() {
-  const params = {
-    Bucket: process.env.AWS_BUCKET_NAME,
-    Key: 'default.json'
-  }
-
-  const data = await s3Client.send(new GetObjectCommand(params))
-  return streamToString(data.Body as NodeJS.ReadableStream)
 }

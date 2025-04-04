@@ -14,12 +14,12 @@ export default defineConfig(({ mode }) => {
             usePolling: true
           }
         : undefined,
-      https: isDevelopment
-        ? {
-            key: fs.readFileSync(path.resolve(__dirname, '../certs/key.pem')),
-            cert: fs.readFileSync(path.resolve(__dirname, '../certs/cert.pem'))
-          }
-        : undefined,
+      // https: isDevelopment
+      //   ? {
+      //       key: fs.readFileSync(path.resolve(__dirname, '../certs/key.pem')),
+      //       cert: fs.readFileSync(path.resolve(__dirname, '../certs/cert.pem'))
+      //     }
+      //   : undefined,
       port: 5100,
       strictPort: true,
       host: '0.0.0.0',

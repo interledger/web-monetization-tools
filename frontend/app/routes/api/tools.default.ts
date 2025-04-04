@@ -1,5 +1,5 @@
 import { json, type LoaderFunctionArgs } from '@remix-run/node'
-import { getDefaultData } from '../../lib/server/s3.server'
+import { getDefaultData } from '../../lib/utils'
 import { corsHeaders } from '../../lib/server/cors.server'
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -8,8 +8,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   }
 
   try {
-    const defaultData = await getDefaultData()
-    return json(JSON.parse(defaultData), { headers: corsHeaders })
+    const defaultData = getDefaultData()
+    return json(defaultData, { headers: corsHeaders })
   } catch (error) {
     console.error('Error fetching default config:', error)
     return json(

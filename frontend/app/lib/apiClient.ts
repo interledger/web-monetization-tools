@@ -2,6 +2,7 @@ import axios from 'axios'
 import https from 'https'
 import fs from 'fs'
 import { ElementConfigType } from './types.js'
+import path from 'path'
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 export type ApiResponse<T = any> = {
@@ -12,14 +13,13 @@ export type ApiResponse<T = any> = {
 }
 
 const isProd = import.meta.env.PROD
-const apiUrl = process.env.API_URL!
+const apiUrl = process.env.API_URL // || 'https://backend:5101/'
 
 let httpsAgent: https.Agent | undefined
-
 if (!isProd) {
   try {
     // Load self-signed certificate
-    const backendCert = fs.readFileSync('/app/certs/cert.pem')
+    const backendCert = fs.readFileSync(path.resolve('..', 'certs', 'cert.pem'))
 
     // Create an HTTPS agent with the certificate
     httpsAgent = isProd
@@ -35,7 +35,8 @@ if (!isProd) {
 
 export class ApiClient {
   public static async getDefaultConfig(): Promise<ApiResponse> {
-    const response = await axios.get(`/api/tools/default`, { httpsAgent })
+    console.log('!!!!!!!!!!!!!!!!!!!!!!getDefaultConfig')
+    const response = await axios.get(`/api/tools/default`)
 
     if (response.status === 200) {
       return {
@@ -56,9 +57,7 @@ export class ApiClient {
     const wa = encodeURIComponent(
       walletAddress.replace('$', '').replace('https://', '')
     )
-    const response = await axios.get(`/api/tools/${wa}`, {
-      httpsAgent
-    })
+    const response = await axios.get(`/api/tools/${wa}`)
 
     if (response.status === 200) {
       return {
@@ -86,7 +85,6 @@ export class ApiClient {
       `${apiUrl}tools`,
       { walletAddress: wa, tag },
       {
-        httpsAgent,
         withCredentials: true,
         headers: {
           Cookie: cookieHeader // Manually attach the session cookie
@@ -113,7 +111,6 @@ export class ApiClient {
     cookieHeader: string
   ): Promise<ApiResponse> {
     const response = await axios.put(`${apiUrl}tools`, configData, {
-      httpsAgent,
       withCredentials: true,
       headers: {
         Cookie: cookieHeader // Manually attach the session cookie
@@ -143,7 +140,6 @@ export class ApiClient {
     )
 
       const response = await axios.delete(`/api/tools/${wa}/${version}`, {
-        httpsAgent,
         withCredentials: true,
         headers: {
           Cookie: cookieHeader

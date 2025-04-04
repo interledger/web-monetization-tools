@@ -69,7 +69,7 @@ export interface ElementConfigType {
   widgetFontSize: number
   widgetTitleText: string
   widgetDescriptionText: string
-  // widgetDonateAmount: number // not posibble currently
+  widgetDonateAmount: number // not posibble currently
   widgetButtonText: string
   widgetButtonBorder: CornerType
   widgetTextColor: string

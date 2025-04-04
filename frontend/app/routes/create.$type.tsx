@@ -22,7 +22,7 @@ import {
   ToolConfig,
   ToolPreview
 } from '~/components/index.js'
-import { ApiClient, ApiResponse } from '~/lib/apiClient.js'
+// import { ApiClient, ApiResponse } from '~/lib/apiClient.js'
 import { validConfigTypes, ModalType } from '~/lib/presets.js'
 import { tooltips } from '~/lib/tooltips.js'
 import { ElementConfigType, ElementErrors } from '~/lib/types.js'
@@ -38,6 +38,14 @@ import {
   getValidWalletAddress,
   createInteractiveGrant
 } from '~/lib/server/open-payments.server'
+import { getDefaultData } from '../lib/utils'
+
+export type ApiResponse<T = any> = {
+  readonly payload?: T
+  readonly isFailure: false | true
+  readonly errors?: Array<string>
+  newversion?: false | string
+}
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const elementType = params.type
@@ -58,8 +66,8 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   session.unset('is-grant-response')
 
   // get default config
-  const apiResponse: ApiResponse = await ApiClient.getDefaultConfig()
-  const defaultConfig: ElementConfigType = apiResponse?.payload?.default
+  // const apiResponse: ApiResponse = await ApiClient.getDefaultConfig()
+  // const defaultConfig: ElementConfigType = apiResponse?.payload?.default
 
   const ilpayUrl = process.env.ILPAY_URL || ''
   const scriptInitUrl = process.env.INIT_SCRIPT_URL || ''
@@ -68,7 +76,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   return json(
     {
       elementType,
-      defaultConfig,
+      // defaultConfig,
       ilpayUrl,
       scriptInitUrl,
       frontendUrl,
@@ -90,7 +98,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 export default function Create() {
   const {
     elementType,
-    defaultConfig,
+    // defaultConfig,
     ilpayUrl,
     scriptInitUrl,
     frontendUrl,
@@ -106,6 +114,7 @@ export default function Create() {
   const isSubmitting = state === 'submitting'
   const contentOnly = contentOnlyParam != null
 
+  const defaultConfig = getDefaultData().default
   const [openWidget, setOpenWidget] = useState(false)
   const [toolConfig, setToolConfig] = useState<ElementConfigType>(defaultConfig)
   const [fullConfig, setFullConfig] =
@@ -430,16 +439,16 @@ export async function action({ request, params }: ActionFunctionArgs) {
   // additional check for newversion
   if (intent == 'newversion') {
     // get existing keys
-    const apiData = await ApiClient.getUserConfig(payload.walletAddress)
-    const currentConfig = apiData.payload || {}
+    // const apiData = await ApiClient.getUserConfig(payload.walletAddress)
+    // const currentConfig = apiData.payload || {}
 
-    const versionName = payload.version.replaceAll(' ', '-')
-    const configKeys = Object.keys(currentConfig)
-    if (configKeys.indexOf(versionName) !== -1) {
-      errors.fieldErrors = { version: ['Already exists'] }
-      actionResponse.errors = errors
-      return json(actionResponse, { status: 400 })
-    }
+    // const versionName = payload.version.replaceAll(' ', '-')
+    // const configKeys = Object.keys(currentConfig)
+    // if (configKeys.indexOf(versionName) !== -1) {
+    //   errors.fieldErrors = { version: ['Already exists'] }
+    //   actionResponse.errors = errors
+    //   return json(actionResponse, { status: 400 })
+    // }
   }
 
   // no need when importing
@@ -479,63 +488,200 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   if (intent == 'import') {
     session.set('last-action', '')
-    apiResponse = await ApiClient.getUserConfig(payload.walletAddress)
+    
+    try {
+      const url = new URL(request.url)
+      const cleanWalletAddress = payload.walletAddress.replace('https://', '')
+      const encodedWallet = encodeURIComponent(cleanWalletAddress)
+      
+      const response = await fetch(`${url.protocol}//${url.host}/api/import?id=${encodedWallet}`, {
+        method: 'GET',
+      })
 
-    actionResponse.apiResponse = apiResponse
-    return json(actionResponse, {
-      status: 200,
-      headers: {
-        'Set-Cookie': await commitSession(session)
+      if (!response.ok) {
+        throw new Error('Failed to fetch configuration')
       }
-    })
+
+      const data = await response.json()
+      apiResponse = {
+        isFailure: false,
+        payload: data
+      }
+
+      return json(
+        { ...actionResponse, apiResponse },
+        {
+          status: 200,
+          headers: {
+            'Set-Cookie': await commitSession(session)
+          }
+        }
+      )
+    } catch (error) {
+      console.error('Import error:', error)
+      return json(
+        {
+          ...actionResponse,
+          errors: {
+            ...errors,
+            message: ['Failed to import configuration']
+          }
+        },
+        { status: 500 }
+      )
+    }
   } else if (intent == 'newversion') {
-    const versionName = payload.version.replaceAll(' ', '-')
-    apiResponse = await ApiClient.createUserConfig(
-      versionName,
-      payload.walletAddress,
-      theCookie || ''
-    )
-    apiResponse.newversion = versionName
+    try {
+      const url = new URL(request.url)
+      const versionName = payload.version.replaceAll(' ', '-')
+      const cleanWalletAddress = payload.walletAddress.replace('https://', '')
+      
+      const response = await fetch(`${url.protocol}//${url.host}/api/tools`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Cookie: theCookie || ''
+        },
+        body: JSON.stringify({
+          walletAddress: cleanWalletAddress,
+          tag: versionName
+        })
+      })
 
-    actionResponse.apiResponse = apiResponse
-    return json(actionResponse, {
-      status: 200,
-      headers: {
-        'Set-Cookie': await commitSession(session)
+      if (!response.ok) {
+        throw new Error('Failed to create version')
       }
-    })
+
+      const data = await response.json()
+      apiResponse = {
+        isFailure: false,
+        payload: data,
+        newversion: versionName
+      }
+
+      return json(
+        { ...actionResponse, apiResponse },
+        {
+          status: 200,
+          headers: {
+            'Set-Cookie': await commitSession(session)
+          }
+        }
+      )
+    } catch (error) {
+      console.error('Create version error:', error)
+      return json(
+        {
+          ...actionResponse,
+          errors: {
+            ...errors,
+            message: ['Failed to create version']
+          }
+        },
+        { status: 500 }
+      )
+    }
   } else if (intent === 'remove') {
-    apiResponse = await ApiClient.deleteConfigVersion(
-      payload.walletAddress,
-      payload.version,
-      theCookie || ''
-    )
-
-    actionResponse.apiResponse = apiResponse
-    return json(actionResponse, {
-      status: 200,
-      headers: {
-        'Set-Cookie': await commitSession(session)
-      }
-    })
-  } else {
-    if (payload.elementType == 'widget') {
-      const css = await encodeAndCompressParameters(
-        getIlpayCss(payload as unknown as ElementConfigType)
+    try {
+      const cleanWalletAddress = payload.walletAddress.replace('https://', '')
+      const encodedWallet = encodeURIComponent(cleanWalletAddress)
+      
+      const response = await fetch(
+        `$http://localhost:5100/api/tools/${encodedWallet}/${payload.version}`,
+        {
+          method: 'DELETE',
+          headers: {
+            Cookie: theCookie || ''
+          }
+        }
       )
 
-      Object.assign(payload, { css })
-    }
-
-    apiResponse = await ApiClient.saveUserConfig(payload, theCookie || '')
-
-    actionResponse.apiResponse = apiResponse
-    actionResponse.displayScript = intent != 'remove' ? true : displayScript
-    return json(actionResponse, {
-      status: 200,
-      headers: {
-        'Set-Cookie': await commitSession(session)
+      if (!response.ok) {
+        throw new Error('Failed to delete version')
       }
-    })
+
+      const data = await response.json()
+      apiResponse = {
+        isFailure: false,
+        payload: data
+      }
+
+      return json(
+        { ...actionResponse, apiResponse },
+        {
+          status: 200,
+          headers: {
+            'Set-Cookie': await commitSession(session)
+          }
+        }
+      )
+    } catch (error) {
+      console.error('Delete error:', error) 
+      return json(
+        {
+          ...actionResponse,
+          errors: {
+            ...errors,
+            message: ['Failed to delete version']
+          }
+        },
+        { status: 500 }
+      )
+    }
+  } else {
+    try {
+      if (payload.elementType == 'widget') {
+        const css = await encodeAndCompressParameters(
+          getIlpayCss(payload as unknown as ElementConfigType)
+        )
+        Object.assign(payload, { css })
+      }
+
+      const url = new URL(request.url)
+      const response = await fetch(`${url.protocol}//${url.host}/api/tools`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Cookie: theCookie || ''
+        },
+        body: JSON.stringify(payload)
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to save configuration')
+      }
+
+      const data = await response.json()
+      apiResponse = {
+        isFailure: false,
+        payload: data
+      }
+
+      return json(
+        {
+          ...actionResponse,
+          apiResponse,
+          displayScript: intent != 'remove'
+        },
+        {
+          status: 200,
+          headers: {
+            'Set-Cookie': await commitSession(session)
+          }
+        }
+      )
+    } catch (error) {
+      console.error('Save error:', error)
+      return json(
+        {
+          ...actionResponse,
+          errors: {
+            ...errors,
+            message: ['Failed to save configuration']
+          }
+        },
+        { status: 500 }
+      )
+    }
   }
 }

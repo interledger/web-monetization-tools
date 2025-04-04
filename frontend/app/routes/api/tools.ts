@@ -6,7 +6,7 @@ import { ConfigVersions, CreateConfigRequest, SaveUserConfigRequest } from '../.
 import { getSession } from '../../lib/server/session.server'
 import { getS3AndParams } from '../../lib/server/s3.server'
 import { corsHeaders } from '../../lib/server/cors.server'
-import { getDefaultData } from '../../lib/server/s3.server'
+import { getDefaultData } from '../../lib/utils'
 
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -28,9 +28,8 @@ export async function action({ request }: ActionFunctionArgs) {
           throw new Error('Grant confirmation required')
         }
 
-        const defaultData = await getDefaultData()
-        const defaultDataContent: ConfigVersions['default'] =
-          JSON.parse(defaultData).default
+        const defaultData = getDefaultData()
+        const defaultDataContent: ConfigVersions['default'] = (defaultData as any).default
         defaultDataContent.walletAddress = walletAddress
 
         sanitizeConfigFields({ ...defaultDataContent, tag })
