@@ -1,11 +1,15 @@
 /** @type {import('@remix-run/dev').AppConfig} */
 export default {
   serverBuildTarget: 'cloudflare-pages',
-  server: './server.ts',
   ignoredRouteFiles: ['**/.*'],
+  appDirectory: 'app',
+  assetsBuildDirectory: 'public/build',
+  publicPath: '/build/',
   serverModuleFormat: 'esm',
   serverPlatform: 'neutral',
   future: {
-    v3_fetcherPersist: true
+    v3_fetcherPersist: true,
+    v3_relativeSplatPath: true,
+    v3_throwAbortReason: true
   }
 }

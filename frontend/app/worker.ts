@@ -15,15 +15,18 @@ router.get('/tools/:id/:tag?', async (request, { id, tag }) => {
 })
 
 const remixRequestHandler = createPagesFunctionHandler({
-  build: process.env.NODE_ENV === "development" 
-  ? require("@remix-run/dev/server-build") 
-  : require("../build"),
+  build:
+    process.env.NODE_ENV === 'development'
+      ? require('@remix-run/dev/server-build')
+      : require('../build'),
   mode: process.env.NODE_ENV,
-  getLoadContext: (context) => context.env
+  getLoadContext(context) {
+    // hand-off Cloudflare ENV vars to the Remix `context` object
+    return { env: context.env }
+  }
 })
 
 export const onRequest: PagesFunction = async (context) => {
-    const response = await router.handle(context.request);
-    return response || remixRequestHandler(context);
-  };
-  
+  const response = await router.handle(context.request)
+  return response || remixRequestHandler(context)
+}

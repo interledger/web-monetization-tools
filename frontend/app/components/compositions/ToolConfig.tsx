@@ -620,6 +620,8 @@ export const ToolConfig = ({
             aria-label="save config"
             type="submit"
             disabled={isSubmiting}
+            value="update"
+            name="intent"
           >
             <img
               className={cx(

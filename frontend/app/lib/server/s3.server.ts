@@ -9,9 +9,13 @@ const s3Client = new S3Client({
 })
 
 export function getS3AndParams(walletAddress: string) {
+  const fileKey = `${decodeURIComponent(walletAddress)
+    .replace('$', '')
+    .replace('https://', '')}.json`
+
   const params = {
     Bucket: process.env.AWS_BUCKET_NAME,
-    Key: `${walletAddress}.json`
+    Key: fileKey
   }
 
   return { s3: s3Client, params }

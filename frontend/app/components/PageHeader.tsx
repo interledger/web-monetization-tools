@@ -8,8 +8,6 @@ export const PageHeader = ({
   elementType,
   title,
   link,
-  setImportModalOpen,
-  setNewVersionModalOpen,
   setConfirmModalOpen,
   versionOptions,
   selectedVersion,
@@ -18,8 +16,6 @@ export const PageHeader = ({
   elementType: string | undefined
   title: string
   link: string
-  setImportModalOpen: React.Dispatch<React.SetStateAction<boolean>>
-  setNewVersionModalOpen: React.Dispatch<React.SetStateAction<boolean>>
   setConfirmModalOpen: React.Dispatch<React.SetStateAction<boolean>>
   versionOptions: SelectOption[]
   selectedVersion: string
@@ -56,7 +52,7 @@ export const PageHeader = ({
           aria-label="add version"
           title="add version"
           onClick={() => {
-            setNewVersionModalOpen(true)
+            navigate('version', { preventScrollReset: true })
           }}
         >
           +
@@ -84,7 +80,10 @@ export const PageHeader = ({
         >
           <Chevron direction="left" className="w-3 h-3 mr-1 -ml-1" /> Back
         </Button>
-        <Button aria-label="import" onClick={() => setImportModalOpen(true)}>
+        <Button
+          aria-label="import"
+          onClick={() => navigate('import', { preventScrollReset: true })}
+        >
           <Chevron direction="up" className="w-3 h-3 mr-1 -ml-1" /> Import
         </Button>
       </div>

@@ -1,29 +1,69 @@
 import { Dialog } from '@headlessui/react'
-import { Form } from '@remix-run/react'
-import { ElementConfigType, ElementErrors } from '~/lib/types.js'
+import {  useFetcher } from '@remix-run/react'
+import { ElementConfigType } from '~/lib/types.js'
 import { XIcon } from '~/components/icons.js'
 import { Button } from '~/components/index.js'
 import { WalletAddress } from '../WalletAddressInput.js'
+import { useEffect } from 'react'
 
 type ImportModalProps = {
   title: string
   isOpen: boolean
-  isSubmitting: boolean
   toolConfig: ElementConfigType
+  setConfigs: (
+    fullConfigObject: Record<string, ElementConfigType>,
+    versionName: string
+  ) => void
   setToolConfig: React.Dispatch<React.SetStateAction<ElementConfigType>>
-  errors?: ElementErrors
   onClose: () => void
+  onImport?: (walletAddress: string) => void
 }
 
 export const ImportModal = ({
   title,
   isOpen,
   onClose,
-  errors,
-  isSubmitting,
   toolConfig,
-  setToolConfig
+  setConfigs = () => {},
+  setToolConfig = () => {}
 }: ImportModalProps) => {
+  const validateFetcher = useFetcher()
+  const importFetcher = useFetcher()
+  const isSubmitting =
+    validateFetcher.state !== 'idle' || importFetcher.state !== 'idle'
+
+  useEffect(() => {
+    if (
+      // @ts-ignore
+      validateFetcher.data?.success &&
+      // @ts-ignore
+      validateFetcher.data?.intent === 'import'
+    ) {
+      try {
+        const cleanWalletAddress =
+          toolConfig.walletAddress?.replace('https://', '') || ''
+        importFetcher.load(
+          `/api/banner/imports?wa=${encodeURIComponent(cleanWalletAddress)}`
+        )
+      } catch (error) {
+        throw error
+      }
+    }
+  }, [validateFetcher.data])
+
+  useEffect(() => {
+    if (importFetcher.data && importFetcher.state === 'idle') {
+      // @ts-ignore
+      if (importFetcher.data.default) {
+        // @ts-ignore
+        setConfigs(importFetcher.data)
+        // @ts-ignore
+        sessionStorage.setItem('fullconfig', JSON.stringify(importFetcher.data))
+        onClose()
+      }
+    }
+  }, [importFetcher.data])
+
   return (
     <Dialog as="div" className="relative z-10" onClose={onClose} open={isOpen}>
       <div className="fixed inset-0 bg-slate-500 bg-opacity-75 transition-opacity" />
@@ -48,11 +88,16 @@ export const ImportModal = ({
                 {title}
               </Dialog.Title>
               <div className="mt-2">
-                <Form method="post" replace preventScrollReset>
+                <validateFetcher.Form
+                  id="import-form"
+                  method="post"
+                  action="/create/banner"
+                >
                   <fieldset disabled={isSubmitting}>
                     <div className="flex w-full items-center">
                       <WalletAddress
-                        errors={errors}
+                        //@ts-ignore
+                        errors={validateFetcher.data?.errors}
                         config={toolConfig}
                         setToolConfig={setToolConfig}
                       />
@@ -65,11 +110,11 @@ export const ImportModal = ({
                         value="import"
                         name="intent"
                       >
-                        Import
+                        {isSubmitting ? 'Importing...' : 'Import'}
                       </Button>
                     </div>
                   </fieldset>
-                </Form>
+                </validateFetcher.Form>
               </div>
             </div>
           </Dialog.Panel>

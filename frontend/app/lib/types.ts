@@ -94,7 +94,6 @@ export type SanitizedFields = Pick<
   | 'tag'
 >
 
-
 export type JSONError<T extends z.ZodTypeAny> = {
   errors: z.typeToFlattenedError<z.infer<T>>
 }
