@@ -5,7 +5,8 @@ import {
   useLoaderData,
   useFetcher,
   useNavigation,
-  Outlet
+  Outlet,
+  useSubmit
 } from '@remix-run/react'
 import { ReactElement, useEffect, useState } from 'react'
 import {
@@ -94,7 +95,7 @@ export default function Create() {
   const navigation = useNavigation()
   const isSubmitting = navigation.state === 'submitting'
   const contentOnly = contentOnlyParam != null
-
+  
   const deleteFetcher = useFetcher()
   const saveFetcher = useFetcher()
   const [openWidget, setOpenWidget] = useState(false)
@@ -112,6 +113,7 @@ export default function Create() {
 
   const wa = toWalletAddressUrl(toolConfig?.walletAddress || '')
   const scriptToDisplay = `<script id="wmt-init-script" type="module" src="${scriptInitUrl}init.js?wa=${wa}&tag=[version]&types=[elements]"></script>`
+  const submitForm = useSubmit()
 
   const onConfirmRemove = () => {
     if (
@@ -144,11 +146,11 @@ export default function Create() {
     }
   }
 
-  const onConfirmOwnership = (interact?: string) => {
-    if (!interact) {
+  const onConfirmOwnership = (interactHref?: string) => {
+    if (!interactHref) {
       throw new Error('Grant not found')
     }
-    window.location.href = interact
+    window.location.href = interactHref
   }
 
   /**
@@ -204,7 +206,10 @@ export default function Create() {
         break
       case 'grant-response':
         title = grantResponse
-        onConfirm = isGrantAccepted ? () => setModal(undefined) : onClose
+        onConfirm = isGrantAccepted ? () => {
+          onResubmitForm()
+          setModal(undefined)
+        } : onClose
         break
       default:
         break
@@ -268,17 +273,19 @@ export default function Create() {
 
     // @ts-ignore
     if (!errors.length && actionData) {
+      const updatedFullConfig = {
+        ...fullConfig,
+        [selectedVersion]: toolConfig
+      }
+
       // @ts-ignore
       if (actionData?.grantRequired) {
+        sessionStorage.setItem('fullconfig', JSON.stringify(updatedFullConfig))
         // @ts-ignore
         setModal({ type: 'wallet-ownership', param: actionData?.grantRequired })
       }
       // @ts-ignore
       else if (actionData?.success && actionData.intent == 'update') {
-        const updatedFullConfig = {
-          ...fullConfig,
-          [selectedVersion]: toolConfig
-        }
         const payload = {
           walletAddress: toolConfig.walletAddress,
           fullconfig: JSON.stringify(updatedFullConfig),
@@ -310,6 +317,27 @@ export default function Create() {
       }
     }
   }, [saveFetcher.data, saveFetcher.state])
+
+  const onResubmitForm = () => {
+    const formData = new FormData()
+    formData.append('bannerFontName', toolConfig.bannerFontName)
+    formData.append('bannerFontSize', toolConfig.bannerFontSize.toString())
+    formData.append('bannerDescriptionText', toolConfig.bannerDescriptionText)
+    formData.append('bannerTextColor', toolConfig.bannerTextColor)
+    formData.append('bannerBackgroundColor', toolConfig.bannerBackgroundColor)
+    formData.append('bannerSlideAnimation', toolConfig.bannerSlideAnimation)
+    formData.append('bannerPosition', toolConfig.bannerPosition)
+    formData.append('bannerBorder', toolConfig.bannerBorder)
+    formData.append('walletAddress', toolConfig.walletAddress!)
+    formData.append('version', selectedVersion)
+    formData.append('fullconfig', JSON.stringify(fullConfig))
+    formData.append('intent', 'update')
+
+        submitForm(formData, {
+          method: 'post',
+          action: '/create/banner'
+        });
+  }
 
   return (
     <div className="flex flex-col gap-6 min-w-128 max-w-prose mx-auto my-8">

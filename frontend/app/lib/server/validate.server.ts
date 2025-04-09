@@ -37,7 +37,7 @@ export const versionSchema = z.object({
   version: z.string().min(1, { message: 'Version is required' })
 })
 
-// need a better definition & validation for this
+// TODO: need a better definition & validation for this
 export const fullConfigSchema = z.object({
   fullconfig: z.string().min(1, { message: 'Unknown error' })
 })
