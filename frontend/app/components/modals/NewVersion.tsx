@@ -1,9 +1,10 @@
 import { Dialog } from '@headlessui/react'
 import { useFetcher } from '@remix-run/react'
-import { ElementConfigType, ElementErrors } from '~/lib/types.js'
+import { ElementConfigType } from '~/lib/types.js'
 import { XIcon } from '~/components/icons.js'
 import { Button, Input, WalletAddress } from '~/components/index.js'
 import { useEffect, useState } from 'react'
+import { ModalType } from '~/lib/presets'
 
 type NewVersionModalProps = {
   title: string
@@ -15,6 +16,7 @@ type NewVersionModalProps = {
     config: Record<string, ElementConfigType>,
     versionName: string
   ) => void
+  setModalOpen: React.Dispatch<React.SetStateAction<ModalType | undefined>>
 }
 
 export const NewVersionModal = ({
@@ -23,37 +25,48 @@ export const NewVersionModal = ({
   onClose,
   toolConfig,
   setToolConfig,
-  setConfigs
+  setConfigs,
+  setModalOpen
 }: NewVersionModalProps) => {
   const validateFetcher = useFetcher()
   const versionFetcher = useFetcher()
-  const isSubmitting = versionFetcher.state !== 'idle'
+  const isSubmitting =
+    versionFetcher.state !== 'idle' || validateFetcher.state !== 'idle'
   const [versionName, setVersionName] = useState('')
 
   useEffect(() => {
+    // @ts-ignore
+    if (validateFetcher.data?.grantRequired) {
+      onClose()
+      setModalOpen({
+        type: 'wallet-ownership',
+        // @ts-ignore
+        param: validateFetcher.data.grantRequired
+      })
+    }
     if (
       // @ts-ignore
       validateFetcher.data?.success &&
       // @ts-ignore
       validateFetcher.data?.intent == 'newversion'
     ) {
-        try {
-          const formData = new FormData()
-          formData.append('operation', 'create')
-          formData.append('walletAddress', toolConfig?.walletAddress || '')
-          formData.append('version', versionName)
-          
-          versionFetcher.submit(formData, {
-            method: 'post',
-            action: '/api/banner/create',
-            encType: 'multipart/form-data'
-          })
-          
-        } catch (error) {
-          throw error
-        }
+      try {
+        const formData = new FormData()
+        formData.append('operation', 'create')
+        formData.append('walletAddress', toolConfig?.walletAddress || '')
+        formData.append('version', versionName)
+
+        versionFetcher.submit(formData, {
+          method: 'post',
+          action: '/api/banner/create',
+          encType: 'multipart/form-data'
+        })
+      } catch (error) {
+        throw error
+      }
     }
   }, [validateFetcher.data])
+
   useEffect(() => {
     if (versionFetcher.data && versionFetcher.state === 'idle') {
       // @ts-ignore

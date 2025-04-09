@@ -1,6 +1,7 @@
 import { NewVersionModal } from '~/components/modals'
 import { useNavigate, useOutletContext } from '@remix-run/react'
 import { ElementConfigType } from '~/lib/types'
+import { ModalType } from '~/lib/presets'
 
 type ContextType = {
   toolConfig: ElementConfigType
@@ -9,11 +10,12 @@ type ContextType = {
     versionName: string
   ) => void
   setToolConfig: React.Dispatch<React.SetStateAction<ElementConfigType>>
+  setModalOpen: React.Dispatch<React.SetStateAction<ModalType | undefined>>
 }
 
 export default function NewVersionRoute() {
   const navigate = useNavigate()
-  const { toolConfig, setConfigs, setToolConfig } =
+  const { toolConfig, setConfigs, setToolConfig, setModalOpen } =
     useOutletContext<ContextType>()
 
   return (
@@ -24,6 +26,7 @@ export default function NewVersionRoute() {
       toolConfig={toolConfig}
       setToolConfig={setToolConfig}
       setConfigs={setConfigs}
+      setModalOpen={setModalOpen}
     />
   )
 }

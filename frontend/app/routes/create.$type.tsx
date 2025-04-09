@@ -104,7 +104,7 @@ export default function Create() {
   >({
     default: defaultConfig
   })
-  const [modalOpen, setModalOpen] = useState<ModalType | undefined>()
+  const [modal, setModal] = useState<ModalType | undefined>()
   const [selectedVersion, setSelectedVersion] = useState('default')
   const [versionOptions, setVersionOptions] = useState<SelectOption[]>([
     { label: 'Default', value: 'default' }
@@ -129,22 +129,32 @@ export default function Create() {
         encType: 'multipart/form-data'
       })
 
-      setModalOpen(undefined)
+      setModal(undefined)
     }
   }
 
-  const onConfirmOwnership = () => {
-    // @ts-ignore
-    if (actionData?.grantRequired) {
-      // @ts-ignore
-      window.location.href = actionData.grantRequired
+  const onSelectVersion = (selectedVersion: string) => {
+    const config = fullConfig[selectedVersion]
+    if (config) {
+      setToolConfig(config)
+      setSelectedVersion(selectedVersion)
+      sessionStorage.setItem('new-version', selectedVersion)
+    } else {
+      throw new Error('Version not found')
     }
+  }
+
+  const onConfirmOwnership = (interact?: string) => {
+    if (!interact) {
+      throw new Error('Grant not found')
+    }
+    window.location.href = interact
   }
 
   /**
    * Update the config and version options based on the provided full config object and version name.
-   * @param fullConfigObject 
-   * @param versionName 
+   * @param fullConfigObject
+   * @param versionName
    */
   const setConfigs = (
     fullConfigObject: Record<string, ElementConfigType>,
@@ -162,17 +172,19 @@ export default function Create() {
     }
     if (versionName) {
       setSelectedVersion(versionName)
+      setToolConfig(fullConfigObject[versionName])
+    } else {
+      setToolConfig(fullConfigObject.default)
     }
   }
 
-  // Get content for confirm modals based on type
-  const getConfirmModalContent = (type: string) => {
+  const getConfirmModalContent = (modal: ModalType | undefined) => {
     let title: string | ReactElement = '',
       description = '',
       onConfirm = () => {}
-    const onClose = () => setModalOpen(undefined)
+    const onClose = () => setModal(undefined)
 
-    switch (type) {
+    switch (modal?.type) {
       case 'confirm':
         title = `Are you sure you want to remove ${selectedVersion}?`
         onConfirm = onConfirmRemove
@@ -188,11 +200,13 @@ export default function Create() {
         )
         description =
           "You will need to confirm a grant to prove that you are the owner of the wallet address. It's value is set to 1 but there will be no funds removed from your wallet"
-        onConfirm = onConfirmOwnership
+        onConfirm = () => onConfirmOwnership(modal?.param)
         break
       case 'grant-response':
         title = grantResponse
-        onConfirm = isGrantAccepted ? () => setModalOpen(undefined) : onClose
+        onConfirm = isGrantAccepted ? () => setModal(undefined) : onClose
+        break
+      default:
         break
     }
     return { title, description, onClose, onConfirm }
@@ -219,46 +233,35 @@ export default function Create() {
   }, [deleteFetcher.data, deleteFetcher.state])
 
   useEffect(() => {
-    const newVersion = sessionStorage.getItem('new-version')
-    const userFullconfig = JSON.parse(
-      sessionStorage.getItem('fullconfig') || '{}'
-    )
-    if (Object.keys(userFullconfig).length === 0) {
-      userFullconfig.default = defaultConfig
-    }
+    const savedConfig = sessionStorage.getItem('fullconfig') || '{}'
+    const savedSelectedVersion =
+      sessionStorage.getItem('new-version') || 'default'
 
-    if (newVersion && !userFullconfig[newVersion]) {
-      userFullconfig[newVersion] = userFullconfig['default']
-    }
+    try {
+      const parsedConfig = JSON.parse(savedConfig)
+      if (Object.keys(parsedConfig).length) {
+        setConfigs(parsedConfig, savedSelectedVersion)
 
-    setConfigs(userFullconfig, newVersion || 'default')
+        setSelectedVersion(savedSelectedVersion)
+        setToolConfig(
+          parsedConfig[savedSelectedVersion] || parsedConfig.default
+        )
+      } else {
+        setToolConfig(defaultConfig)
+        setFullConfig({ default: defaultConfig })
+      }
+    } catch (error) {
+      setToolConfig(defaultConfig)
+      setFullConfig({ default: defaultConfig })
+      throw new Error(
+        `Error restoring saved configuration: ${(error as Error).message}`
+      )
+    }
 
     if (isGrantResponse) {
-      setModalOpen('grant-response')
+      setModal({ type: 'grant-response' })
     }
   }, [])
-
-  useEffect(() => {
-    if (selectedVersion && fullConfig) {
-      const config = fullConfig[selectedVersion]
-      if (config) {
-        setToolConfig(config)
-      }
-      sessionStorage.setItem('new-version', selectedVersion)
-      sessionStorage.setItem('fullconfig', JSON.stringify(fullConfig))
-    }
-  }, [selectedVersion, fullConfig])
-
-  useEffect(() => {
-    if (toolConfig?.walletAddress) {
-      const updatedFullConfig = {
-        ...fullConfig,
-        [selectedVersion]: toolConfig
-      }
-      setFullConfig(updatedFullConfig)
-      sessionStorage.setItem('fullconfig', JSON.stringify(updatedFullConfig))
-    }
-  }, [toolConfig])
 
   useEffect(() => {
     const errors = Object.keys(actionData?.errors?.fieldErrors || {})
@@ -267,13 +270,18 @@ export default function Create() {
     if (!errors.length && actionData) {
       // @ts-ignore
       if (actionData?.grantRequired) {
-        setModalOpen('wallet-ownership')
+        // @ts-ignore
+        setModal({ type: 'wallet-ownership', param: actionData?.grantRequired })
       }
       // @ts-ignore
       else if (actionData?.success && actionData.intent == 'update') {
+        const updatedFullConfig = {
+          ...fullConfig,
+          [selectedVersion]: toolConfig
+        }
         const payload = {
           walletAddress: toolConfig.walletAddress,
-          fullconfig: JSON.stringify(fullConfig),
+          fullconfig: JSON.stringify(updatedFullConfig),
           version: selectedVersion,
           elementType: elementType
         }
@@ -295,7 +303,10 @@ export default function Create() {
     if (saveFetcher.data && saveFetcher.state === 'idle') {
       // @ts-ignore
       if (!saveFetcher.data.error) {
-        setModalOpen('script')
+        // @ts-ignore
+        setFullConfig(saveFetcher.data)
+        sessionStorage.setItem('fullconfig', JSON.stringify(saveFetcher.data))
+        setModal({ type: 'script' })
       }
     }
   }, [saveFetcher.data, saveFetcher.state])
@@ -306,10 +317,10 @@ export default function Create() {
         title={`Create ${elementType}`}
         elementType={elementType}
         link={`${frontendUrl}/tools/${contentOnly ? '?contentOnly' : ''}`}
-        setConfirmModalOpen={() => setModalOpen('confirm')}
+        setConfirmModalOpen={() => setModal({ type: 'confirm' })}
         versionOptions={versionOptions}
         selectedVersion={selectedVersion}
-        setSelectedVersion={setSelectedVersion}
+        onsetSelectVersion={onSelectVersion}
       />
       {toolConfig && validConfigTypes.includes(String(elementType)) ? (
         <div className="flex flex-col">
@@ -367,26 +378,27 @@ export default function Create() {
         tooltip={tooltips.scriptModal}
         defaultType={elementType}
         scriptForDisplay={scriptToDisplay}
-        isOpen={modalOpen === 'script'}
-        onClose={() => setModalOpen(undefined)}
+        isOpen={modal?.type === 'script'}
+        onClose={() => setModal(undefined)}
       />
       <Outlet
         context={{
           toolConfig,
           setConfigs,
-          setToolConfig
+          setToolConfig,
+          setModalOpen: setModal
         }}
       />
       <InfoModal
         title="Available configs"
         content={versionOptions.map((ver) => ver.value).join(', ')}
-        isOpen={modalOpen === 'info'}
-        onClose={() => setModalOpen(undefined)}
+        isOpen={modal?.type === 'info'}
+        onClose={() => setModal(undefined)}
       />
       <ConfirmModal
-        {...getConfirmModalContent(modalOpen ?? '')}
+        {...getConfirmModalContent(modal)}
         isOpen={['confirm', 'wallet-ownership', 'grant-response'].includes(
-          modalOpen ?? ''
+          modal?.type || ''
         )}
       />
     </div>
@@ -416,7 +428,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const ownerWalletAddress: string = payload.walletAddress as string
   const validForWallet = session.get('validForWallet')
 
-  if (!validForWallet || validForWallet !== ownerWalletAddress) {
+  if (
+    intent !== 'import' &&
+    (!validForWallet || validForWallet !== ownerWalletAddress)
+  ) {
     try {
       const walletAddress = await getValidWalletAddress(ownerWalletAddress)
       session.set('wallet-address', walletAddress)

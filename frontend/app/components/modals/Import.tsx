@@ -1,5 +1,5 @@
 import { Dialog } from '@headlessui/react'
-import {  useFetcher } from '@remix-run/react'
+import { useFetcher } from '@remix-run/react'
 import { ElementConfigType } from '~/lib/types.js'
 import { XIcon } from '~/components/icons.js'
 import { Button } from '~/components/index.js'
@@ -56,8 +56,7 @@ export const ImportModal = ({
       // @ts-ignore
       if (importFetcher.data.default) {
         // @ts-ignore
-        setConfigs(importFetcher.data)
-        // @ts-ignore
+        setConfigs(importFetcher.data, 'default')
         sessionStorage.setItem('fullconfig', JSON.stringify(importFetcher.data))
         onClose()
       }

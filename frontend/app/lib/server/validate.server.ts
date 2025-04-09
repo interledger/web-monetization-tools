@@ -114,9 +114,7 @@ export const validateForm = async (
   if (intent == 'import') {
     result = await walletSchema.safeParseAsync(formData)
   } else if (intent == 'newversion') {
-    result = await versionSchema
-      .merge(walletSchema)
-      .safeParseAsync(formData)
+    result = await versionSchema.merge(walletSchema).safeParseAsync(formData)
   } else {
     let currentSchema
 

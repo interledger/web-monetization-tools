@@ -11,7 +11,7 @@ export const PageHeader = ({
   setConfirmModalOpen,
   versionOptions,
   selectedVersion,
-  setSelectedVersion
+  onsetSelectVersion
 }: {
   elementType: string | undefined
   title: string
@@ -19,7 +19,7 @@ export const PageHeader = ({
   setConfirmModalOpen: React.Dispatch<React.SetStateAction<boolean>>
   versionOptions: SelectOption[]
   selectedVersion: string
-  setSelectedVersion: (value: string) => void
+  onsetSelectVersion: (value: string) => void
 }) => {
   const navigate = useNavigate()
 
@@ -44,7 +44,7 @@ export const PageHeader = ({
           placeholder="Default"
           options={versionOptions}
           value={versionOptions.find((opt) => opt.value == selectedVersion)}
-          onChange={(value) => setSelectedVersion(value)}
+          onChange={(value) => onsetSelectVersion(value)}
         />
         <Button
           intent="icon"
