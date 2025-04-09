@@ -8,15 +8,13 @@ import { sanitizeConfigFields } from '../lib/server/sanitize.server'
 import { ConfigVersions, SaveUserConfigRequest } from '../lib/types'
 import { getSession } from '../lib/server/session.server'
 import { getS3AndParams } from '../lib/server/s3.server'
-import { corsHeaders } from '../lib/server/cors.server'
 
 export async function action({ request }: ActionFunctionArgs) {
   if (request.method !== 'PUT') {
     return json(
       { error: 'Method not allowed' },
       {
-        status: 405,
-        headers: corsHeaders
+        status: 405
       }
     )
   }
@@ -69,14 +67,13 @@ export async function action({ request }: ActionFunctionArgs) {
 
     await s3.send(new PutObjectCommand(extendedParams))
 
-    return json(existingConfig, { headers: corsHeaders })
+    return json(existingConfig)
   } catch (error) {
     console.log(error)
     return json(
       { error: (error as Error).message },
       {
-        status: 500,
-        headers: corsHeaders
+        status: 500
       }
     )
   }

@@ -95,7 +95,7 @@ export default function Create() {
   const navigation = useNavigation()
   const isSubmitting = navigation.state === 'submitting'
   const contentOnly = contentOnlyParam != null
-  
+
   const deleteFetcher = useFetcher()
   const saveFetcher = useFetcher()
   const [openWidget, setOpenWidget] = useState(false)
@@ -206,10 +206,12 @@ export default function Create() {
         break
       case 'grant-response':
         title = grantResponse
-        onConfirm = isGrantAccepted ? () => {
-          onResubmitForm()
-          setModal(undefined)
-        } : onClose
+        onConfirm = isGrantAccepted
+          ? () => {
+              onResubmitForm()
+              setModal(undefined)
+            }
+          : onClose
         break
       default:
         break
@@ -333,10 +335,10 @@ export default function Create() {
     formData.append('fullconfig', JSON.stringify(fullConfig))
     formData.append('intent', 'update')
 
-        submitForm(formData, {
-          method: 'post',
-          action: '/create/banner'
-        });
+    submitForm(formData, {
+      method: 'post',
+      action: '/create/banner'
+    })
   }
 
   return (

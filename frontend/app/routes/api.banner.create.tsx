@@ -8,7 +8,6 @@ import { sanitizeConfigFields } from '../lib/server/sanitize.server'
 import { ConfigVersions } from '../lib/types'
 import { getSession } from '../lib/server/session.server'
 import { getS3AndParams } from '../lib/server/s3.server'
-import { corsHeaders } from '../lib/server/cors.server'
 import { getDefaultData } from '../lib/utils'
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -16,8 +15,7 @@ export async function action({ request }: ActionFunctionArgs) {
     return json(
       { error: 'Method not allowed' },
       {
-        status: 405,
-        headers: corsHeaders
+        status: 405
       }
     )
   }
@@ -64,8 +62,7 @@ export async function action({ request }: ActionFunctionArgs) {
         return json(
           { error: 'An error occurred while fetching data' },
           {
-            status: 500,
-            headers: corsHeaders
+            status: 500
           }
         )
       }
@@ -77,8 +74,7 @@ export async function action({ request }: ActionFunctionArgs) {
         return json(
           { errors: { fieldErrors: { version: 'Version already exists' } } },
           {
-            status: 500,
-            headers: corsHeaders
+            status: 500
           }
         )
       }
@@ -97,14 +93,13 @@ export async function action({ request }: ActionFunctionArgs) {
     const fileContent = JSON.stringify(currentData)
     const extendedParams = { ...params, Body: fileContent }
     await s3.send(new PutObjectCommand(extendedParams))
-    return json(currentData, { headers: corsHeaders })
+    return json(currentData)
   } catch (error) {
     console.log(error)
     return json(
       { error: (error as Error).message },
       {
-        status: 500,
-        headers: corsHeaders
+        status: 500
       }
     )
   }

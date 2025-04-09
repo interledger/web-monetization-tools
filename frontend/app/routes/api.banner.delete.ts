@@ -2,7 +2,6 @@ import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3'
 import { json, type ActionFunctionArgs } from '@remix-run/node'
 import { getS3AndParams } from '../lib/server/s3.server'
 import { streamToString } from '../lib/server/utils.server'
-import { corsHeaders } from '../lib/server/cors.server'
 import { getSession } from '../lib/server/session.server'
 import type { ConfigVersions } from '../lib/types'
 
@@ -11,8 +10,7 @@ export async function action({ request }: ActionFunctionArgs) {
     return json(
       { error: 'Method not allowed' },
       {
-        status: 405,
-        headers: corsHeaders
+        status: 405
       }
     )
   }
@@ -55,7 +53,7 @@ export async function action({ request }: ActionFunctionArgs) {
       )
     }
 
-    return json(existingConfig, { headers: corsHeaders })
+    return json(existingConfig)
   } catch (error: any) {
     console.error('Delete config error:', error)
 
@@ -67,8 +65,7 @@ export async function action({ request }: ActionFunctionArgs) {
     return json(
       { error: message },
       {
-        status: 500,
-        headers: corsHeaders
+        status: 500
       }
     )
   }
