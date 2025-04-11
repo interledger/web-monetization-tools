@@ -1,4 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, json } from '@remix-run/node'
+import { ActionFunctionArgs, LoaderFunctionArgs, json } from '@remix-run/cloudflare'
 import {
   Form,
   useActionData,
@@ -34,7 +34,8 @@ import {
 } from '~/lib/server/open-payments.server'
 import { getDefaultData } from '../lib/utils'
 
-export async function loader({ params, request }: LoaderFunctionArgs) {
+export async function loader({ params, request, context }: LoaderFunctionArgs) {
+  const { cloudflare : {env} } = context
   const elementType = params.type
   const url = new URL(request.url)
   const contentOnlyParam = url.searchParams.get('contentOnly')
@@ -52,9 +53,9 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   session.unset('is-grant-response')
 
   const defaultConfig = getDefaultData().default
-  const ilpayUrl = process.env.ILPAY_URL || ''
-  const scriptInitUrl = process.env.INIT_SCRIPT_URL || ''
-  const frontendUrl = process.env.FRONTEND_URL || ''
+  const ilpayUrl =  env.SCRIPT_ILPAY_URL
+  const scriptInitUrl = env.SCRIPT_EMBER_URL
+  const frontendUrl = env.SCRIPT_FRONTEND_URL
 
   return json(
     {
@@ -435,7 +436,8 @@ export default function Create() {
   )
 }
 
-export async function action({ request, params }: ActionFunctionArgs) {
+export async function action({ request, params, context }: ActionFunctionArgs) {
+  const { cloudflare : {env} } = context
   const elementType = params.type
   const formData = Object.fromEntries(await request.formData())
   const intent = formData.intent
@@ -463,11 +465,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
     (!validForWallet || validForWallet !== ownerWalletAddress)
   ) {
     try {
-      const walletAddress = await getValidWalletAddress(ownerWalletAddress)
+      const walletAddress = await getValidWalletAddress(env, ownerWalletAddress)
       session.set('wallet-address', walletAddress)
 
-      const redirectUrl = `${process.env.FRONTEND_URL}grant/${elementType}/`
-      const grant = await createInteractiveGrant({
+      const redirectUrl = `${env.SCRIPT_FRONTEND_URL}grant/${elementType}/`
+      const grant = await createInteractiveGrant(env,{
         walletAddress: walletAddress,
         redirectUrl
       })

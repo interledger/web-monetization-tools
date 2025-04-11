@@ -1,10 +1,11 @@
-import { LoaderFunctionArgs } from '@remix-run/node'
+import { LoaderFunctionArgs } from '@remix-run/cloudflare'
 import { redirect } from '@remix-run/react'
 import { commitSession, getSession } from '~/lib/server/session.server'
 import { isGrantValidAndAccepted } from '~/lib/server/open-payments.server'
 
-export async function loader({ params, request }: LoaderFunctionArgs) {
+export async function loader({ params, request, context }: LoaderFunctionArgs) {
   const elementType = params.type
+  const { env } = context
 
   const url = new URL(request.url)
   const interactRef = url.searchParams.get('interact_ref') || ''
@@ -20,7 +21,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
   if (walletAddress && grant && interactRef) {
     try {
-      isGrantAccepted = await isGrantValidAndAccepted(grant, interactRef)
+      isGrantAccepted = await isGrantValidAndAccepted(env, grant, interactRef)
     } catch (_err) {
       isGrantAccepted = false
     }

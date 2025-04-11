@@ -1,4 +1,4 @@
-import { json, type ActionFunctionArgs } from '@remix-run/node'
+import { json, type ActionFunctionArgs } from '@remix-run/cloudflare'
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3'
 import {
   filterDeepProperties,
@@ -10,7 +10,7 @@ import { getSession } from '../lib/server/session.server'
 import { getS3AndParams } from '../lib/server/s3.server'
 import { getDefaultData } from '../lib/utils'
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request, context }: ActionFunctionArgs) {
   if (request.method !== 'POST') {
     return json(
       { error: 'Method not allowed' },
@@ -22,6 +22,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const formData = await request.formData()
   try {
+    const { cloudflare : {env} } = context
     const walletAddress = formData.get('walletAddress') as string
     const version = formData.get('version') as string
 
@@ -45,7 +46,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
     sanitizeConfigFields({ ...defaultDataContent, version })
 
-    const { s3, params } = getS3AndParams(walletAddress)
+    const { s3, params } = getS3AndParams(env, walletAddress)
 
     let fileContentString = '{}'
     try {

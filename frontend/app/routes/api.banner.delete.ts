@@ -1,11 +1,11 @@
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3'
-import { json, type ActionFunctionArgs } from '@remix-run/node'
+import { json, type ActionFunctionArgs } from '@remix-run/cloudflare'
 import { getS3AndParams } from '../lib/server/s3.server'
 import { streamToString } from '../lib/server/utils.server'
 import { getSession } from '../lib/server/session.server'
 import type { ConfigVersions } from '../lib/types'
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request, context }: ActionFunctionArgs) {
   if (request.method !== 'DELETE') {
     return json(
       { error: 'Method not allowed' },
@@ -18,6 +18,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData()
 
   try {
+    const { cloudflare : {env} } = context
     const walletAddress = formData.get('walletAddress') as string
     const version = formData.get('version') as string
 
@@ -36,7 +37,7 @@ export async function action({ request }: ActionFunctionArgs) {
       throw new Error('Cannot delete default version')
     }
 
-    const { s3, params: s3Params } = getS3AndParams(walletAddress)
+    const { s3, params: s3Params } = getS3AndParams(env, walletAddress)
     const existingData = await s3.send(new GetObjectCommand(s3Params))
     const existingContentString = await streamToString(
       existingData.Body as NodeJS.ReadableStream

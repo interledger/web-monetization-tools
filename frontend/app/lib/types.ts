@@ -1,3 +1,4 @@
+import { type PlatformProxy } from "wrangler";
 import type { z } from 'zod'
 import {
   createBannerSchema,
@@ -122,4 +123,32 @@ export interface WalletAddress {
   assetCode: string
   authServer: string
   resourceServer: string
+}
+
+import '@remix-run/cloudflare';
+
+declare global {
+  interface Env {
+    SCRIPT_API_URL: string
+    SCRIPT_FRONTEND_URL: string
+    SCRIPT_ILPAY_URL: string
+    SCRIPT_EMBER_URL: string
+
+    OP_KEY_ID: string
+    OP_PRIVATE_KEY: string
+    OP_WALLET_ADDRESS: string
+
+    AWS_ACCESS_KEY_ID: string
+    AWS_SECRET_ACCESS_KEY: string
+    AWS_REGION: string
+    AWS_BUCKET_NAME: string
+  }
+}
+
+type Cloudflare = Omit<PlatformProxy<Env>, "dispose">;
+
+declare module '@remix-run/cloudflare' {
+  interface AppLoadContext {
+    cloudflare: Cloudflare
+  }
 }

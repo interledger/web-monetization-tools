@@ -1,8 +1,9 @@
-import type {
-  LinksFunction,
-  LoaderFunctionArgs,
-  MetaFunction
-} from '@remix-run/node'
+import {
+  type LinksFunction,
+  type LoaderFunctionArgs,
+  type MetaFunction,
+  json
+} from '@remix-run/cloudflare'
 import {
   Links,
   Meta,
@@ -13,7 +14,6 @@ import {
   useRouteError,
   isRouteErrorResponse
 } from '@remix-run/react'
-import { json } from '@remix-run/node'
 import type { ReactNode } from 'react'
 import { useEffect, useState } from 'react'
 import stylesheet from '~/tailwind.css?url'

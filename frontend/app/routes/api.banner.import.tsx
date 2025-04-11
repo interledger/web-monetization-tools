@@ -1,11 +1,12 @@
-import { json, type LoaderFunctionArgs } from '@remix-run/node'
+import { json, type LoaderFunctionArgs } from '@remix-run/cloudflare'
 import { GetObjectCommand } from '@aws-sdk/client-s3'
 import { getS3AndParams } from '../lib/server/s3.server'
 import { streamToString } from '../lib/server/utils.server'
 import { getDefaultData } from '../lib/utils'
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request, context }: LoaderFunctionArgs) {
   try {
+    const { cloudflare : {env} } = context
     const url = new URL(request.url)
     const wa = url.searchParams.get('wa')
     const version = url.searchParams.get('version') || 'default'
@@ -16,7 +17,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const defaultDataResp = getDefaultData()
     const defaultData = defaultDataResp.default
 
-    const { s3, params: s3Params } = getS3AndParams(wa)
+    const { s3, params: s3Params } = getS3AndParams(env, wa)
     const data = await s3.send(new GetObjectCommand(s3Params))
     const fileContentString = await streamToString(
       data.Body as NodeJS.ReadableStream

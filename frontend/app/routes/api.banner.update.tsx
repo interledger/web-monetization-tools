@@ -1,4 +1,4 @@
-import { json, type ActionFunctionArgs } from '@remix-run/node'
+import { json, type ActionFunctionArgs } from '@remix-run/cloudflare'
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3'
 import {
   filterDeepProperties,
@@ -9,7 +9,7 @@ import { ConfigVersions, SaveUserConfigRequest } from '../lib/types'
 import { getSession } from '../lib/server/session.server'
 import { getS3AndParams } from '../lib/server/s3.server'
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request, context }: ActionFunctionArgs) {
   if (request.method !== 'PUT') {
     return json(
       { error: 'Method not allowed' },
@@ -22,6 +22,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const session = await getSession(request.headers.get('Cookie'))
   const formData = await request.formData()
   try {
+    const { cloudflare : {env} } = context
     const walletAddressValue = formData.get('walletAddress')
     if (walletAddressValue === null) {
       throw new Error('Wallet address is required')
@@ -37,7 +38,7 @@ export async function action({ request }: ActionFunctionArgs) {
       throw new Error('Grant confirmation required')
     }
 
-    const { s3, params } = getS3AndParams(data.walletAddress as string)
+    const { s3, params } = getS3AndParams(env, data.walletAddress as string)
     let existingConfig: ConfigVersions = {}
 
     try {
