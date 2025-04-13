@@ -5,7 +5,9 @@ import { ConfigVersions } from '../lib/types'
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
   try {
-    const { cloudflare : {env} } = context
+    const {
+      cloudflare: { env }
+    } = context
     const url = new URL(request.url)
     const wa = url.searchParams.get('wa')
     const version = url.searchParams.get('version') || 'default'
@@ -16,7 +18,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     const defaultDataResp = getDefaultData()
     const defaultData = defaultDataResp.default
 
-      const s3Service = new S3Service(env, wa)
+    const s3Service = new S3Service(env, wa)
 
     const userConfig: ConfigVersions = await s3Service.getJsonFromS3()
     const selectedConfig = userConfig[version] ?? defaultData

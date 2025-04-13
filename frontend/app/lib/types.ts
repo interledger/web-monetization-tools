@@ -1,4 +1,4 @@
-import { type PlatformProxy } from "wrangler";
+import { type PlatformProxy } from 'wrangler'
 import type { z } from 'zod'
 import {
   createBannerSchema,
@@ -125,7 +125,7 @@ export interface WalletAddress {
   resourceServer: string
 }
 
-import '@remix-run/cloudflare';
+import '@remix-run/cloudflare'
 
 declare global {
   interface Env {
@@ -145,7 +145,7 @@ declare global {
   }
 }
 
-type Cloudflare = Omit<PlatformProxy<Env>, "dispose">;
+type Cloudflare = Omit<PlatformProxy<Env>, 'dispose'>
 
 declare module '@remix-run/cloudflare' {
   interface AppLoadContext {

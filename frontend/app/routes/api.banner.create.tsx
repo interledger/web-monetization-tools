@@ -1,7 +1,5 @@
 import { json, type ActionFunctionArgs } from '@remix-run/cloudflare'
-import {
-  filterDeepProperties
-} from '../lib/server/utils.server'
+import { filterDeepProperties } from '../lib/server/utils.server'
 import { sanitizeConfigFields } from '../lib/server/sanitize.server'
 import { ConfigVersions } from '../lib/types'
 import { getSession } from '../lib/server/session.server'
@@ -20,7 +18,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
   const formData = await request.formData()
   try {
-    const { cloudflare : {env} } = context
+    const {
+      cloudflare: { env }
+    } = context
     const walletAddress = formData.get('walletAddress') as string
     const version = formData.get('version') as string
 

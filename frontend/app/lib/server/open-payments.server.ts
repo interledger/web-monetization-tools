@@ -23,10 +23,13 @@ export async function getValidWalletAddress(env: Env, walletAddress: string) {
   return response
 }
 
-export async function createInteractiveGrant(env: Env, args: {
-  walletAddress: WalletAddress
-  redirectUrl?: string
-}) {
+export async function createInteractiveGrant(
+  env: Env,
+  args: {
+    walletAddress: WalletAddress
+    redirectUrl?: string
+  }
+) {
   const opClient = await createClient(env)
   const clientNonce = crypto.randomUUID()
   const paymentId = createId()

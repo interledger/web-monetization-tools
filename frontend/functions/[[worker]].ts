@@ -11,14 +11,17 @@ router.get('/tools/default', async (request) => {
 })
 
 router.get('/tools', async () => {
-  return new Response(JSON.stringify({
-    message: `Hello from itty-router!`,
-    timestamp: new Date().toISOString()
-  }), {
+  return new Response(
+    JSON.stringify({
+      message: `Hello from itty-router!`,
+      timestamp: new Date().toISOString()
+    }),
+    {
       headers: {
-      'Content-Type': 'application/json'
+        'Content-Type': 'application/json'
       }
-  });
+    }
+  )
 })
 
 const remixRequestHandler = createPagesFunctionHandler({

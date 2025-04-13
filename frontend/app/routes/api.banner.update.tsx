@@ -1,11 +1,9 @@
 import { json, type ActionFunctionArgs } from '@remix-run/cloudflare'
-import {
-  filterDeepProperties
-} from '../lib/server/utils.server'
+import { filterDeepProperties } from '../lib/server/utils.server'
 import { sanitizeConfigFields } from '../lib/server/sanitize.server'
 import { ConfigVersions } from '../lib/types'
 import { getSession } from '../lib/server/session.server'
-import {  S3Service } from '../lib/server/s3.server'
+import { S3Service } from '../lib/server/s3.server'
 
 export async function action({ request, context }: ActionFunctionArgs) {
   if (request.method !== 'PUT') {
@@ -20,7 +18,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
   const session = await getSession(request.headers.get('Cookie'))
   const formData = await request.formData()
   try {
-    const { cloudflare : {env} } = context
+    const {
+      cloudflare: { env }
+    } = context
     const walletAddressValue = formData.get('walletAddress')
     if (walletAddressValue === null) {
       throw new Error('Wallet address is required')

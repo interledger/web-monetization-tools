@@ -3,29 +3,31 @@
  * for both cloudflare workers and node environments
  * @param stream - the ReadableStream to convert
  */
-export async function streamToJson<T>(stream: ReadableStream | NodeJS.ReadableStream): Promise<T> {
-  if ((stream instanceof ReadableStream)) {
-    const reader = stream.getReader();
-    const decoder = new TextDecoder();
-    let chunks = "";
+export async function streamToJson<T>(
+  stream: ReadableStream | NodeJS.ReadableStream
+): Promise<T> {
+  if (stream instanceof ReadableStream) {
+    const reader = stream.getReader()
+    const decoder = new TextDecoder()
+    let chunks = ''
 
     try {
       while (true) {
-        const { done, value } = await reader.read();
-        
-        if (done) {
-          break;
-        }
-        chunks += decoder.decode(value, { stream: true });
-      }
-      chunks += decoder.decode();
+        const { done, value } = await reader.read()
 
-      return JSON.parse(chunks) as T;
+        if (done) {
+          break
+        }
+        chunks += decoder.decode(value, { stream: true })
+      }
+      chunks += decoder.decode()
+
+      return JSON.parse(chunks) as T
     } catch (error) {
-      console.error("Error converting stream to JSON:", error);
-      throw error;
+      console.error('Error converting stream to JSON:', error)
+      throw error
     } finally {
-      reader.releaseLock();
+      reader.releaseLock()
     }
   }
 

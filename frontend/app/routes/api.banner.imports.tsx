@@ -6,7 +6,9 @@ import { ConfigVersions, ElementConfigType } from '~/lib/types'
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
   try {
-    const { cloudflare : {env} } = context
+    const {
+      cloudflare: { env }
+    } = context
     const url = new URL(request.url)
     const wa = url.searchParams.get('wa')
     if (!wa) {
@@ -20,15 +22,13 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     parsedDefaultData.default.walletAddress = walletAddress
 
     try {
-        const s3Service = new S3Service(env, walletAddress)
-        const fileContentString: ConfigVersions = await s3Service.getJsonFromS3()
-      
+      const s3Service = new S3Service(env, walletAddress)
+      const fileContentString: ConfigVersions = await s3Service.getJsonFromS3()
 
-      let fileContent = Object.assign(
-        parsedDefaultData,
-        ...[fileContentString]
-      )
-      fileContent = filterDeepProperties(fileContent) as { default: ElementConfigType } & ConfigVersions
+      let fileContent = Object.assign(parsedDefaultData, ...[fileContentString])
+      fileContent = filterDeepProperties(fileContent) as {
+        default: ElementConfigType
+      } & ConfigVersions
 
       return json(fileContent)
     } catch (error) {

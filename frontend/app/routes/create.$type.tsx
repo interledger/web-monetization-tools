@@ -1,4 +1,8 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, json } from '@remix-run/cloudflare'
+import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  json
+} from '@remix-run/cloudflare'
 import {
   Form,
   useActionData,
@@ -35,7 +39,9 @@ import {
 import { getDefaultData } from '../lib/utils'
 
 export async function loader({ params, request, context }: LoaderFunctionArgs) {
-  const { cloudflare : {env} } = context
+  const {
+    cloudflare: { env }
+  } = context
   const elementType = params.type
   const url = new URL(request.url)
   const contentOnlyParam = url.searchParams.get('contentOnly')
@@ -53,7 +59,7 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
   session.unset('is-grant-response')
 
   const defaultConfig = getDefaultData().default
-  const ilpayUrl =  env.SCRIPT_ILPAY_URL
+  const ilpayUrl = env.SCRIPT_ILPAY_URL
   const scriptInitUrl = env.SCRIPT_EMBER_URL
   const frontendUrl = env.SCRIPT_FRONTEND_URL
 
@@ -147,7 +153,10 @@ export default function Create() {
     }
   }
 
-  const onConfirmOwnership = (redirectIntent?: string, interactHref?: string) => {
+  const onConfirmOwnership = (
+    redirectIntent?: string,
+    interactHref?: string
+  ) => {
     if (!interactHref) {
       throw new Error('Grant not found')
     }
@@ -206,7 +215,11 @@ export default function Create() {
         )
         description =
           "You will need to confirm a grant to prove that you are the owner of the wallet address. It's value is set to 1 but there will be no funds removed from your wallet"
-        onConfirm = () => onConfirmOwnership(modal?.grantRedirectIntent, modal?.grantRedirectURI)
+        onConfirm = () =>
+          onConfirmOwnership(
+            modal?.grantRedirectIntent,
+            modal?.grantRedirectURI
+          )
         break
       case 'grant-response':
         title = grantResponse
@@ -449,7 +462,9 @@ export default function Create() {
 }
 
 export async function action({ request, params, context }: ActionFunctionArgs) {
-  const { cloudflare : {env} } = context
+  const {
+    cloudflare: { env }
+  } = context
   const elementType = params.type
   const formData = Object.fromEntries(await request.formData())
   const intent = formData.intent
@@ -481,7 +496,7 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
       session.set('wallet-address', walletAddress)
 
       const redirectUrl = `${env.SCRIPT_FRONTEND_URL}grant/${elementType}/`
-      const grant = await createInteractiveGrant(env,{
+      const grant = await createInteractiveGrant(env, {
         walletAddress: walletAddress,
         redirectUrl
       })

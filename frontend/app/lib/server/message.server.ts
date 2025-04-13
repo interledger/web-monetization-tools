@@ -1,4 +1,9 @@
-import { type Session, type SessionData, redirect, createCookieSessionStorage } from '@remix-run/cloudflare'
+import {
+  type Session,
+  type SessionData,
+  redirect,
+  createCookieSessionStorage
+} from '@remix-run/cloudflare'
 
 const ONE_MINUTE_IN_S = 60
 
