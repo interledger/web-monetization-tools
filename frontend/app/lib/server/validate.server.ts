@@ -21,7 +21,6 @@ export const walletSchema = z.object({
         checkHrefFormat(updatedUrl)
         await isValidWalletAddress(updatedUrl)
       } catch (e) {
-        console.log({ e })
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message:

@@ -1,19 +1,41 @@
 /**
- *
- * @param stream
- * @returns string
- * @description Converts a readable stream to a string
+ * Convert a ReadableStream to a JSON object
+ * for both cloudflare workers and node environments
+ * @param stream - the ReadableStream to convert
  */
-export const streamToString = (
-  readableStream: NodeJS.ReadableStream
-): Promise<string> => {
+export async function streamToJson<T>(stream: ReadableStream | NodeJS.ReadableStream): Promise<T> {
+  if ((stream instanceof ReadableStream)) {
+    const reader = stream.getReader();
+    const decoder = new TextDecoder();
+    let chunks = "";
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        
+        if (done) {
+          break;
+        }
+        chunks += decoder.decode(value, { stream: true });
+      }
+      chunks += decoder.decode();
+
+      return JSON.parse(chunks) as T;
+    } catch (error) {
+      console.error("Error converting stream to JSON:", error);
+      throw error;
+    } finally {
+      reader.releaseLock();
+    }
+  }
+
   return new Promise((resolve, reject) => {
     const chunks: Uint8Array[] = []
-    readableStream.on('data', (chunk) => chunks.push(chunk))
-    readableStream.on('end', () =>
-      resolve(Buffer.concat(chunks).toString('utf-8'))
+    stream.on('data', (chunk) => chunks.push(chunk))
+    stream.on('end', () =>
+      resolve(JSON.parse(Buffer.concat(chunks).toString('utf-8')))
     )
-    readableStream.on('error', reject)
+    stream.on('error', reject)
   })
 }
 

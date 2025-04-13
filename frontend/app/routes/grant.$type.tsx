@@ -4,9 +4,9 @@ import { commitSession, getSession } from '~/lib/server/session.server'
 import { isGrantValidAndAccepted } from '~/lib/server/open-payments.server'
 
 export async function loader({ params, request, context }: LoaderFunctionArgs) {
+  const { cloudflare : {env} } = context
+  
   const elementType = params.type
-  const { env } = context
-
   const url = new URL(request.url)
   const interactRef = url.searchParams.get('interact_ref') || ''
   const result = url.searchParams.get('result') || ''

@@ -1,9 +1,8 @@
 import { json, type LoaderFunctionArgs } from '@remix-run/cloudflare'
-import { GetObjectCommand } from '@aws-sdk/client-s3'
-import { getS3AndParams } from '../lib/server/s3.server'
-import { streamToString } from '../lib/server/utils.server'
 import { filterDeepProperties } from '../lib/server/utils.server'
 import { getDefaultData } from '../lib/utils'
+import { S3Service } from '../lib/server/s3.server'
+import { ConfigVersions, ElementConfigType } from '~/lib/types'
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
   try {
@@ -20,22 +19,20 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     const parsedDefaultData = defaultData
     parsedDefaultData.default.walletAddress = walletAddress
 
-    const { s3, params: s3Params } = getS3AndParams(env, walletAddress)
     try {
-      const data = await s3.send(new GetObjectCommand(s3Params))
-      const fileContentString = await streamToString(
-        data.Body as NodeJS.ReadableStream
-      )
+        const s3Service = new S3Service(env, walletAddress)
+        const fileContentString: ConfigVersions = await s3Service.getJsonFromS3()
+      
 
       let fileContent = Object.assign(
         parsedDefaultData,
-        ...[JSON.parse(fileContentString)]
+        ...[fileContentString]
       )
-      fileContent = filterDeepProperties(fileContent)
+      fileContent = filterDeepProperties(fileContent) as { default: ElementConfigType } & ConfigVersions
 
       return json(fileContent)
-    } catch (error: any) {
-      console.log('Error fetching config:', error)
+    } catch (error) {
+      //@ts-ignore
       if (error.name === 'NoSuchKey') {
         // if no user config exists, return default
         return json(parsedDefaultData)

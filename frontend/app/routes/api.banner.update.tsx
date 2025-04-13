@@ -1,13 +1,11 @@
 import { json, type ActionFunctionArgs } from '@remix-run/cloudflare'
-import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3'
 import {
-  filterDeepProperties,
-  streamToString
+  filterDeepProperties
 } from '../lib/server/utils.server'
 import { sanitizeConfigFields } from '../lib/server/sanitize.server'
-import { ConfigVersions, SaveUserConfigRequest } from '../lib/types'
+import { ConfigVersions } from '../lib/types'
 import { getSession } from '../lib/server/session.server'
-import { getS3AndParams } from '../lib/server/s3.server'
+import {  S3Service } from '../lib/server/s3.server'
 
 export async function action({ request, context }: ActionFunctionArgs) {
   if (request.method !== 'PUT') {
@@ -38,24 +36,18 @@ export async function action({ request, context }: ActionFunctionArgs) {
       throw new Error('Grant confirmation required')
     }
 
-    const { s3, params } = getS3AndParams(env, data.walletAddress as string)
     let existingConfig: ConfigVersions = {}
+    const s3Service = new S3Service(env, data.walletAddress as string)
 
     try {
-      const existingData = await s3.send(new GetObjectCommand(params))
-      const existingContentString = await streamToString(
-        existingData.Body as NodeJS.ReadableStream
-      )
-      existingConfig = JSON.parse(existingContentString)
+      existingConfig = await s3Service.getJsonFromS3()
     } catch (error: any) {
       // treats new wallets entries with no existing Default config
       if (error.name !== 'NoSuchKey') throw error
     }
 
     //TODO: check data.fullconfig for types; ConfigVersions might miss some fields
-    const { fullconfig } = data as SaveUserConfigRequest
-    // @ts-ignore
-    const newConfigData: ConfigVersions = fullconfig
+    const newConfigData: ConfigVersions = data.fullconfig
     Object.keys(newConfigData).forEach((key) => {
       if (typeof newConfigData[key] === 'object') {
         existingConfig[key] = sanitizeConfigFields(newConfigData[key])
@@ -63,14 +55,10 @@ export async function action({ request, context }: ActionFunctionArgs) {
     })
 
     const filteredData = filterDeepProperties(existingConfig)
-    const fileContent = JSON.stringify(filteredData)
-    const extendedParams = { ...params, Body: fileContent }
-
-    await s3.send(new PutObjectCommand(extendedParams))
+    await s3Service.putJsonToS3(filteredData)
 
     return json(existingConfig)
   } catch (error) {
-    console.log(error)
     return json(
       { error: (error as Error).message },
       {

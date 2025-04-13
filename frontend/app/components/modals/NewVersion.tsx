@@ -41,7 +41,7 @@ export const NewVersionModal = ({
       setModalOpen({
         type: 'wallet-ownership',
         // @ts-ignore
-        param: validateFetcher.data.grantRequired
+        grantRedirectURI: validateFetcher.data.grantRequired
       })
     }
     if (

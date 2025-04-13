@@ -11,7 +11,7 @@ export const modalTypes = [
   'wallet-ownership',
   'grant-response'
 ]
-export type ModalType = { type: (typeof modalTypes)[number]; param?: string }
+export type ModalType = { type: (typeof modalTypes)[number]; grantRedirectIntent?: string; grantRedirectURI?: string }
 
 export const textColorPresets = ['#ffffff', '#000000']
 export const triggerColorPresets = ['#ffffff', '#000000', '#096b63']

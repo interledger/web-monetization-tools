@@ -5,6 +5,7 @@ export default {
   appDirectory: 'app',
   assetsBuildDirectory: 'public/build',
   publicPath: '/build/',
+  serverBuildPath: 'build/server/index.js',
   serverModuleFormat: 'esm',
   serverPlatform: 'neutral',
   future: {

@@ -104,8 +104,7 @@ async function createOutgoingPaymentGrant(
         }
       }
     )
-    .catch((error) => {
-      console.log({ error })
+    .catch(() => {
       throw new Error('Could not retrieve outgoing payment grant.')
     })
 
@@ -151,8 +150,7 @@ export async function getWalletAddress(
     .get({
       url: toWalletAddressUrl(url)
     })
-    .catch((error) => {
-      console.log({ error })
+    .catch(() => {
       throw new Error('Invalid wallet address.')
     })
 

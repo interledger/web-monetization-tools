@@ -1,8 +1,7 @@
 import { json, type LoaderFunctionArgs } from '@remix-run/cloudflare'
-import { GetObjectCommand } from '@aws-sdk/client-s3'
-import { getS3AndParams } from '../lib/server/s3.server'
-import { streamToString } from '../lib/server/utils.server'
+import { S3Service } from '../lib/server/s3.server'
 import { getDefaultData } from '../lib/utils'
+import { ConfigVersions } from '../lib/types'
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
   try {
@@ -17,13 +16,9 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     const defaultDataResp = getDefaultData()
     const defaultData = defaultDataResp.default
 
-    const { s3, params: s3Params } = getS3AndParams(env, wa)
-    const data = await s3.send(new GetObjectCommand(s3Params))
-    const fileContentString = await streamToString(
-      data.Body as NodeJS.ReadableStream
-    )
+      const s3Service = new S3Service(env, wa)
 
-    const userConfig = JSON.parse(fileContentString)
+    const userConfig: ConfigVersions = await s3Service.getJsonFromS3()
     const selectedConfig = userConfig[version] ?? defaultData
     const fileContent = Object.assign(defaultData, [selectedConfig])
 

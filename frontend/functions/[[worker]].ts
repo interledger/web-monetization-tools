@@ -11,7 +11,6 @@ router.get('/tools/default', async (request) => {
 })
 
 router.get('/tools', async () => {
-  // const url = tag ? `/api/tools/${tag}` : `/api/tools}`
   return new Response(JSON.stringify({
     message: `Hello from itty-router!`,
     timestamp: new Date().toISOString()
@@ -24,15 +23,10 @@ router.get('/tools', async () => {
 
 const remixRequestHandler = createPagesFunctionHandler({
   build,
-  mode: process.env.NODE_ENV,
-  getLoadContext(context) {
-    // hand-off Cloudflare ENV vars to the Remix `context` object
-    return { env: context.env }
-  }
+  mode: process.env.NODE_ENV
 })
 
 export const onRequest: PagesFunction<Env> = async (context) => {
-  console.log('!!!onRequest', context.request.url , ' !!! ', context.env)
   const ittyResponse = await router.fetch(context.request)
   if (ittyResponse.ok) {
     return ittyResponse

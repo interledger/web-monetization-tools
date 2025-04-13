@@ -147,9 +147,12 @@ export default function Create() {
     }
   }
 
-  const onConfirmOwnership = (interactHref?: string) => {
+  const onConfirmOwnership = (redirectIntent?: string, interactHref?: string) => {
     if (!interactHref) {
       throw new Error('Grant not found')
+    }
+    if (redirectIntent) {
+      sessionStorage.setItem('grant-redirect-intent', redirectIntent)
     }
     window.location.href = interactHref
   }
@@ -203,7 +206,7 @@ export default function Create() {
         )
         description =
           "You will need to confirm a grant to prove that you are the owner of the wallet address. It's value is set to 1 but there will be no funds removed from your wallet"
-        onConfirm = () => onConfirmOwnership(modal?.param)
+        onConfirm = () => onConfirmOwnership(modal?.grantRedirectIntent, modal?.grantRedirectURI)
         break
       case 'grant-response':
         title = grantResponse
@@ -213,8 +216,6 @@ export default function Create() {
               setModal(undefined)
             }
           : onClose
-        break
-      default:
         break
     }
     return { title, description, onClose, onConfirm }
@@ -284,8 +285,13 @@ export default function Create() {
       // @ts-ignore
       if (actionData?.grantRequired) {
         sessionStorage.setItem('fullconfig', JSON.stringify(updatedFullConfig))
-        // @ts-ignore
-        setModal({ type: 'wallet-ownership', param: actionData?.grantRequired })
+        setModal({
+          type: 'wallet-ownership',
+          // @ts-ignore
+          grantRedirectURI: actionData?.grantRequired,
+          // @ts-ignore
+          grantRedirectIntent: actionData?.intent
+        })
       }
       // @ts-ignore
       else if (actionData?.success && actionData.intent == 'update') {
@@ -322,6 +328,12 @@ export default function Create() {
   }, [saveFetcher.data, saveFetcher.state])
 
   const onResubmitForm = () => {
+    const intent = sessionStorage.getItem('grant-redirect-intent')
+    if (intent !== 'update') {
+      sessionStorage.removeItem('grant-redirect-intent')
+      return
+    }
+    sessionStorage.removeItem('grant-redirect-intent')
     const formData = new FormData()
     formData.append('bannerFontName', toolConfig.bannerFontName)
     formData.append('bannerFontSize', toolConfig.bannerFontSize.toString())
@@ -478,7 +490,8 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
       return json(
         {
           errors,
-          grantRequired: grant.interact.redirect
+          grantRequired: grant.interact.redirect,
+          intent
         },
         {
           status: 200,
@@ -488,7 +501,6 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
         }
       )
     } catch (err) {
-      console.log({ err })
       errors.fieldErrors = {
         walletAddress: ['Could not verify ownership of wallet address']
       }

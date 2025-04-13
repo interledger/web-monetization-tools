@@ -1,13 +1,11 @@
 import { json, type ActionFunctionArgs } from '@remix-run/cloudflare'
-import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3'
 import {
-  filterDeepProperties,
-  streamToString
+  filterDeepProperties
 } from '../lib/server/utils.server'
 import { sanitizeConfigFields } from '../lib/server/sanitize.server'
 import { ConfigVersions } from '../lib/types'
 import { getSession } from '../lib/server/session.server'
-import { getS3AndParams } from '../lib/server/s3.server'
+import { S3Service } from '../lib/server/s3.server'
 import { getDefaultData } from '../lib/utils'
 
 export async function action({ request, context }: ActionFunctionArgs) {
@@ -46,15 +44,10 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
     sanitizeConfigFields({ ...defaultDataContent, version })
 
-    const { s3, params } = getS3AndParams(env, walletAddress)
-
-    let fileContentString = '{}'
+    const s3Service = new S3Service(env, walletAddress)
+    let configs: ConfigVersions = {}
     try {
-      // existing config
-      const s3data = await s3.send(new GetObjectCommand(params))
-      fileContentString = await streamToString(
-        s3data.Body as NodeJS.ReadableStream
-      )
+      configs = await s3Service.getJsonFromS3()
     } catch (error) {
       const err = error as Error
       if (err.name === 'NoSuchKey') {
@@ -69,9 +62,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
       }
     }
 
-    let currentData = JSON.parse(fileContentString)
-    if (currentData?.default) {
-      if (currentData[version]) {
+    if (configs.default) {
+      if (configs[version]) {
         return json(
           { errors: { fieldErrors: { version: 'Version already exists' } } },
           {
@@ -79,24 +71,21 @@ export async function action({ request, context }: ActionFunctionArgs) {
           }
         )
       }
-      currentData = Object.assign(filterDeepProperties(currentData), {
+      configs = Object.assign(filterDeepProperties(configs), {
         [version]: defaultDataContent
       })
     } else {
-      currentData = Object.assign(
-        { default: currentData },
+      configs = Object.assign(
+        { default: configs },
         {
           [version]: defaultDataContent
         }
       )
     }
 
-    const fileContent = JSON.stringify(currentData)
-    const extendedParams = { ...params, Body: fileContent }
-    await s3.send(new PutObjectCommand(extendedParams))
-    return json(currentData)
+    await s3Service.putJsonToS3(configs)
+    return json(configs)
   } catch (error) {
-    console.log(error)
     return json(
       { error: (error as Error).message },
       {
