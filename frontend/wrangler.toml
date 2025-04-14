@@ -9,9 +9,6 @@ port = 5100
 [site]
 bucket = "./public"
 
-[env.production]
-vars = { NODE_ENV = "production" }
-
-[env.development]
+[vars]
 workers_dev = true
 vars = { NODE_ENV = "development" }

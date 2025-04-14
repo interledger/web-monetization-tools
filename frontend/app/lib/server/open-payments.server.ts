@@ -13,7 +13,8 @@ async function createClient(env: Env) {
   return await createAuthenticatedClient({
     keyId: env.OP_KEY_ID,
     privateKey: Buffer.from(env.OP_PRIVATE_KEY, 'base64'),
-    walletAddressUrl: env.OP_WALLET_ADDRESS
+    walletAddressUrl: env.OP_WALLET_ADDRESS,
+    validateResponses: false
   })
 }
 
