@@ -4,7 +4,7 @@ import { ElementConfigType } from '~/lib/types.js'
 import { XIcon } from '~/components/icons.js'
 import { Button, Input, WalletAddress } from '~/components/index.js'
 import { useEffect, useState } from 'react'
-import { ModalType } from '~/lib/presets'
+import { ModalType } from '~/lib/presets.js'
 
 type NewVersionModalProps = {
   title: string
@@ -35,48 +35,44 @@ export const NewVersionModal = ({
   const [versionName, setVersionName] = useState('')
 
   useEffect(() => {
-    // @ts-ignore
+    // @ts-expect-error TODO
     if (validateFetcher.data?.grantRequired) {
       onClose()
       setModalOpen({
         type: 'wallet-ownership',
-        // @ts-ignore
+        // @ts-expect-error TODO
         grantRedirectURI: validateFetcher.data.grantRequired
       })
     }
     if (
-      // @ts-ignore
+      // @ts-expect-error TODO
       validateFetcher.data?.success &&
-      // @ts-ignore
+      // @ts-expect-error TODO
       validateFetcher.data?.intent == 'newversion'
     ) {
-      try {
-        const formData = new FormData()
-        formData.append('operation', 'create')
-        formData.append('walletAddress', toolConfig?.walletAddress || '')
-        formData.append('version', versionName)
+      const formData = new FormData()
+      formData.append('operation', 'create')
+      formData.append('walletAddress', toolConfig?.walletAddress || '')
+      formData.append('version', versionName)
 
-        versionFetcher.submit(formData, {
-          method: 'post',
-          action: '/api/banner/create',
-          encType: 'multipart/form-data'
-        })
-      } catch (error) {
-        throw error
-      }
+      versionFetcher.submit(formData, {
+        method: 'post',
+        action: '/api/banner/create',
+        encType: 'multipart/form-data'
+      })
     }
   }, [validateFetcher.data])
 
   useEffect(() => {
     if (versionFetcher.data && versionFetcher.state === 'idle') {
-      // @ts-ignore
+      // @ts-expect-error TODO
       if (versionFetcher.data.default) {
         sessionStorage.setItem(
           'fullconfig',
           JSON.stringify(versionFetcher.data)
         )
         sessionStorage.setItem('new-version', versionName)
-        // @ts-ignore
+        // @ts-expect-error TODO
         setConfigs(versionFetcher.data, versionName)
         onClose()
       }
@@ -115,7 +111,7 @@ export const NewVersionModal = ({
                   <fieldset disabled={isSubmitting}>
                     <div className="flex w-full items-center">
                       <WalletAddress
-                        //@ts-ignore
+                        // @ts-expect-error TODO
                         errors={validateFetcher.data?.errors}
                         config={toolConfig}
                         setToolConfig={setToolConfig}
@@ -129,7 +125,7 @@ export const NewVersionModal = ({
                           placeholder="Default"
                           value={versionName ?? ''}
                           error={
-                            // @ts-ignore
+                            // @ts-expect-error TODO
                             versionFetcher.data?.errors?.fieldErrors?.version
                           }
                           onChange={(e) => {

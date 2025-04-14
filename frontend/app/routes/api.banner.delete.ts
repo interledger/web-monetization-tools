@@ -46,12 +46,14 @@ export async function action({ request, context }: ActionFunctionArgs) {
     }
 
     return json(existingConfig)
-  } catch (error: any) {
+  } catch (error) {
     console.error('Delete config error:', error)
 
     const message =
+      // @ts-expect-error TODO: add type for error
       error.message === 'Cannot delete default version'
-        ? error.message
+        ? // @ts-expect-error TODO: add type for error
+          error.message
         : 'An error occurred when deleting config version'
 
     return json(

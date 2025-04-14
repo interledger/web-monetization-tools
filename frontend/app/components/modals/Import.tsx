@@ -34,28 +34,24 @@ export const ImportModal = ({
 
   useEffect(() => {
     if (
-      // @ts-ignore
+      // @ts-expect-error TODO
       validateFetcher.data?.success &&
-      // @ts-ignore
+      // @ts-expect-error TODO
       validateFetcher.data?.intent === 'import'
     ) {
-      try {
-        const cleanWalletAddress =
-          toolConfig.walletAddress?.replace('https://', '') || ''
-        importFetcher.load(
-          `/api/banner/imports?wa=${encodeURIComponent(cleanWalletAddress)}`
-        )
-      } catch (error) {
-        throw error
-      }
+      const cleanWalletAddress =
+        toolConfig.walletAddress?.replace('https://', '') || ''
+      importFetcher.load(
+        `/api/banner/imports?wa=${encodeURIComponent(cleanWalletAddress)}`
+      )
     }
   }, [validateFetcher.data])
 
   useEffect(() => {
     if (importFetcher.data && importFetcher.state === 'idle') {
-      // @ts-ignore
+      // @ts-expect-error TODO
       if (importFetcher.data.default) {
-        // @ts-ignore
+        // @ts-expect-error TODO
         setConfigs(importFetcher.data, 'default')
         sessionStorage.setItem('fullconfig', JSON.stringify(importFetcher.data))
         onClose()
@@ -95,7 +91,7 @@ export const ImportModal = ({
                   <fieldset disabled={isSubmitting}>
                     <div className="flex w-full items-center">
                       <WalletAddress
-                        //@ts-ignore
+                        // @ts-expect-error TODO
                         errors={validateFetcher.data?.errors}
                         config={toolConfig}
                         setToolConfig={setToolConfig}

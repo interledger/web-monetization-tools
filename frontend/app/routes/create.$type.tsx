@@ -29,14 +29,17 @@ import {
 import { validConfigTypes, ModalType } from '~/lib/presets.js'
 import { tooltips } from '~/lib/tooltips.js'
 import { ElementConfigType, ElementErrors } from '~/lib/types.js'
-import { capitalizeFirstLetter, toWalletAddressUrl } from '~/lib/utils.js'
+import {
+  capitalizeFirstLetter,
+  toWalletAddressUrl,
+  getDefaultData
+} from '~/lib/utils.js'
 import { validateForm } from '~/lib/server/validate.server'
 import { commitSession, getSession } from '~/lib/server/session.server'
 import {
   getValidWalletAddress,
   createInteractiveGrant
 } from '~/lib/server/open-payments.server'
-import { getDefaultData } from '../lib/utils'
 
 export async function loader({ params, request, context }: LoaderFunctionArgs) {
   const {
@@ -236,7 +239,7 @@ export default function Create() {
 
   useEffect(() => {
     if (deleteFetcher.data && deleteFetcher.state === 'idle') {
-      // @ts-ignore
+      // @ts-expect-error TODO
       if (deleteFetcher.data.default) {
         const { [selectedVersion]: _, ...rest } = fullConfig
         setFullConfig(rest)
@@ -288,25 +291,24 @@ export default function Create() {
   useEffect(() => {
     const errors = Object.keys(actionData?.errors?.fieldErrors || {})
 
-    // @ts-ignore
     if (!errors.length && actionData) {
       const updatedFullConfig = {
         ...fullConfig,
         [selectedVersion]: toolConfig
       }
 
-      // @ts-ignore
+      // @ts-expect-error TODO
       if (actionData?.grantRequired) {
         sessionStorage.setItem('fullconfig', JSON.stringify(updatedFullConfig))
         setModal({
           type: 'wallet-ownership',
-          // @ts-ignore
+          // @ts-expect-error TODO
           grantRedirectURI: actionData?.grantRequired,
-          // @ts-ignore
+          // @ts-expect-error TODO
           grantRedirectIntent: actionData?.intent
         })
       }
-      // @ts-ignore
+      // @ts-expect-error TODO
       else if (actionData?.success && actionData.intent == 'update') {
         const payload = {
           walletAddress: toolConfig.walletAddress,
@@ -330,9 +332,9 @@ export default function Create() {
 
   useEffect(() => {
     if (saveFetcher.data && saveFetcher.state === 'idle') {
-      // @ts-ignore
+      // @ts-expect-error TODO
       if (!saveFetcher.data.error) {
-        // @ts-ignore
+        // @ts-expect-error TODO
         setFullConfig(saveFetcher.data)
         sessionStorage.setItem('fullconfig', JSON.stringify(saveFetcher.data))
         setModal({ type: 'script' })
@@ -515,7 +517,7 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
           }
         }
       )
-    } catch (err) {
+    } catch {
       errors.fieldErrors = {
         walletAddress: ['Could not verify ownership of wallet address']
       }

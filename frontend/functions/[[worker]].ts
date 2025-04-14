@@ -1,6 +1,6 @@
 import { createPagesFunctionHandler } from '@remix-run/cloudflare-pages'
 import { AutoRouter } from 'itty-router'
-import * as build from '../build/server'
+import * as build from '../build/server/index.js'
 
 const router = AutoRouter()
 

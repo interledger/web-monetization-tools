@@ -1,8 +1,8 @@
 import { json, type LoaderFunctionArgs } from '@remix-run/cloudflare'
 import { filterDeepProperties } from '../lib/server/utils.server'
-import { getDefaultData } from '../lib/utils'
+import { getDefaultData } from '../lib/utils.js'
 import { S3Service } from '../lib/server/s3.server'
-import { ConfigVersions, ElementConfigType } from '~/lib/types'
+import { ConfigVersions, ElementConfigType } from '~/lib/types.js'
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
   try {
@@ -32,14 +32,14 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
       return json(fileContent)
     } catch (error) {
-      //@ts-ignore
+      // @ts-expect-error TODO
       if (error.name === 'NoSuchKey') {
         // if no user config exists, return default
         return json(parsedDefaultData)
       }
       throw error
     }
-  } catch (error) {
+  } catch {
     return json(
       { error: 'An error occurred while fetching data' },
       { status: 500 }

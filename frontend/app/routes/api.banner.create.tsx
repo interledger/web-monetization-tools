@@ -1,10 +1,10 @@
 import { json, type ActionFunctionArgs } from '@remix-run/cloudflare'
 import { filterDeepProperties } from '../lib/server/utils.server'
 import { sanitizeConfigFields } from '../lib/server/sanitize.server'
-import { ConfigVersions } from '../lib/types'
+import { ConfigVersions } from '../lib/types.js'
 import { getSession } from '../lib/server/session.server'
 import { S3Service } from '../lib/server/s3.server'
-import { getDefaultData } from '../lib/utils'
+import { getDefaultData } from '../lib/utils.js'
 
 export async function action({ request, context }: ActionFunctionArgs) {
   if (request.method !== 'POST') {
@@ -38,8 +38,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
     }
 
     const defaultData = getDefaultData()
-    const defaultDataContent: ConfigVersions['default'] = (defaultData as any)
-      .default
+    const defaultDataContent: ConfigVersions['default'] = defaultData.default
     defaultDataContent.walletAddress = walletAddress
 
     sanitizeConfigFields({ ...defaultDataContent, version })
