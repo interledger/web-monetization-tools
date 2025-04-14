@@ -38,6 +38,7 @@ import {
   getValidWalletAddress,
   createInteractiveGrant
 } from '~/lib/server/open-payments.server'
+import { normalizeWalletAddress } from './grant.$type'
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const elementType = params.type
@@ -443,15 +444,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 
   // no need when importing
+  const ownerWalletAddress: string = payload.walletAddress as string
+  const walletAddress = await getValidWalletAddress(ownerWalletAddress)
   if (intent != 'import') {
-    const ownerWalletAddress: string = payload.walletAddress as string
     validForWallet = session.get('validForWallet')
-
-    if (!validForWallet || validForWallet !== ownerWalletAddress) {
+    session.set('wallet-address', walletAddress)
+    if (!validForWallet || validForWallet !== walletAddress.id) {
       try {
-        const walletAddress = await getValidWalletAddress(ownerWalletAddress)
-        session.set('wallet-address', walletAddress)
-
         const redirectUrl = `${process.env.FRONTEND_URL}grant/${elementType}/`
         const grant = await createInteractiveGrant({
           walletAddress: walletAddress,
@@ -476,6 +475,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
       })
     }
   }
+
+  // normalize wallet address KEY
+  payload.walletAddress = normalizeWalletAddress(walletAddress)
 
   if (intent == 'import') {
     session.set('last-action', '')

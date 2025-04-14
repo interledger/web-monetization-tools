@@ -2,6 +2,7 @@ import axios from 'axios'
 import https from 'https'
 import fs from 'fs'
 import { ElementConfigType } from './types.js'
+import path from 'path'
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 export type ApiResponse<T = any> = {
@@ -19,7 +20,7 @@ let httpsAgent: https.Agent | undefined
 if (!isProd) {
   try {
     // Load self-signed certificate
-    const backendCert = fs.readFileSync('/app/certs/cert.pem')
+    const backendCert = fs.readFileSync(path.resolve('..', 'certs', 'cert.pem'))
 
     // Create an HTTPS agent with the certificate
     httpsAgent = isProd

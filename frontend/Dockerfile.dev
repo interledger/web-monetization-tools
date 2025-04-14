@@ -41,4 +41,4 @@ ENV VITE_SCRIPT_API_URL=$VITE_SCRIPT_API_URL \
 WORKDIR /app/frontend
 
 # Command to run the Remix app with Vite
-CMD ["pnpm", "run", "dev"]
+CMD ["pnpm", "run", "dev", "--inspect=0.0.0.0:9229", "--host"]
