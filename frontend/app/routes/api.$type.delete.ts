@@ -35,12 +35,12 @@ export async function action({ request, context }: ActionFunctionArgs) {
       throw new Error('Cannot delete default version')
     }
 
-    const s3Service = new S3Service(env, walletAddress)
-    const existingConfig: ConfigVersions = await s3Service.getJsonFromS3()
+    const s3Service = new S3Service(env)
+    const existingConfig: ConfigVersions = await s3Service.getJson(walletAddress)
 
     if (existingConfig[version]) {
       delete existingConfig[version]
-      await s3Service.putJsonToS3(existingConfig)
+      await s3Service.putJson(walletAddress, existingConfig)
     }
 
     return json(existingConfig)

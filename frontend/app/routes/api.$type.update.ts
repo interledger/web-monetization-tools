@@ -35,10 +35,11 @@ export async function action({ request, context }: ActionFunctionArgs) {
     }
 
     let existingConfig: ConfigVersions = {}
-    const s3Service = new S3Service(env, data.walletAddress as string)
+    const walletAddress = data.walletAddress as string
+    const s3Service = new S3Service(env)
 
     try {
-      existingConfig = await s3Service.getJsonFromS3()
+      existingConfig = await s3Service.getJson(walletAddress)
     } catch (error) {
       // treats new wallets entries with no existing Default config
       // @ts-expect-error TODO: add type for error
@@ -54,7 +55,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
     })
 
     const filteredData = filterDeepProperties(existingConfig)
-    await s3Service.putJsonToS3(filteredData)
+    await s3Service.putJson(walletAddress, filteredData)
 
     return json(existingConfig)
   } catch (error) {

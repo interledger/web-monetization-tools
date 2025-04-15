@@ -40,10 +40,10 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
     sanitizeConfigFields({ ...defaultDataContent, version })
 
-    const s3Service = new S3Service(env, walletAddress)
+    const s3Service = new S3Service(env)
     let configs: ConfigVersions = {}
     try {
-      configs = await s3Service.getJsonFromS3()
+      configs = await s3Service.getJson(walletAddress)
     } catch (error) {
       const err = error as Error
       if (err.name === 'NoSuchKey') {
@@ -79,7 +79,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
       )
     }
 
-    await s3Service.putJsonToS3(configs)
+    await s3Service.putJson(walletAddress, configs)
     return json(configs)
   } catch (error) {
     return json(

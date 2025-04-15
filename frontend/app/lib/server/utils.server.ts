@@ -87,3 +87,7 @@ export const filterDeepProperties = (
   traverse(obj, [], result)
   return result
 }
+
+export function walletAddressToKey(walletAddress: string): string {
+  return `${decodeURIComponent(walletAddress).replace('$', '').replace('https://', '')}.json`
+}

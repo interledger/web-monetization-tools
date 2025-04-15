@@ -15,9 +15,9 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
     const defaultData = getDefaultData()
 
-    const s3Service = new S3Service(env, wa)
+    const s3Service = new S3Service(env)
 
-    const userConfig: ConfigVersions = await s3Service.getJsonFromS3()
+    const userConfig: ConfigVersions = await s3Service.getJson(wa)
     const selectedConfig = userConfig[version] ?? defaultData
     const fileContent = Object.assign(defaultData, [selectedConfig])
 

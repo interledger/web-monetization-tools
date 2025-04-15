@@ -19,8 +19,8 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     defaultData.default.walletAddress = walletAddress
 
     try {
-      const s3Service = new S3Service(env, walletAddress)
-      const fileContentString: ConfigVersions = await s3Service.getJsonFromS3()
+      const s3Service = new S3Service(env)
+      const fileContentString: ConfigVersions = await s3Service.getJson(walletAddress)
 
       let fileContent = Object.assign(defaultData, ...[fileContentString])
       fileContent = filterDeepProperties(fileContent) as {
