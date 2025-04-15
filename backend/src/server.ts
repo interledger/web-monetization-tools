@@ -1,7 +1,7 @@
 import https from 'https'
 import http from 'http'
 import fs from 'fs'
-import type { Express } from 'express';
+import type { Express } from 'express'
 import express from 'express'
 import session from 'express-session'
 import routes from './routes/index.js'

@@ -36,7 +36,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
     }
 
     const s3Service = new S3Service(env)
-    const existingConfig: ConfigVersions = await s3Service.getJson(walletAddress)
+    const existingConfig: ConfigVersions =
+      await s3Service.getJson(walletAddress)
 
     if (existingConfig[version]) {
       delete existingConfig[version]

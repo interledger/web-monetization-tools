@@ -1,11 +1,5 @@
-import type {
-  ComponentPropsWithoutRef,
-  Ref} from 'react';
-import {
-  forwardRef,
-  useEffect,
-  useState
-} from 'react'
+import type { ComponentPropsWithoutRef, Ref } from 'react'
+import { forwardRef, useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import { Info } from './icons.js'
 import 'tippy.js/dist/tippy.css'

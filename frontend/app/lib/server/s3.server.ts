@@ -46,7 +46,7 @@ export class S3Service {
     }
   }
 
-  async putJson<T>(walletAddress:string, data: T): Promise<void> {
+  async putJson<T>(walletAddress: string, data: T): Promise<void> {
     const jsonString = JSON.stringify(data)
     const command = new PutObjectCommand({
       Bucket: this.bucketName,

@@ -1,7 +1,7 @@
 import { useNavigate } from '@remix-run/react'
 import { cx } from 'class-variance-authority'
 import { availableTools } from '~/lib/presets.js'
-import type { SelectOption } from './index.js';
+import type { SelectOption } from './index.js'
 import { Button, InfoWithTooltip, Select } from './index.js'
 import { Chevron } from './icons.js'
 
