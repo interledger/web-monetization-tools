@@ -59,7 +59,7 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
   session.unset('is-grant-accepted')
   session.unset('is-grant-response')
 
-  const defaultConfig = getDefaultData().default
+  const defaultConfig = getDefaultData()
   const ilpayUrl = env.SCRIPT_ILPAY_URL
   const scriptInitUrl = env.SCRIPT_EMBER_URL
   const frontendUrl = env.SCRIPT_FRONTEND_URL

@@ -35,8 +35,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
       throw new Error('Grant confirmation required')
     }
 
-    const defaultData = getDefaultData()
-    const defaultDataContent: ConfigVersions['default'] = defaultData.default
+    const defaultDataContent = getDefaultData()
     defaultDataContent.walletAddress = walletAddress
 
     sanitizeConfigFields({ ...defaultDataContent, version })

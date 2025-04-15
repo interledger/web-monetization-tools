@@ -15,15 +15,14 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     //TODO: test this wallet address
     const walletAddress = decodeURIComponent(wa)
 
-    const defaultData = getDefaultData()
-    const parsedDefaultData = defaultData
-    parsedDefaultData.default.walletAddress = walletAddress
+    const defaultData = { default: {...getDefaultData()}}
+    defaultData.default.walletAddress = walletAddress
 
     try {
       const s3Service = new S3Service(env, walletAddress)
       const fileContentString: ConfigVersions = await s3Service.getJsonFromS3()
 
-      let fileContent = Object.assign(parsedDefaultData, ...[fileContentString])
+      let fileContent = Object.assign(defaultData, ...[fileContentString])
       fileContent = filterDeepProperties(fileContent) as {
         default: ElementConfigType
       } & ConfigVersions
@@ -33,7 +32,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       // @ts-expect-error TODO
       if (error.name === 'NoSuchKey') {
         // if no user config exists, return default
-        return json(parsedDefaultData)
+        return json(defaultData)
       }
       throw error
     }

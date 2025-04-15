@@ -13,8 +13,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       throw new Error('Wallet address is required')
     }
 
-    const defaultDataResp = getDefaultData()
-    const defaultData = defaultDataResp.default
+    const defaultData = getDefaultData()
 
     const s3Service = new S3Service(env, wa)
 
