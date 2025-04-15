@@ -1,7 +1,8 @@
-import {
+import type {
   ComponentPropsWithoutRef,
+  Ref} from 'react';
+import {
   forwardRef,
-  Ref,
   useEffect,
   useState
 } from 'react'

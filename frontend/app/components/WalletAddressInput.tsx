@@ -1,4 +1,4 @@
-import { ElementConfigType, ElementErrors } from '~/lib/types.js'
+import type { ElementConfigType, ElementErrors } from '~/lib/types.js'
 import { Input } from './index.js'
 import { tooltips } from '~/lib/tooltips.js'
 

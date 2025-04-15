@@ -1,6 +1,6 @@
 import { cx } from 'class-variance-authority'
 import { useEffect, useState } from 'react'
-import {
+import type {
   CornerType,
   ElementConfigType,
   ElementErrors,

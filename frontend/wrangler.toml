@@ -1,4 +1,4 @@
-name = "web-monetization-tools"
+name = "publisher-tools-api"
 main = "functions/[[worker]].ts"
 compatibility_flags = [ "nodejs_compat" ]
 compatibility_date = "2024-09-23"
@@ -10,5 +10,4 @@ port = 5100
 bucket = "./public"
 
 [vars]
-workers_dev = true
-vars = { NODE_ENV = "development" }
+NODE_ENV = "development"

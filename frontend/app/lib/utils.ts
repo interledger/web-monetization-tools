@@ -1,10 +1,10 @@
 import React from 'react'
 import {
   CornerType,
-  ElementConfigType,
   PositionType,
   SlideAnimationType,
-  WalletAddress
+  type ElementConfigType,
+  type WalletAddress
 } from './types.js'
 
 const getSelectedFont = (name: string) => {

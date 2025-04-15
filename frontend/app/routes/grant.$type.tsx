@@ -1,12 +1,10 @@
-import { LoaderFunctionArgs } from '@remix-run/cloudflare'
 import { redirect } from '@remix-run/react'
-import { commitSession, getSession } from '~/lib/server/session.server'
-import { isGrantValidAndAccepted } from '~/lib/server/open-payments.server'
+import { commitSession, getSession } from '../lib/server/session.server'
+import { isGrantValidAndAccepted } from '../lib/server/open-payments.server'
+import type { LoaderFunctionArgs } from '@remix-run/cloudflare'
 
 export async function loader({ params, request, context }: LoaderFunctionArgs) {
-  const {
-    cloudflare: { env }
-  } = context
+  const { env } = context.cloudflare
 
   const elementType = params.type
   const url = new URL(request.url)

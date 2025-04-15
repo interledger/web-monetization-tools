@@ -1,6 +1,6 @@
 import sanitizeHtml from 'sanitize-html'
 import he from 'he'
-import { SanitizedFields } from '../types.js'
+import type { SanitizedFields } from '../types.js'
 
 export const sanitizeConfigFields = <T extends Partial<SanitizedFields>>(
   config: T

@@ -1,7 +1,7 @@
 import { NewVersionModal } from '~/components/modals/index.js'
 import { useNavigate, useOutletContext } from '@remix-run/react'
-import { ElementConfigType } from '~/lib/types.js'
-import { ModalType } from '~/lib/presets.js'
+import type { ElementConfigType } from '~/lib/types.js'
+import type { ModalType } from '~/lib/presets.js'
 
 type ContextType = {
   toolConfig: ElementConfigType

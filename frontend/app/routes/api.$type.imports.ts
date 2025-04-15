@@ -2,13 +2,11 @@ import { json, type LoaderFunctionArgs } from '@remix-run/cloudflare'
 import { filterDeepProperties } from '../lib/server/utils.server'
 import { getDefaultData } from '../lib/utils.js'
 import { S3Service } from '../lib/server/s3.server'
-import { ConfigVersions, ElementConfigType } from '~/lib/types.js'
+import type { ConfigVersions, ElementConfigType } from '../lib/types.js'
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
   try {
-    const {
-      cloudflare: { env }
-    } = context
+    const { env } = context.cloudflare
     const url = new URL(request.url)
     const wa = url.searchParams.get('wa')
     if (!wa) {

@@ -1,7 +1,8 @@
 import { useNavigate } from '@remix-run/react'
 import { cx } from 'class-variance-authority'
 import { availableTools } from '~/lib/presets.js'
-import { Button, InfoWithTooltip, Select, SelectOption } from './index.js'
+import type { SelectOption } from './index.js';
+import { Button, InfoWithTooltip, Select } from './index.js'
 import { Chevron } from './icons.js'
 
 export const PageHeader = ({
@@ -52,7 +53,7 @@ export const PageHeader = ({
           aria-label="add version"
           title="add version"
           onClick={() => {
-            navigate('version', { preventScrollReset: true })
+            navigate('new-version', { preventScrollReset: true })
           }}
         >
           +

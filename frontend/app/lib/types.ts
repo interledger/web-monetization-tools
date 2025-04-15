@@ -1,6 +1,6 @@
 import { type PlatformProxy } from 'wrangler'
 import type { z } from 'zod'
-import {
+import type {
   createBannerSchema,
   createButtonSchema,
   createWidgetSchema

@@ -1,6 +1,6 @@
 import {
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
+  type ActionFunctionArgs,
+  type LoaderFunctionArgs,
   json
 } from '@remix-run/cloudflare'
 import {
@@ -12,7 +12,7 @@ import {
   Outlet,
   useSubmit
 } from '@remix-run/react'
-import { ReactElement, useEffect, useState } from 'react'
+import { useEffect, useState, type ReactElement } from 'react'
 import {
   ConfirmModal,
   InfoModal,
@@ -22,13 +22,13 @@ import {
   ErrorPanel,
   NotFoundConfig,
   PageHeader,
-  SelectOption,
   ToolConfig,
-  ToolPreview
+  ToolPreview,
+  type SelectOption
 } from '~/components/index.js'
-import { validConfigTypes, ModalType } from '~/lib/presets.js'
+import { validConfigTypes, type ModalType } from '~/lib/presets.js'
 import { tooltips } from '~/lib/tooltips.js'
-import { ElementConfigType, ElementErrors } from '~/lib/types.js'
+import type { ElementConfigType, ElementErrors } from '~/lib/types.js'
 import {
   capitalizeFirstLetter,
   toWalletAddressUrl,
@@ -42,9 +42,7 @@ import {
 } from '~/lib/server/open-payments.server'
 
 export async function loader({ params, request, context }: LoaderFunctionArgs) {
-  const {
-    cloudflare: { env }
-  } = context
+  const { env } = context.cloudflare
   const elementType = params.type
   const url = new URL(request.url)
   const contentOnlyParam = url.searchParams.get('contentOnly')
@@ -464,9 +462,7 @@ export default function Create() {
 }
 
 export async function action({ request, params, context }: ActionFunctionArgs) {
-  const {
-    cloudflare: { env }
-  } = context
+  const { env } = context.cloudflare
   const elementType = params.type
   const formData = Object.fromEntries(await request.formData())
   const intent = formData.intent

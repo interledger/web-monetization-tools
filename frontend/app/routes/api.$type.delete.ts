@@ -16,9 +16,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
   const formData = await request.formData()
 
   try {
-    const {
-      cloudflare: { env }
-    } = context
+    const { env } = context.cloudflare
     const walletAddress = formData.get('walletAddress') as string
     const version = formData.get('version') as string
 
