@@ -22,10 +22,7 @@ import {
 import { validConfigTypes, type ModalType } from '~/lib/presets.js'
 import { tooltips } from '~/lib/tooltips.js'
 import type { ElementConfigType } from '~/lib/types.js'
-import {
-  capitalizeFirstLetter,
-  getDefaultData
-} from '~/lib/utils.js'
+import { capitalizeFirstLetter, getDefaultData } from '~/lib/utils.js'
 import { commitSession, getSession } from '~/lib/server/session.server'
 
 export async function loader({ params, request, context }: LoaderFunctionArgs) {
@@ -103,12 +100,12 @@ export default function Create() {
 
   const getScriptToDisplay = (): string | undefined => {
     if (!toolConfig?.walletAddress) {
-      return undefined; 
+      return undefined
     }
-    
-    const wa = toolConfig.walletAddress.replace('$', '').replace('https://', '');
-    return `<script id="wmt-init-script" type="module" src="${scriptInitUrl}init.js?wa=${wa}&tag=[version]&types=[elements]"></script>`;
-  };
+
+    const wa = toolConfig.walletAddress.replace('$', '').replace('https://', '')
+    return `<script id="wmt-init-script" type="module" src="${scriptInitUrl}init.js?wa=${wa}&tag=[version]&types=[elements]"></script>`
+  }
 
   const onSelectVersion = (selectedVersion: string) => {
     const config = fullConfig[selectedVersion]

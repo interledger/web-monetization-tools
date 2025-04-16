@@ -41,9 +41,11 @@ export const ScriptModal = ({
   useEffect(() => {
     if (!scriptForDisplay) return
 
-    setProcessedScript(scriptForDisplay
-      .replace('[elements]', types.join('|'))
-      .replace('[version]', selectedVersion))
+    setProcessedScript(
+      scriptForDisplay
+        .replace('[elements]', types.join('|'))
+        .replace('[version]', selectedVersion)
+    )
   }, [types, scriptForDisplay, selectedVersion])
 
   return (
@@ -70,50 +72,51 @@ export const ScriptModal = ({
                 <span>{title}</span>
                 <InfoWithTooltip tooltip={tooltip} />
               </Dialog.Title>
-              {processedScript ?
-              (<div className="mt-2">
-                <div className="flex items-center m-6 mb-0 p-2">
-                  <span className="flex">Include: </span>
-                  {selectableTypes.map((type) => {
-                    return (
-                      <div className="flex items-center ml-2" key={type}>
-                        <input
-                          type="checkbox"
-                          className="flex w-5 h-5 mr-2"
-                          defaultChecked={defaultType == type}
-                          onClick={() => chooseType(type)}
-                        />
-                        <span className="flex">{type}</span>
-                      </div>
-                    )
-                  })}
-                </div>
-                <div className="flex">
-                  <code className="flex m-6 p-2 max-w-md border border-tealish whitespace-pre-wrap break-all break-words overflow-x-auto block">
-                    {processedScript}
-                  </code>
+              {processedScript ? (
+                <div className="mt-2">
+                  <div className="flex items-center m-6 mb-0 p-2">
+                    <span className="flex">Include: </span>
+                    {selectableTypes.map((type) => {
+                      return (
+                        <div className="flex items-center ml-2" key={type}>
+                          <input
+                            type="checkbox"
+                            className="flex w-5 h-5 mr-2"
+                            defaultChecked={defaultType == type}
+                            onClick={() => chooseType(type)}
+                          />
+                          <span className="flex">{type}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
                   <div className="flex">
-                    <CopyButton
-                      aria-label="copy script"
-                      className="h-7 w-7"
-                      size="sm"
-                      value={processedScript}
-                      variant="input"
-                    ></CopyButton>
+                    <code className="flex m-6 p-2 max-w-md border border-tealish whitespace-pre-wrap break-all break-words overflow-x-auto block">
+                      {processedScript}
+                    </code>
+                    <div className="flex">
+                      <CopyButton
+                        aria-label="copy script"
+                        className="h-7 w-7"
+                        size="sm"
+                        value={processedScript}
+                        variant="input"
+                      ></CopyButton>
+                    </div>
                   </div>
+                  <Form method="post" replace preventScrollReset>
+                    <div className="flex justify-end space-x-4">
+                      <Button
+                        aria-label="close modal"
+                        type="reset"
+                        onClick={onClose}
+                      >
+                        Close
+                      </Button>
+                    </div>
+                  </Form>
                 </div>
-                <Form method="post" replace preventScrollReset>
-                  <div className="flex justify-end space-x-4">
-                    <Button
-                      aria-label="close modal"
-                      type="reset"
-                      onClick={onClose}
-                    >
-                      Close
-                    </Button>
-                  </div>
-                </Form>
-              </div>) : (
+              ) : (
                 <span>Could not process script, missing wallet address</span>
               )}
             </div>
