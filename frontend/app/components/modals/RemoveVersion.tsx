@@ -85,8 +85,7 @@ export const RemoveVersionModal = ({
                 >
                   <fieldset disabled={isSubmitting}>
                     <div className="flex justify-center p-4 mx-2">
-                      Are you sure you want to remove the version "
-                      {versionToRemove}"?
+                      {`Are you sure you want to remove the version "${versionToRemove}" ?`}
                       <input
                         type="hidden"
                         name="walletAddress"
