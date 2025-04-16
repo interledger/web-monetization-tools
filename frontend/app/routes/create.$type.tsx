@@ -1,12 +1,9 @@
-import {
-  type LoaderFunctionArgs,
-  json
-} from '@remix-run/cloudflare'
+import { type LoaderFunctionArgs, json } from '@remix-run/cloudflare'
 import {
   useLoaderData,
   useFetcher,
   useNavigation,
-  Outlet,
+  Outlet
 } from '@remix-run/react'
 import { useEffect, useState, type ReactElement } from 'react'
 import {
@@ -53,7 +50,6 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
   const defaultConfig = getDefaultData()
   const ilpayUrl = env.SCRIPT_ILPAY_URL
   const scriptInitUrl = env.SCRIPT_EMBER_URL
-  const frontendUrl = env.SCRIPT_FRONTEND_URL
 
   return json(
     {
@@ -61,7 +57,6 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
       defaultConfig,
       ilpayUrl,
       scriptInitUrl,
-      frontendUrl,
       walletAddress,
       contentOnlyParam,
       grantResponse,
@@ -83,7 +78,6 @@ export default function Create() {
     defaultConfig,
     ilpayUrl,
     scriptInitUrl,
-    frontendUrl,
     walletAddress,
     contentOnlyParam,
     isGrantAccepted,
@@ -94,7 +88,6 @@ export default function Create() {
   const isSubmitting = navigation.state === 'submitting'
   const contentOnly = contentOnlyParam != null
 
-  const deleteFetcher = useFetcher()
   const saveFetcher = useFetcher()
   const [openWidget, setOpenWidget] = useState(false)
   const [toolConfig, setToolConfig] = useState<ElementConfigType>(defaultConfig)
@@ -111,27 +104,6 @@ export default function Create() {
 
   const wa = toWalletAddressUrl(toolConfig?.walletAddress || '')
   const scriptToDisplay = `<script id="wmt-init-script" type="module" src="${scriptInitUrl}init.js?wa=${wa}&tag=[version]&types=[elements]"></script>`
-
-  const onConfirmRemove = () => {
-    if (
-      fullConfig &&
-      toolConfig.walletAddress &&
-      selectedVersion !== 'default'
-    ) {
-      const formData = new FormData()
-      formData.append('walletAddress', toolConfig.walletAddress)
-      formData.append('version', selectedVersion)
-      formData.append('intent', 'delete')
-
-      deleteFetcher.submit(formData, {
-        method: 'delete',
-        action: '/api/config/banner',
-        encType: 'multipart/form-data'
-      })
-
-      setModal(undefined)
-    }
-  }
 
   const onSelectVersion = (selectedVersion: string) => {
     const config = fullConfig[selectedVersion]
@@ -191,10 +163,6 @@ export default function Create() {
     const onClose = () => setModal(undefined)
 
     switch (modal?.type) {
-      case 'confirm':
-        title = `Are you sure you want to remove ${selectedVersion}?`
-        onConfirm = onConfirmRemove
-        break
       case 'wallet-ownership':
         title = (
           <span>
@@ -224,34 +192,6 @@ export default function Create() {
     }
     return { title, description, onClose, onConfirm }
   }
-
-  useEffect(() => {
-    if (deleteFetcher.data && deleteFetcher.state === 'idle') {
-      // @ts-expect-error TODO
-      if (deleteFetcher.data?.grantRequired) {
-        setModal({
-          type: 'wallet-ownership',
-          // @ts-expect-error TODO
-          grantRedirectURI: deleteFetcher.data.grantRequired
-        })
-      }
-      // @ts-expect-error TODO
-      if (deleteFetcher.data.default) {
-        const { [selectedVersion]: _, ...rest } = fullConfig
-        setFullConfig(rest)
-        setToolConfig(rest['default'])
-
-        const filteredOptions = versionOptions.filter(
-          (ver) => ver.value !== selectedVersion
-        )
-        setVersionOptions(filteredOptions)
-        setSelectedVersion('default')
-
-        sessionStorage.setItem('fullconfig', JSON.stringify(rest))
-        sessionStorage.setItem('new-version', 'default')
-      }
-    }
-  }, [deleteFetcher.data, deleteFetcher.state])
 
   useEffect(() => {
     const savedConfig = sessionStorage.getItem('fullconfig') || '{}'
@@ -345,7 +285,6 @@ export default function Create() {
         title={`Create ${elementType}`}
         elementType={elementType}
         contentOnlyLink={contentOnly ? '/?contentOnly' : '/'}
-        setConfirmModalOpen={() => setModal({ type: 'confirm' })}
         versionOptions={versionOptions}
         selectedVersion={selectedVersion}
         onsetSelectVersion={onSelectVersion}
@@ -372,13 +311,7 @@ export default function Create() {
               })
             }}
           >
-            <fieldset
-              disabled={
-                isSubmitting ||
-                deleteFetcher.state !== 'idle' ||
-                saveFetcher.state !== 'idle'
-              }
-            >
+            <fieldset disabled={isSubmitting || saveFetcher.state !== 'idle'}>
               <ToolPreview
                 type={elementType}
                 toolConfig={toolConfig}
@@ -391,11 +324,7 @@ export default function Create() {
                 toolConfig={toolConfig}
                 defaultConfig={defaultConfig}
                 setToolConfig={setToolConfig}
-                isSubmiting={
-                  isSubmitting ||
-                  deleteFetcher.state !== 'idle' ||
-                  saveFetcher.state !== 'idle'
-                }
+                isSubmiting={isSubmitting || saveFetcher.state !== 'idle'}
                 // @ts-expect-error TODO
                 errors={saveFetcher?.data?.errors}
                 setOpenWidget={setOpenWidget}
@@ -435,7 +364,8 @@ export default function Create() {
           toolConfig,
           setConfigs,
           setToolConfig,
-          setModalOpen: setModal
+          setModalOpen: setModal,
+          selectedVersion
         }}
       />
       <InfoModal

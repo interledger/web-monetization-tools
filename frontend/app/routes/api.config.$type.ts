@@ -105,7 +105,7 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
   }
 
   let ownerWalletAddress: string = payload.walletAddress
-    const walletAddress = await getValidWalletAddress(env, ownerWalletAddress)
+  const walletAddress = await getValidWalletAddress(env, ownerWalletAddress)
 
   const session = await getSession(request.headers.get('Cookie'))
   const validForWallet = session.get('validForWallet')
@@ -139,7 +139,7 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
       return json({ errors }, { status: 500 })
     }
   }
-  
+
   ownerWalletAddress = normalizeWalletAddress(walletAddress)
   const s3Service = new S3Service(env)
   switch (request.method) {

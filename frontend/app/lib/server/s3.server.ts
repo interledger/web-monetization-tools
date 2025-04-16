@@ -24,13 +24,13 @@ export class S3Service {
   async getJson<T>(walletAddress: string): Promise<T> {
     const key = walletAddressToKey(walletAddress)
     const url = `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${key}`
-    
+
     const response = await this.client.fetch(url)
-    
+
     if (!response.ok) {
       throw new Error(`S3 request failed with status: ${response.status}`)
     }
-    
+
     return await response.json()
   }
 
@@ -38,7 +38,7 @@ export class S3Service {
     const key = walletAddressToKey(walletAddress)
     const url = `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${key}`
     const jsonString = JSON.stringify(data)
-    
+
     const response = await this.client.fetch(url, {
       method: 'PUT',
       body: jsonString,

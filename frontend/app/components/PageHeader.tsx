@@ -9,7 +9,6 @@ export const PageHeader = ({
   elementType,
   title,
   contentOnlyLink,
-  setConfirmModalOpen,
   versionOptions,
   selectedVersion,
   onsetSelectVersion
@@ -17,7 +16,6 @@ export const PageHeader = ({
   elementType: string | undefined
   title: string
   contentOnlyLink: string
-  setConfirmModalOpen: React.Dispatch<React.SetStateAction<boolean>>
   versionOptions: SelectOption[]
   selectedVersion: string
   onsetSelectVersion: (value: string) => void
@@ -65,7 +63,7 @@ export const PageHeader = ({
           title="remove version"
           disabled={selectedVersion == 'default'}
           onClick={() => {
-            setConfirmModalOpen(true)
+            navigate('remove-version', { preventScrollReset: true })
           }}
         >
           x
