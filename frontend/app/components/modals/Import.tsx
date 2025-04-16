@@ -69,7 +69,7 @@ export const ImportModal = ({
                 <importFetcher.Form
                   id="import-form"
                   method="get"
-                  action="/api/banner/config"
+                  action="/api/config/banner"
                 >
                   <fieldset disabled={isSubmitting}>
                     <div className="flex w-full items-center">

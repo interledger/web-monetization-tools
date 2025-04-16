@@ -8,7 +8,7 @@ import { Chevron } from './icons.js'
 export const PageHeader = ({
   elementType,
   title,
-  link,
+  contentOnlyLink,
   setConfirmModalOpen,
   versionOptions,
   selectedVersion,
@@ -16,7 +16,7 @@ export const PageHeader = ({
 }: {
   elementType: string | undefined
   title: string
-  link: string
+  contentOnlyLink: string
   setConfirmModalOpen: React.Dispatch<React.SetStateAction<boolean>>
   versionOptions: SelectOption[]
   selectedVersion: string
@@ -76,7 +76,7 @@ export const PageHeader = ({
           className="mr-2"
           aria-label="back"
           onClick={() => {
-            navigate(link)
+            navigate(contentOnlyLink)
           }}
         >
           <Chevron direction="left" className="w-3 h-3 mr-1 -ml-1" /> Back

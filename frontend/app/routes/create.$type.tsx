@@ -125,7 +125,7 @@ export default function Create() {
 
       deleteFetcher.submit(formData, {
         method: 'delete',
-        action: '/api/banner/config',
+        action: '/api/config/banner',
         encType: 'multipart/form-data'
       })
 
@@ -335,7 +335,7 @@ export default function Create() {
 
     saveFetcher.submit(formData, {
       method: 'put',
-      action: '/api/banner/config'
+      action: '/api/config/banner'
     })
   }
 
@@ -344,7 +344,7 @@ export default function Create() {
       <PageHeader
         title={`Create ${elementType}`}
         elementType={elementType}
-        link={`${frontendUrl}/tools/${contentOnly ? '?contentOnly' : ''}`}
+        contentOnlyLink={contentOnly ? '/?contentOnly' : '/'}
         setConfirmModalOpen={() => setModal({ type: 'confirm' })}
         versionOptions={versionOptions}
         selectedVersion={selectedVersion}
@@ -355,7 +355,7 @@ export default function Create() {
           <saveFetcher.Form
             id="config-form"
             method="put"
-            action="/api/banner/config"
+            action="/api/config/banner"
             onSubmit={async (e) => {
               e.preventDefault()
               const formData = new FormData(e.currentTarget)
@@ -368,7 +368,7 @@ export default function Create() {
               formData.set('intent', 'update')
               saveFetcher.submit(formData, {
                 method: 'put',
-                action: '/api/banner/config'
+                action: '/api/config/banner'
               })
             }}
           >

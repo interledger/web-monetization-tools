@@ -85,7 +85,7 @@ export const NewVersionModal = ({
                 <versionFetcher.Form
                   id="new-version-form"
                   method="post"
-                  action="/api/banner/config"
+                  action="/api/config/banner"
                 >
                   <fieldset disabled={isSubmitting}>
                     <div className="flex w-full items-center">
