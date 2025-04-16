@@ -24,7 +24,6 @@ import { tooltips } from '~/lib/tooltips.js'
 import type { ElementConfigType } from '~/lib/types.js'
 import {
   capitalizeFirstLetter,
-  toWalletAddressUrl,
   getDefaultData
 } from '~/lib/utils.js'
 import { commitSession, getSession } from '~/lib/server/session.server'
@@ -49,7 +48,7 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
 
   const defaultConfig = getDefaultData()
   const ilpayUrl = env.SCRIPT_ILPAY_URL
-  const scriptInitUrl = env.SCRIPT_EMBER_URL
+  const scriptInitUrl = env.SCRIPT_EMBED_URL
 
   return json(
     {
@@ -102,8 +101,14 @@ export default function Create() {
     { label: 'Default', value: 'default' }
   ])
 
-  const wa = toWalletAddressUrl(toolConfig?.walletAddress || '')
-  const scriptToDisplay = `<script id="wmt-init-script" type="module" src="${scriptInitUrl}init.js?wa=${wa}&tag=[version]&types=[elements]"></script>`
+  const getScriptToDisplay = (): string | undefined => {
+    if (!toolConfig?.walletAddress) {
+      return undefined; 
+    }
+    
+    const wa = toolConfig.walletAddress.replace('$', '').replace('https://', '');
+    return `<script id="wmt-init-script" type="module" src="${scriptInitUrl}init.js?wa=${wa}&tag=[version]&types=[elements]"></script>`;
+  };
 
   const onSelectVersion = (selectedVersion: string) => {
     const config = fullConfig[selectedVersion]
@@ -355,7 +360,7 @@ export default function Create() {
         selectedVersion={selectedVersion}
         tooltip={tooltips.scriptModal}
         defaultType={elementType}
-        scriptForDisplay={scriptToDisplay}
+        scriptForDisplay={getScriptToDisplay()}
         isOpen={modal?.type === 'script'}
         onClose={() => setModal(undefined)}
       />

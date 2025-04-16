@@ -132,7 +132,7 @@ declare global {
     SCRIPT_API_URL: string
     SCRIPT_FRONTEND_URL: string
     SCRIPT_ILPAY_URL: string
-    SCRIPT_EMBER_URL: string
+    SCRIPT_EMBED_URL: string
 
     OP_KEY_ID: string
     OP_PRIVATE_KEY: string

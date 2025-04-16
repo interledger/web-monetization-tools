@@ -9,7 +9,7 @@ type ScriptModalProps = {
   title: string
   tooltip?: string
   defaultType?: string
-  scriptForDisplay: string
+  scriptForDisplay?: string
   selectedVersion: string
   isOpen: boolean
   onClose: () => void
@@ -39,10 +39,11 @@ export const ScriptModal = ({
   }
 
   useEffect(() => {
-    const script = scriptForDisplay
+    if (!scriptForDisplay) return
+
+    setProcessedScript(scriptForDisplay
       .replace('[elements]', types.join('|'))
-      .replace('[version]', selectedVersion)
-    setProcessedScript(script)
+      .replace('[version]', selectedVersion))
   }, [types, scriptForDisplay, selectedVersion])
 
   return (
@@ -69,7 +70,8 @@ export const ScriptModal = ({
                 <span>{title}</span>
                 <InfoWithTooltip tooltip={tooltip} />
               </Dialog.Title>
-              <div className="mt-2">
+              {processedScript ?
+              (<div className="mt-2">
                 <div className="flex items-center m-6 mb-0 p-2">
                   <span className="flex">Include: </span>
                   {selectableTypes.map((type) => {
@@ -111,7 +113,9 @@ export const ScriptModal = ({
                     </Button>
                   </div>
                 </Form>
-              </div>
+              </div>) : (
+                <span>Could not process script, missing wallet address</span>
+              )}
             </div>
           </Dialog.Panel>
         </div>
