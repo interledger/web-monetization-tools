@@ -28,43 +28,22 @@ export const NewVersionModal = ({
   setConfigs,
   setModalOpen
 }: NewVersionModalProps) => {
-  const validateFetcher = useFetcher()
   const versionFetcher = useFetcher()
-  const isSubmitting =
-    versionFetcher.state !== 'idle' || validateFetcher.state !== 'idle'
+  const isSubmitting = versionFetcher.state !== 'idle'
   const [versionName, setVersionName] = useState('')
 
   useEffect(() => {
-    // @ts-expect-error TODO
-    if (validateFetcher.data?.grantRequired) {
-      onClose()
-      setModalOpen({
-        type: 'wallet-ownership',
-        // @ts-expect-error TODO
-        grantRedirectURI: validateFetcher.data.grantRequired
-      })
-    }
-    if (
-      // @ts-expect-error TODO
-      validateFetcher.data?.success &&
-      // @ts-expect-error TODO
-      validateFetcher.data?.intent == 'newversion'
-    ) {
-      const formData = new FormData()
-      formData.append('operation', 'create')
-      formData.append('walletAddress', toolConfig?.walletAddress || '')
-      formData.append('version', versionName)
-
-      versionFetcher.submit(formData, {
-        method: 'post',
-        action: '/api/banner/create',
-        encType: 'multipart/form-data'
-      })
-    }
-  }, [validateFetcher.data])
-
-  useEffect(() => {
     if (versionFetcher.data && versionFetcher.state === 'idle') {
+      // @ts-expect-error TODO
+      if (versionFetcher.data?.grantRequired) {
+        onClose()
+        setModalOpen({
+          type: 'wallet-ownership',
+          // @ts-expect-error TODO
+          grantRedirectURI: versionFetcher.data.grantRequired
+        })
+      }
+
       // @ts-expect-error TODO
       if (versionFetcher.data.default) {
         sessionStorage.setItem(
@@ -103,16 +82,16 @@ export const NewVersionModal = ({
                 {title}
               </Dialog.Title>
               <div className="mt-2">
-                <validateFetcher.Form
+                <versionFetcher.Form
                   id="new-version-form"
                   method="post"
-                  action="/create/banner"
+                  action="/api/banner/config"
                 >
                   <fieldset disabled={isSubmitting}>
                     <div className="flex w-full items-center">
                       <WalletAddress
                         // @ts-expect-error TODO
-                        errors={validateFetcher.data?.errors}
+                        errors={versionFetcher.data?.errors}
                         config={toolConfig}
                         setToolConfig={setToolConfig}
                       />
@@ -150,7 +129,7 @@ export const NewVersionModal = ({
                       </Button>
                     </div>
                   </fieldset>
-                </validateFetcher.Form>
+                </versionFetcher.Form>
               </div>
             </div>
           </Dialog.Panel>

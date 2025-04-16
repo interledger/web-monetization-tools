@@ -109,10 +109,9 @@ export const validateForm = async (
 ) => {
   const intent = formData?.intent
   let result
-
-  if (intent == 'import') {
+  if (intent === 'import' || intent === 'delete') {
     result = await walletSchema.safeParseAsync(formData)
-  } else if (intent == 'newversion') {
+  } else if (intent === 'newversion') {
     const newVersionSchema = versionSchema.merge(walletSchema)
     result = await newVersionSchema.safeParseAsync(formData)
   } else {

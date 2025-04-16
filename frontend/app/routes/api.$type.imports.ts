@@ -15,15 +15,15 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     //TODO: test this wallet address
     const walletAddress = decodeURIComponent(wa)
 
-    const defaultData = { default: { ...getDefaultData() } }
+    const defaultData = { default: getDefaultData() }
     defaultData.default.walletAddress = walletAddress
 
     try {
       const s3Service = new S3Service(env)
-      const fileContentString: ConfigVersions =
-        await s3Service.getJson(walletAddress)
+      const fileContentString =
+        await s3Service.getJson<ConfigVersions>(walletAddress)
 
-      let fileContent = Object.assign(defaultData, ...[fileContentString])
+      let fileContent = Object.assign(defaultData, fileContentString)
       fileContent = filterDeepProperties(fileContent) as {
         default: ElementConfigType
       } & ConfigVersions

@@ -27,25 +27,8 @@ export const ImportModal = ({
   setConfigs = () => {},
   setToolConfig = () => {}
 }: ImportModalProps) => {
-  const validateFetcher = useFetcher()
   const importFetcher = useFetcher()
-  const isSubmitting =
-    validateFetcher.state !== 'idle' || importFetcher.state !== 'idle'
-
-  useEffect(() => {
-    if (
-      // @ts-expect-error TODO
-      validateFetcher.data?.success &&
-      // @ts-expect-error TODO
-      validateFetcher.data?.intent === 'import'
-    ) {
-      const cleanWalletAddress =
-        toolConfig.walletAddress?.replace('https://', '') || ''
-      importFetcher.load(
-        `/api/banner/imports?wa=${encodeURIComponent(cleanWalletAddress)}`
-      )
-    }
-  }, [validateFetcher.data])
+  const isSubmitting = importFetcher.state !== 'idle'
 
   useEffect(() => {
     if (importFetcher.data && importFetcher.state === 'idle') {
@@ -57,7 +40,7 @@ export const ImportModal = ({
         onClose()
       }
     }
-  }, [importFetcher.data])
+  }, [importFetcher.data, importFetcher.state])
 
   return (
     <Dialog as="div" className="relative z-10" onClose={onClose} open={isOpen}>
@@ -83,16 +66,16 @@ export const ImportModal = ({
                 {title}
               </Dialog.Title>
               <div className="mt-2">
-                <validateFetcher.Form
+                <importFetcher.Form
                   id="import-form"
-                  method="post"
-                  action="/create/banner"
+                  method="get"
+                  action="/api/banner/config"
                 >
                   <fieldset disabled={isSubmitting}>
                     <div className="flex w-full items-center">
                       <WalletAddress
                         // @ts-expect-error TODO
-                        errors={validateFetcher.data?.errors}
+                        errors={importFetcher.data?.errors}
                         config={toolConfig}
                         setToolConfig={setToolConfig}
                       />
@@ -109,7 +92,7 @@ export const ImportModal = ({
                       </Button>
                     </div>
                   </fieldset>
-                </validateFetcher.Form>
+                </importFetcher.Form>
               </div>
             </div>
           </Dialog.Panel>

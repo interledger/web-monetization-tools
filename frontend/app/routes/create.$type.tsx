@@ -99,7 +99,6 @@ export default function Create() {
     grantResponse,
     isGrantResponse
   } = useLoaderData<typeof loader>()
-  const actionData = useActionData<typeof action>()
   const navigation = useNavigation()
   const isSubmitting = navigation.state === 'submitting'
   const contentOnly = contentOnlyParam != null
@@ -132,10 +131,11 @@ export default function Create() {
       const formData = new FormData()
       formData.append('walletAddress', toolConfig.walletAddress)
       formData.append('version', selectedVersion)
+      formData.append('intent', 'delete')
 
       deleteFetcher.submit(formData, {
         method: 'delete',
-        action: '/api/banner/delete',
+        action: '/api/banner/config',
         encType: 'multipart/form-data'
       })
 
@@ -238,6 +238,14 @@ export default function Create() {
   useEffect(() => {
     if (deleteFetcher.data && deleteFetcher.state === 'idle') {
       // @ts-expect-error TODO
+      if (deleteFetcher.data?.grantRequired) {
+        setModal({
+          type: 'wallet-ownership',
+          // @ts-expect-error TODO
+          grantRedirectURI: deleteFetcher.data.grantRequired
+        })
+      }
+      // @ts-expect-error TODO
       if (deleteFetcher.data.default) {
         const { [selectedVersion]: _, ...rest } = fullConfig
         setFullConfig(rest)
@@ -287,51 +295,25 @@ export default function Create() {
   }, [])
 
   useEffect(() => {
-    const errors = Object.keys(actionData?.errors?.fieldErrors || {})
-
-    if (!errors.length && actionData) {
+    // @ts-expect-error TODO
+    const errors = Object.keys(saveFetcher?.data?.errors?.fieldErrors || {})
+    if (!errors.length && saveFetcher.data && saveFetcher.state === 'idle') {
       const updatedFullConfig = {
         ...fullConfig,
         [selectedVersion]: toolConfig
       }
 
       // @ts-expect-error TODO
-      if (actionData?.grantRequired) {
+      if (saveFetcher.data?.grantRequired) {
         sessionStorage.setItem('fullconfig', JSON.stringify(updatedFullConfig))
         setModal({
           type: 'wallet-ownership',
           // @ts-expect-error TODO
-          grantRedirectURI: actionData?.grantRequired,
+          grantRedirectURI: saveFetcher.data?.grantRequired,
           // @ts-expect-error TODO
-          grantRedirectIntent: actionData?.intent
+          grantRedirectIntent: saveFetcher.data?.intent
         })
-      }
-      // @ts-expect-error TODO
-      else if (actionData?.success && actionData.intent == 'update') {
-        const payload = {
-          walletAddress: toolConfig.walletAddress,
-          fullconfig: JSON.stringify(updatedFullConfig),
-          version: selectedVersion,
-          elementType: elementType
-        }
-
-        const formData = new FormData()
-        for (const [key, value] of Object.entries(payload)) {
-          formData.append(key, value!)
-        }
-        saveFetcher.submit(formData, {
-          method: 'put',
-          action: '/api/banner/update',
-          encType: 'multipart/form-data'
-        })
-      }
-    }
-  }, [actionData])
-
-  useEffect(() => {
-    if (saveFetcher.data && saveFetcher.state === 'idle') {
-      // @ts-expect-error TODO
-      if (!saveFetcher.data.error) {
+      } else {
         // @ts-expect-error TODO
         setFullConfig(saveFetcher.data)
         sessionStorage.setItem('fullconfig', JSON.stringify(saveFetcher.data))
@@ -362,8 +344,9 @@ export default function Create() {
     formData.append('intent', 'update')
 
     submitForm(formData, {
-      method: 'post',
-      action: '/create/banner'
+      navigate: false,
+      method: 'put',
+      action: '/api/banner/config'
     })
   }
 
@@ -380,7 +363,26 @@ export default function Create() {
       />
       {toolConfig && validConfigTypes.includes(String(elementType)) ? (
         <div className="flex flex-col">
-          <Form id="config-form" method="post" action="/create/banner">
+          <saveFetcher.Form
+            id="config-form"
+            method="put"
+            action="/api/banner/config"
+            onSubmit={async (e) => {
+              e.preventDefault()
+              const formData = new FormData(e.currentTarget)
+              const updatedFullConfig = {
+                ...fullConfig,
+                [selectedVersion]: toolConfig
+              }
+
+              formData.set('fullconfig', JSON.stringify(updatedFullConfig))
+              formData.set('intent', 'update')
+              saveFetcher.submit(formData, {
+                method: 'put',
+                action: '/api/banner/config'
+              })
+            }}
+          >
             <fieldset
               disabled={
                 isSubmitting ||
@@ -405,7 +407,8 @@ export default function Create() {
                   deleteFetcher.state !== 'idle' ||
                   saveFetcher.state !== 'idle'
                 }
-                errors={actionData?.errors}
+                // @ts-expect-error TODO
+                errors={saveFetcher?.data?.errors}
                 setOpenWidget={setOpenWidget}
               />
             </fieldset>
@@ -420,9 +423,10 @@ export default function Create() {
               value={selectedVersion || 'default'}
             />
             <div className="px-6 pt-5">
-              <ErrorPanel errors={actionData?.errors?.message || []} />
+              {/* @ts-expect-error TODO */}
+              <ErrorPanel errors={saveFetcher?.data?.errors?.message || []} />
             </div>
-          </Form>
+          </saveFetcher.Form>
         </div>
       ) : (
         <NotFoundConfig />
@@ -458,80 +462,5 @@ export default function Create() {
         )}
       />
     </div>
-  )
-}
-
-export async function action({ request, params, context }: ActionFunctionArgs) {
-  const { env } = context.cloudflare
-  const elementType = params.type
-  const formData = Object.fromEntries(await request.formData())
-  const intent = formData.intent
-
-  const theCookie = request.headers.get('Cookie')
-  const session = await getSession(theCookie)
-  const errors: ElementErrors = {
-    fieldErrors: {},
-    message: []
-  }
-
-  const { result, payload } = await validateForm(formData, elementType)
-  if (!result.success || !payload) {
-    errors.fieldErrors = result.error?.flatten().fieldErrors || {
-      walletAddress: undefined
-    }
-    return json({ errors, success: false, intent }, { status: 400 })
-  }
-
-  const ownerWalletAddress: string = payload.walletAddress as string
-  const validForWallet = session.get('validForWallet')
-
-  if (
-    intent !== 'import' &&
-    (!validForWallet || validForWallet !== ownerWalletAddress)
-  ) {
-    try {
-      const walletAddress = await getValidWalletAddress(env, ownerWalletAddress)
-      session.set('wallet-address', walletAddress)
-
-      const redirectUrl = `${env.SCRIPT_FRONTEND_URL}grant/${elementType}/`
-      const grant = await createInteractiveGrant(env, {
-        walletAddress: walletAddress,
-        redirectUrl
-      })
-      session.set('payment-grant', grant)
-
-      return json(
-        {
-          errors,
-          grantRequired: grant.interact.redirect,
-          intent
-        },
-        {
-          status: 200,
-          headers: {
-            'Set-Cookie': await commitSession(session)
-          }
-        }
-      )
-    } catch {
-      errors.fieldErrors = {
-        walletAddress: ['Could not verify ownership of wallet address']
-      }
-      return json({ errors }, { status: 400 })
-    }
-  }
-
-  return json(
-    {
-      errors,
-      success: true,
-      intent
-    },
-    {
-      status: 200,
-      headers: {
-        'Set-Cookie': await commitSession(session)
-      }
-    }
   )
 }
