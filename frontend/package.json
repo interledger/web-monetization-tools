@@ -14,8 +14,6 @@
     "@interledger/open-payments": "^6.13.2",
     "@paralleldrive/cuid2": "^2.2.2",
     "@remix-run/cloudflare": "^2.16.5",
-    "@remix-run/cloudflare-pages": "^2.16.5",
-    "@remix-run/node": "^2.14.0",
     "@remix-run/react": "^2.16.5",
     "@remix-run/serve": "^2.16.5",
     "@tippyjs/react": "^4.2.6",

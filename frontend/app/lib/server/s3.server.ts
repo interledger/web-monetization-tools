@@ -4,8 +4,7 @@ import { walletAddressToKey } from './utils.server'
 export class S3Service {
   private static instance: AwsClient | null = null
   private client: AwsClient
-  private bucketName: string
-  private region: string
+  private endpoint: string
 
   constructor(env: Env) {
     if (!S3Service.instance) {
@@ -17,13 +16,12 @@ export class S3Service {
     }
 
     this.client = S3Service.instance
-    this.bucketName = env.AWS_BUCKET_NAME
-    this.region = env.AWS_REGION
+    this.endpoint = `https://${env.AWS_BUCKET_NAME}.s3.${env.AWS_REGION}.amazonaws.com`
   }
 
   async getJson<T>(walletAddress: string): Promise<T> {
     const key = walletAddressToKey(walletAddress)
-    const url = `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${key}`
+    const url = new URL(key, this.endpoint)
 
     const response = await this.client.fetch(url)
 
@@ -36,7 +34,7 @@ export class S3Service {
 
   async putJson<T>(walletAddress: string, data: T): Promise<void> {
     const key = walletAddressToKey(walletAddress)
-    const url = `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${key}`
+    const url = new URL(key, this.endpoint)
     const jsonString = JSON.stringify(data)
 
     const response = await this.client.fetch(url, {
