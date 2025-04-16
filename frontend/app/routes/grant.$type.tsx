@@ -2,8 +2,8 @@ import { redirect } from '@remix-run/react'
 import { commitSession, getSession } from '../lib/server/session.server'
 import { isGrantValidAndAccepted } from '../lib/server/open-payments.server'
 import type { LoaderFunctionArgs } from '@remix-run/cloudflare'
-import { WalletAddress } from '@interledger/open-payments'
-import { toWalletAddressUrl } from '../lib/utils'
+import type { WalletAddress } from '@interledger/open-payments'
+import { toWalletAddressUrl } from '../lib/utils.js'
 
 export async function loader({ params, request, context }: LoaderFunctionArgs) {
   const { env } = context.cloudflare
