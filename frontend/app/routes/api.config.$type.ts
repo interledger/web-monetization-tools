@@ -11,7 +11,7 @@ import type {
   ElementErrors
 } from '../lib/types.js'
 import { commitSession, getSession } from '../lib/server/session.server'
-import { S3Service } from '../lib/server/s3.server'
+import { ConfigStorageService } from '../lib/server/config-storage.server'
 import { getDefaultData } from '../lib/utils.js'
 import { validateForm } from '~/lib/server/validate.server'
 import {
@@ -48,9 +48,9 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
     defaultData.default.walletAddress = ownerWalletAddress
 
     try {
-      const s3Service = new S3Service(env)
+      const storageService = new ConfigStorageService(env)
       const fileContentString =
-        await s3Service.getJson<ConfigVersions>(ownerWalletAddress)
+        await storageService.getJson<ConfigVersions>(ownerWalletAddress)
 
       let fileContent = Object.assign(defaultData, fileContentString)
       fileContent = filterDeepProperties(fileContent) as {
@@ -141,16 +141,16 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
   }
 
   ownerWalletAddress = normalizeWalletAddress(walletAddress)
-  const s3Service = new S3Service(env)
+  const storageService = new ConfigStorageService(env)
   switch (request.method) {
     case 'POST':
-      return handleCreate(s3Service, formData, ownerWalletAddress)
+      return handleCreate(storageService, formData, ownerWalletAddress)
 
     case 'PUT':
-      return handleUpdate(s3Service, formData, ownerWalletAddress)
+      return handleUpdate(storageService, formData, ownerWalletAddress)
 
     case 'DELETE':
-      return handleDelete(s3Service, formData, ownerWalletAddress)
+      return handleDelete(storageService, formData, ownerWalletAddress)
 
     default:
       return json({ error: 'Method not allowed' }, { status: 405 })
@@ -158,7 +158,7 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
 }
 
 async function handleCreate(
-  s3Service: S3Service,
+  storageService: ConfigStorageService,
   formData: FormData,
   walletAddress: string
 ) {
@@ -179,7 +179,7 @@ async function handleCreate(
     // Get existing configs or handle new wallet
     let configs: ConfigVersions = {}
     try {
-      configs = await s3Service.getJson(walletAddress)
+      configs = await storageService.getJson(walletAddress)
     } catch (error) {
       const err = error as Error
       if (err.name !== 'NoSuchKey') {
@@ -210,7 +210,7 @@ async function handleCreate(
       )
     }
 
-    await s3Service.putJson(walletAddress, configs)
+    await storageService.putJson(walletAddress, configs)
     return json(configs)
   } catch (error) {
     return json({ error: (error as Error).message }, { status: 500 })
@@ -218,7 +218,7 @@ async function handleCreate(
 }
 
 async function handleUpdate(
-  s3Service: S3Service,
+  configStorage: ConfigStorageService,
   formData: FormData,
   walletAddress: string
 ) {
@@ -231,7 +231,7 @@ async function handleUpdate(
 
     let existingConfig: ConfigVersions = {}
     try {
-      existingConfig = await s3Service.getJson(walletAddress)
+      existingConfig = await configStorage.getJson(walletAddress)
     } catch (error) {
       // treats new wallets entries with no existing Default config
       // @ts-expect-error TODO: add type for error
@@ -246,7 +246,7 @@ async function handleUpdate(
     })
 
     const filteredData = filterDeepProperties(existingConfig)
-    await s3Service.putJson(walletAddress, filteredData)
+    await configStorage.putJson(walletAddress, filteredData)
 
     return json(existingConfig)
   } catch (error) {
@@ -255,7 +255,7 @@ async function handleUpdate(
 }
 
 async function handleDelete(
-  s3Service: S3Service,
+  configStorage: ConfigStorageService,
   formData: FormData,
   walletAddress: string
 ) {
@@ -274,11 +274,11 @@ async function handleDelete(
     }
 
     const existingConfig =
-      await s3Service.getJson<ConfigVersions>(walletAddress)
+      await configStorage.getJson<ConfigVersions>(walletAddress)
 
     if (existingConfig[version]) {
       delete existingConfig[version]
-      await s3Service.putJson(walletAddress, existingConfig)
+      await configStorage.putJson(walletAddress, existingConfig)
     }
 
     return json(existingConfig)

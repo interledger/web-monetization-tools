@@ -1,21 +1,21 @@
 import { AwsClient } from 'aws4fetch'
 import { walletAddressToKey } from './utils.server'
 
-export class S3Service {
+export class ConfigStorageService {
   private static instance: AwsClient | null = null
   private client: AwsClient
   private endpoint: string
 
   constructor(env: Env) {
-    if (!S3Service.instance) {
-      S3Service.instance = new AwsClient({
+    if (!ConfigStorageService.instance) {
+      ConfigStorageService.instance = new AwsClient({
         accessKeyId: env.AWS_ACCESS_KEY_ID,
         secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
         region: env.AWS_REGION
       })
     }
 
-    this.client = S3Service.instance
+    this.client = ConfigStorageService.instance
     this.endpoint = `https://${env.AWS_BUCKET_NAME}.s3.${env.AWS_REGION}.amazonaws.com`
   }
 
