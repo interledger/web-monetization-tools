@@ -1,16 +1,12 @@
 import {
-  type ActionFunctionArgs,
   type LoaderFunctionArgs,
   json
 } from '@remix-run/cloudflare'
 import {
-  Form,
-  useActionData,
   useLoaderData,
   useFetcher,
   useNavigation,
   Outlet,
-  useSubmit
 } from '@remix-run/react'
 import { useEffect, useState, type ReactElement } from 'react'
 import {
@@ -28,18 +24,13 @@ import {
 } from '~/components/index.js'
 import { validConfigTypes, type ModalType } from '~/lib/presets.js'
 import { tooltips } from '~/lib/tooltips.js'
-import type { ElementConfigType, ElementErrors } from '~/lib/types.js'
+import type { ElementConfigType } from '~/lib/types.js'
 import {
   capitalizeFirstLetter,
   toWalletAddressUrl,
   getDefaultData
 } from '~/lib/utils.js'
-import { validateForm } from '~/lib/server/validate.server'
 import { commitSession, getSession } from '~/lib/server/session.server'
-import {
-  getValidWalletAddress,
-  createInteractiveGrant
-} from '~/lib/server/open-payments.server'
 
 export async function loader({ params, request, context }: LoaderFunctionArgs) {
   const { env } = context.cloudflare

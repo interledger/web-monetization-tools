@@ -18,6 +18,7 @@ import {
   createInteractiveGrant,
   getValidWalletAddress
 } from '~/lib/server/open-payments.server'
+import { normalizeWalletAddress } from './grant.$type'
 
 export async function loader({ request, params, context }: LoaderFunctionArgs) {
   try {
@@ -42,9 +43,7 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
       return json({ errors, success: false }, { status: 400 })
     }
 
-    const ownerWalletAddress = decodeURIComponent(
-      payload.walletAddress as string
-    )
+    const ownerWalletAddress = payload.walletAddress as string
     const defaultData = { default: getDefaultData() }
     defaultData.default.walletAddress = ownerWalletAddress
 
@@ -104,18 +103,18 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
     }
     return json({ errors, success: false, intent }, { status: 400 })
   }
-  const ownerWalletAddress = payload.walletAddress as string
+
+  let ownerWalletAddress: string = payload.walletAddress
+    const walletAddress = await getValidWalletAddress(env, ownerWalletAddress)
+
   const session = await getSession(request.headers.get('Cookie'))
   const validForWallet = session.get('validForWallet')
-
-  if (!validForWallet || validForWallet !== ownerWalletAddress) {
+  session.set('wallet-address', walletAddress)
+  if (!validForWallet || validForWallet !== walletAddress.id) {
     try {
-      const walletAddress = await getValidWalletAddress(env, ownerWalletAddress)
-      session.set('wallet-address', walletAddress)
-
       const redirectUrl = `${env.SCRIPT_FRONTEND_URL}grant/${elementType}/`
       const grant = await createInteractiveGrant(env, {
-        walletAddress: walletAddress,
+        walletAddress,
         redirectUrl
       })
       session.set('payment-grant', grant)
@@ -140,7 +139,8 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
       return json({ errors }, { status: 500 })
     }
   }
-
+  
+  ownerWalletAddress = normalizeWalletAddress(walletAddress)
   const s3Service = new S3Service(env)
   switch (request.method) {
     case 'POST':
