@@ -1,58 +1,54 @@
-import {
-  GetObjectCommand,
-  PutObjectCommand,
-  S3Client
-} from '@aws-sdk/client-s3'
-import { streamToJson, walletAddressToKey } from './utils.server'
+import { AwsClient } from 'aws4fetch'
+import { walletAddressToKey } from './utils.server'
 
 export class S3Service {
-  private static instance: S3Client | null = null
-  private client: S3Client
+  private static instance: AwsClient | null = null
+  private client: AwsClient
   private bucketName: string
+  private region: string
 
   constructor(env: Env) {
-    // Use singleton pattern for S3 client
     if (!S3Service.instance) {
-      S3Service.instance = new S3Client({
-        region: env.AWS_REGION,
-        credentials: {
-          accessKeyId: env.AWS_ACCESS_KEY_ID,
-          secretAccessKey: env.AWS_SECRET_ACCESS_KEY
-        }
+      S3Service.instance = new AwsClient({
+        accessKeyId: env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
+        region: env.AWS_REGION
       })
     }
 
     this.client = S3Service.instance
     this.bucketName = env.AWS_BUCKET_NAME
+    this.region = env.AWS_REGION
   }
 
   async getJson<T>(walletAddress: string): Promise<T> {
-    try {
-      const command = new GetObjectCommand({
-        Bucket: this.bucketName,
-        Key: walletAddressToKey(walletAddress)
-      })
-
-      const response = await this.client.send(command)
-      const s3Stream = response.Body
-      if (!s3Stream) {
-        throw new Error('No stream returned from S3')
-      }
-
-      return await streamToJson<T>(s3Stream as ReadableStream)
-    } catch (error) {
-      console.error('Error reading JSON from S3:', error)
-      throw error
+    const key = walletAddressToKey(walletAddress)
+    const url = `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${key}`
+    
+    const response = await this.client.fetch(url)
+    
+    if (!response.ok) {
+      throw new Error(`S3 request failed with status: ${response.status}`)
     }
+    
+    return await response.json()
   }
 
   async putJson<T>(walletAddress: string, data: T): Promise<void> {
+    const key = walletAddressToKey(walletAddress)
+    const url = `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${key}`
     const jsonString = JSON.stringify(data)
-    const command = new PutObjectCommand({
-      Bucket: this.bucketName,
-      Key: walletAddressToKey(walletAddress),
-      Body: jsonString
+    
+    const response = await this.client.fetch(url, {
+      method: 'PUT',
+      body: jsonString,
+      headers: {
+        'Content-Type': 'application/json'
+      }
     })
-    await this.client.send(command)
+
+    if (!response.ok) {
+      throw new Error(`Failed to upload to S3: ${response.status}`)
+    }
   }
 }

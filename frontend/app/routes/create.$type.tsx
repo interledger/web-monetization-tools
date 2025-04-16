@@ -120,7 +120,6 @@ export default function Create() {
 
   const wa = toWalletAddressUrl(toolConfig?.walletAddress || '')
   const scriptToDisplay = `<script id="wmt-init-script" type="module" src="${scriptInitUrl}init.js?wa=${wa}&tag=[version]&types=[elements]"></script>`
-  const submitForm = useSubmit()
 
   const onConfirmRemove = () => {
     if (
@@ -343,8 +342,7 @@ export default function Create() {
     formData.append('fullconfig', JSON.stringify(fullConfig))
     formData.append('intent', 'update')
 
-    submitForm(formData, {
-      navigate: false,
+    saveFetcher.submit(formData, {
       method: 'put',
       action: '/api/banner/config'
     })
