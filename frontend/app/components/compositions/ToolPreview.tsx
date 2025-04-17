@@ -2,9 +2,9 @@ import { cx } from 'class-variance-authority'
 import { useEffect, useState } from 'react'
 import { bgColors } from '~/lib/presets.js'
 import {
-  ElementConfigType,
   PositionType,
-  SlideAnimationType
+  SlideAnimationType,
+  type ElementConfigType
 } from '~/lib/types.js'
 import {
   encodeAndCompressParameters,

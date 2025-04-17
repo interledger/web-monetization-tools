@@ -1,13 +1,14 @@
-import { LoaderFunctionArgs } from '@remix-run/node'
 import { redirect } from '@remix-run/react'
-import { commitSession, getSession } from '~/lib/server/session.server'
-import { isGrantValidAndAccepted } from '~/lib/server/open-payments.server'
+import { commitSession, getSession } from '../lib/server/session.server'
+import { isGrantValidAndAccepted } from '../lib/server/open-payments.server'
+import type { LoaderFunctionArgs } from '@remix-run/cloudflare'
+import type { WalletAddress } from '@interledger/open-payments'
 import { toWalletAddressUrl } from '../lib/utils.js'
-import { type WalletAddress } from '@interledger/open-payments'
 
-export async function loader({ params, request }: LoaderFunctionArgs) {
+export async function loader({ params, request, context }: LoaderFunctionArgs) {
+  const { env } = context.cloudflare
+
   const elementType = params.type
-
   const url = new URL(request.url)
   const interactRef = url.searchParams.get('interact_ref') || ''
   const result = url.searchParams.get('result') || ''
@@ -22,7 +23,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
   if (walletAddress && grant && interactRef) {
     try {
-      isGrantAccepted = await isGrantValidAndAccepted(grant, interactRef)
+      isGrantAccepted = await isGrantValidAndAccepted(env, grant, interactRef)
     } catch (_err) {
       isGrantAccepted = false
     }
@@ -44,7 +45,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   })
 }
 
-export function normalizeWalletAddress(walletAddress: WalletAddress) {
+export function normalizeWalletAddress(walletAddress: WalletAddress): string {
   const IS_INTERLEDGER_CARDS =
     walletAddress.authServer === 'https://auth.interledger.cards'
   const url = new URL(toWalletAddressUrl(walletAddress.id))

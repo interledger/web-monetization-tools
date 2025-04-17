@@ -1,6 +1,6 @@
 import { cx } from 'class-variance-authority'
 import { useEffect, useState } from 'react'
-import {
+import type {
   CornerType,
   ElementConfigType,
   ElementErrors,
@@ -620,6 +620,8 @@ export const ToolConfig = ({
             aria-label="save config"
             type="submit"
             disabled={isSubmiting}
+            value="update"
+            name="intent"
           >
             <img
               className={cx(

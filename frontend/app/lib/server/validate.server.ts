@@ -21,7 +21,6 @@ export const walletSchema = z.object({
         checkHrefFormat(updatedUrl)
         await isValidWalletAddress(updatedUrl)
       } catch (e) {
-        console.log({ e })
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message:
@@ -37,7 +36,7 @@ export const versionSchema = z.object({
   version: z.string().min(1, { message: 'Version is required' })
 })
 
-// need a better definition & validation for this
+// TODO: need a better definition & validation for this
 export const fullConfigSchema = z.object({
   fullconfig: z.string().min(1, { message: 'Unknown error' })
 })
@@ -110,14 +109,11 @@ export const validateForm = async (
 ) => {
   const intent = formData?.intent
   let result
-
-  if (intent == 'import') {
+  if (intent === 'import' || intent === 'delete') {
     result = await walletSchema.safeParseAsync(formData)
-  } else if (intent == 'newversion') {
-    result = await versionSchema
-      .merge(walletSchema)
-      .merge(fullConfigSchema)
-      .safeParseAsync(formData)
+  } else if (intent === 'newversion') {
+    const newVersionSchema = versionSchema.merge(walletSchema)
+    result = await newVersionSchema.safeParseAsync(formData)
   } else {
     let currentSchema
 

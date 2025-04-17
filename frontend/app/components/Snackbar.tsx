@@ -2,7 +2,7 @@ import { Transition } from '@headlessui/react'
 import { cx } from 'class-variance-authority'
 import type { FC } from 'react'
 import { Fragment, useEffect } from 'react'
-import { type Message } from '~/lib/server/message.server.js'
+import type { Message } from '../lib/server/message.server.js'
 import { CheckCircleSolid, XIcon, XCircleSolid } from '../components/icons.js'
 
 interface SnackbarProps {

@@ -1,4 +1,4 @@
-import type { MetaFunction } from '@remix-run/node'
+import type { MetaFunction } from '@remix-run/cloudflare'
 import { TypeCard } from '~/components/index.js'
 import { availableTools } from '~/lib/presets.js'
 

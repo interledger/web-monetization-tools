@@ -1,34 +1,5 @@
 name: wm-tools
 services:
-  backend:
-    hostname: backend
-    build:
-      context: ../..
-      dockerfile: backend/Dockerfile.dev
-    command: 'pnpm nodemon --watch . --ext ts,js,mjs,cjs,json --exec pnpm tsx src/server.ts'
-    ports:
-      - '5101:5101'
-    expose:
-      - '5101'
-    volumes:
-      - ../../certs:/app/certs # Ensure certificates are available
-      - ../../backend:/app/backend
-      - /app/backend/node_modules
-    networks:
-      - wm-tools
-    environment:
-      PORT: 5101
-      NODE_ENV: development
-      SSL_CERT: /app/certs/cert.pem
-      SSL_KEY: /app/certs/key.pem
-      CHOKIDAR_USEPOLLING: 'true'
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_REGION: ${AWS_REGION}
-      AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
-      AWS_RETRY_MAX_ATTEMPTS: ${AWS_RETRY_MAX_ATTEMPTS}
-      AWS_RETRY_TIMEOUT: ${AWS_RETRY_TIMEOUT}
-
   frontend:
     hostname: frontend
     build:
@@ -55,12 +26,17 @@ services:
       OP_PRIVATE_KEY: ${OP_PRIVATE_KEY}
       OP_WALLET_ADDRESS: ${OP_WALLET_ADDRESS}
       OP_REDIRECT_URL: ${OP_REDIRECT_URL}
-      NODE_OPTIONS: '--inspect=0.0.0.0:9229'
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
+      AWS_RETRY_MAX_ATTEMPTS: ${AWS_RETRY_MAX_ATTEMPTS}
+      AWS_RETRY_TIMEOUT: ${AWS_RETRY_TIMEOUT}
     networks:
       - wm-tools
     command: pnpm run dev
-    depends_on:
-      - backend
+    # depends_on:
+    #   - backend
     volumes:
       - ../../certs:/app/certs
       - ../../frontend:/app/frontend

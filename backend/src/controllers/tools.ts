@@ -10,7 +10,7 @@ import {
   streamToString
 } from '../services/utils.js'
 import { S3FileNotFoundError } from '../services/errors.js'
-import {
+import type {
   ConfigVersions,
   CreateConfigRequest,
   SanitizedFields,

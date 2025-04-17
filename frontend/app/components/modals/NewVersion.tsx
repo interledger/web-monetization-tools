@@ -1,34 +1,63 @@
 import { Dialog } from '@headlessui/react'
-import { Form } from '@remix-run/react'
-import { ElementConfigType, ElementErrors } from '~/lib/types.js'
+import { useFetcher } from '@remix-run/react'
+import type { ElementConfigType } from '~/lib/types.js'
 import { XIcon } from '~/components/icons.js'
 import { Button, Input, WalletAddress } from '~/components/index.js'
+import { useEffect, useState } from 'react'
+import type { ModalType } from '~/lib/presets.js'
 
 type NewVersionModalProps = {
   title: string
   isOpen: boolean
-  isSubmitting: boolean
-  errors?: ElementErrors
   onClose: () => void
   toolConfig: ElementConfigType
   setToolConfig: React.Dispatch<React.SetStateAction<ElementConfigType>>
-  fullConfig?: Record<string, ElementConfigType>
-  versionName: string
-  setVersionName: (value: string) => void
+  setConfigs: (
+    config: Record<string, ElementConfigType>,
+    versionName: string
+  ) => void
+  setModalOpen: React.Dispatch<React.SetStateAction<ModalType | undefined>>
 }
 
 export const NewVersionModal = ({
   title,
   isOpen,
   onClose,
-  errors,
-  isSubmitting,
   toolConfig,
   setToolConfig,
-  fullConfig,
-  versionName,
-  setVersionName
+  setConfigs,
+  setModalOpen
 }: NewVersionModalProps) => {
+  const versionFetcher = useFetcher()
+  const isSubmitting = versionFetcher.state !== 'idle'
+  const [versionName, setVersionName] = useState('')
+
+  useEffect(() => {
+    if (versionFetcher.data && versionFetcher.state === 'idle') {
+      // @ts-expect-error TODO
+      if (versionFetcher.data?.grantRequired) {
+        onClose()
+        setModalOpen({
+          type: 'wallet-ownership',
+          // @ts-expect-error TODO
+          grantRedirectURI: versionFetcher.data.grantRequired
+        })
+      }
+
+      // @ts-expect-error TODO
+      if (versionFetcher.data.default) {
+        sessionStorage.setItem(
+          'fullconfig',
+          JSON.stringify(versionFetcher.data)
+        )
+        sessionStorage.setItem('new-version', versionName)
+        // @ts-expect-error TODO
+        setConfigs(versionFetcher.data, versionName)
+        onClose()
+      }
+    }
+  }, [versionFetcher.data, versionFetcher.state])
+
   return (
     <Dialog as="div" className="relative z-10" onClose={onClose} open={isOpen}>
       <div className="fixed inset-0 bg-slate-500 bg-opacity-75 transition-opacity" />
@@ -53,11 +82,16 @@ export const NewVersionModal = ({
                 {title}
               </Dialog.Title>
               <div className="mt-2">
-                <Form method="post" replace preventScrollReset>
+                <versionFetcher.Form
+                  id="new-version-form"
+                  method="post"
+                  action="/api/config/banner"
+                >
                   <fieldset disabled={isSubmitting}>
                     <div className="flex w-full items-center">
                       <WalletAddress
-                        errors={errors}
+                        // @ts-expect-error TODO
+                        errors={versionFetcher.data?.errors}
                         config={toolConfig}
                         setToolConfig={setToolConfig}
                       />
@@ -69,7 +103,10 @@ export const NewVersionModal = ({
                           label="Version title"
                           placeholder="Default"
                           value={versionName ?? ''}
-                          error={errors?.fieldErrors.version}
+                          error={
+                            // @ts-expect-error TODO
+                            versionFetcher.data?.errors?.fieldErrors?.version
+                          }
                           onChange={(e) => {
                             const newValue = e.target.value
                             if (/^[a-zA-Z0-9-_ ]*$/.test(newValue)) {
@@ -79,27 +116,20 @@ export const NewVersionModal = ({
                           withBorder
                         />
                       </div>
-                      <input
-                        type="hidden"
-                        name="fullconfig"
-                        value={JSON.stringify(
-                          fullConfig || { default: toolConfig }
-                        )}
-                      />
                     </div>
                     <div className="flex justify-end space-x-4">
                       <Button
                         aria-label={`new config`}
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || !versionName}
                         type="submit"
                         value="newversion"
                         name="intent"
                       >
-                        Create
+                        {isSubmitting ? 'Creating...' : 'Create'}
                       </Button>
                     </div>
                   </fieldset>
-                </Form>
+                </versionFetcher.Form>
               </div>
             </div>
           </Dialog.Panel>

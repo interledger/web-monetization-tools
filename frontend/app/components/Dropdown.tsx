@@ -19,6 +19,7 @@ type DropdownProps = {
   defaultValue?: DropdownOption
 }
 
+//TODO: component not used anywhere; to be deleted
 export const Dropdown = ({
   options,
   name,

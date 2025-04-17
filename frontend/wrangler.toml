@@ -1,0 +1,13 @@
+name = "publisher-tools-api"
+main = "functions/[[worker]].ts"
+compatibility_flags = [ "nodejs_compat" ]
+compatibility_date = "2024-09-23"
+
+[dev]
+port = 5100
+
+[site]
+bucket = "./public"
+
+[vars]
+NODE_ENV = "development"

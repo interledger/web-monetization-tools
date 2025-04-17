@@ -1,29 +1,24 @@
 import { useNavigate } from '@remix-run/react'
 import { cx } from 'class-variance-authority'
 import { availableTools } from '~/lib/presets.js'
-import { Button, InfoWithTooltip, Select, SelectOption } from './index.js'
+import type { SelectOption } from './index.js'
+import { Button, InfoWithTooltip, Select } from './index.js'
 import { Chevron } from './icons.js'
 
 export const PageHeader = ({
   elementType,
   title,
-  link,
-  setImportModalOpen,
-  setNewVersionModalOpen,
-  setConfirmModalOpen,
+  contentOnlyLink,
   versionOptions,
   selectedVersion,
-  setSelectedVersion
+  onsetSelectVersion
 }: {
   elementType: string | undefined
   title: string
-  link: string
-  setImportModalOpen: React.Dispatch<React.SetStateAction<boolean>>
-  setNewVersionModalOpen: React.Dispatch<React.SetStateAction<boolean>>
-  setConfirmModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+  contentOnlyLink: string
   versionOptions: SelectOption[]
   selectedVersion: string
-  setSelectedVersion: (value: string) => void
+  onsetSelectVersion: (value: string) => void
 }) => {
   const navigate = useNavigate()
 
@@ -48,7 +43,7 @@ export const PageHeader = ({
           placeholder="Default"
           options={versionOptions}
           value={versionOptions.find((opt) => opt.value == selectedVersion)}
-          onChange={(value) => setSelectedVersion(value)}
+          onChange={(value) => onsetSelectVersion(value)}
         />
         <Button
           intent="icon"
@@ -56,7 +51,7 @@ export const PageHeader = ({
           aria-label="add version"
           title="add version"
           onClick={() => {
-            setNewVersionModalOpen(true)
+            navigate('new-version', { preventScrollReset: true })
           }}
         >
           +
@@ -68,7 +63,7 @@ export const PageHeader = ({
           title="remove version"
           disabled={selectedVersion == 'default'}
           onClick={() => {
-            setConfirmModalOpen(true)
+            navigate('remove-version', { preventScrollReset: true })
           }}
         >
           x
@@ -79,12 +74,15 @@ export const PageHeader = ({
           className="mr-2"
           aria-label="back"
           onClick={() => {
-            navigate(link)
+            navigate(contentOnlyLink)
           }}
         >
           <Chevron direction="left" className="w-3 h-3 mr-1 -ml-1" /> Back
         </Button>
-        <Button aria-label="import" onClick={() => setImportModalOpen(true)}>
+        <Button
+          aria-label="import"
+          onClick={() => navigate('import', { preventScrollReset: true })}
+        >
           <Chevron direction="up" className="w-3 h-3 mr-1 -ml-1" /> Import
         </Button>
       </div>

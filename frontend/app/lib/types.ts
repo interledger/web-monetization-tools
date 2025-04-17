@@ -1,5 +1,6 @@
+import { type PlatformProxy } from 'wrangler'
 import type { z } from 'zod'
-import {
+import type {
   createBannerSchema,
   createButtonSchema,
   createWidgetSchema
@@ -21,7 +22,28 @@ export enum PositionType {
   Bottom = 'Bottom'
 }
 
+export interface CreateConfigRequest {
+  walletAddress: string
+  tag: string
+  version?: string
+}
+
+export interface SaveUserConfigRequest {
+  walletAddress: string
+  fullconfig: string // JSON stringified object containing all versions
+  version: string
+  // ... other fields
+}
+
+export interface ConfigVersions {
+  [key: string]: ElementConfigType
+}
+
 export interface ElementConfigType {
+  // general config
+  css: string
+  version?: string
+  tag?: string // when creating a new config
   walletAddress?: string
 
   // button specific
@@ -30,6 +52,7 @@ export interface ElementConfigType {
   buttonBorder: CornerType
   buttonTextColor: string
   buttonBackgroundColor: string
+  buttonDescriptionText?: string
 
   // banner specific
   bannerFontName: string
@@ -47,7 +70,7 @@ export interface ElementConfigType {
   widgetFontSize: number
   widgetTitleText: string
   widgetDescriptionText: string
-  // widgetDonateAmount: number // not posibble currently
+  widgetDonateAmount: number // not posibble currently
   widgetButtonText: string
   widgetButtonBorder: CornerType
   widgetTextColor: string
@@ -57,6 +80,20 @@ export interface ElementConfigType {
   widgetTriggerBackgroundColor: string
   widgetTriggerIcon: string
 }
+
+export type SanitizedFields = Pick<
+  ElementConfigType,
+  | 'bannerTitleText'
+  | 'bannerDescriptionText'
+  | 'widgetTitleText'
+  | 'widgetDescriptionText'
+  | 'widgetButtonText'
+  | 'buttonText'
+  | 'buttonDescriptionText'
+  | 'walletAddress'
+  | 'version'
+  | 'tag'
+>
 
 export type JSONError<T extends z.ZodTypeAny> = {
   errors: z.typeToFlattenedError<z.infer<T>>
@@ -86,4 +123,32 @@ export interface WalletAddress {
   assetCode: string
   authServer: string
   resourceServer: string
+}
+
+import '@remix-run/cloudflare'
+
+declare global {
+  interface Env {
+    SCRIPT_API_URL: string
+    SCRIPT_FRONTEND_URL: string
+    SCRIPT_ILPAY_URL: string
+    SCRIPT_EMBED_URL: string
+
+    OP_KEY_ID: string
+    OP_PRIVATE_KEY: string
+    OP_WALLET_ADDRESS: string
+
+    AWS_ACCESS_KEY_ID: string
+    AWS_SECRET_ACCESS_KEY: string
+    AWS_REGION: string
+    AWS_BUCKET_NAME: string
+  }
+}
+
+type Cloudflare = Omit<PlatformProxy<Env>, 'dispose'>
+
+declare module '@remix-run/cloudflare' {
+  interface AppLoadContext {
+    cloudflare: Cloudflare
+  }
 }

@@ -1,9 +1,9 @@
 import { Dialog } from '@headlessui/react'
 import { Form } from '@remix-run/react'
-import { ElementErrors } from '~/lib/types.js'
 import { XIcon } from '~/components/icons.js'
 import { Button } from '~/components/index.js'
-import { ReactElement } from 'react'
+import type { ElementErrors } from '~/lib/types.js'
+import type { ReactElement } from 'react'
 
 type ConfirmModalProps = {
   title: string | ReactElement

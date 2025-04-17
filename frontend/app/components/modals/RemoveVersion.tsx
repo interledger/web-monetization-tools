@@ -1,46 +1,58 @@
 import { Dialog } from '@headlessui/react'
 import { useFetcher } from '@remix-run/react'
+import { useEffect } from 'react'
 import type { ElementConfigType } from '~/lib/types.js'
 import { XIcon } from '~/components/icons.js'
 import { Button } from '~/components/index.js'
-import { WalletAddress } from '../WalletAddressInput.js'
-import { useEffect } from 'react'
+import type { ModalType } from '~/lib/presets.js'
 
-type ImportModalProps = {
+type RemoveVersionModalProps = {
   title: string
+  versionToRemove: string
   isOpen: boolean
+  onClose: () => void
   toolConfig: ElementConfigType
   setConfigs: (
-    fullConfigObject: Record<string, ElementConfigType>,
+    config: Record<string, ElementConfigType>,
     versionName: string
   ) => void
-  setToolConfig: React.Dispatch<React.SetStateAction<ElementConfigType>>
-  onClose: () => void
-  onImport?: (walletAddress: string) => void
+  setModalOpen: React.Dispatch<React.SetStateAction<ModalType | undefined>>
 }
 
-export const ImportModal = ({
+export const RemoveVersionModal = ({
   title,
+  versionToRemove,
   isOpen,
   onClose,
   toolConfig,
-  setConfigs = () => {},
-  setToolConfig = () => {}
-}: ImportModalProps) => {
-  const importFetcher = useFetcher()
-  const isSubmitting = importFetcher.state !== 'idle'
+  setConfigs,
+  setModalOpen
+}: RemoveVersionModalProps) => {
+  const deleteFetcher = useFetcher()
+  const isSubmitting = deleteFetcher.state !== 'idle'
 
   useEffect(() => {
-    if (importFetcher.data && importFetcher.state === 'idle') {
+    if (deleteFetcher.data && deleteFetcher.state === 'idle') {
       // @ts-expect-error TODO
-      if (importFetcher.data.default) {
+      if (deleteFetcher.data?.grantRequired) {
+        onClose()
+        setModalOpen({
+          type: 'wallet-ownership',
+          // @ts-expect-error TODO
+          grantRedirectURI: deleteFetcher.data.grantRequired
+        })
+      }
+
+      // @ts-expect-error TODO
+      if (deleteFetcher.data.default) {
+        sessionStorage.setItem('fullconfig', JSON.stringify(deleteFetcher.data))
+        sessionStorage.setItem('new-version', 'default')
         // @ts-expect-error TODO
-        setConfigs(importFetcher.data, 'default')
-        sessionStorage.setItem('fullconfig', JSON.stringify(importFetcher.data))
+        setConfigs(deleteFetcher.data, 'default')
         onClose()
       }
     }
-  }, [importFetcher.data, importFetcher.state])
+  }, [deleteFetcher.data, deleteFetcher.state])
 
   return (
     <Dialog as="div" className="relative z-10" onClose={onClose} open={isOpen}>
@@ -66,33 +78,38 @@ export const ImportModal = ({
                 {title}
               </Dialog.Title>
               <div className="mt-2">
-                <importFetcher.Form
-                  id="import-form"
-                  method="get"
+                <deleteFetcher.Form
+                  id="remove-version-form"
+                  method="delete"
                   action="/api/config/banner"
                 >
                   <fieldset disabled={isSubmitting}>
-                    <div className="flex w-full items-center">
-                      <WalletAddress
-                        // @ts-expect-error TODO
-                        errors={importFetcher.data?.errors}
-                        config={toolConfig}
-                        setToolConfig={setToolConfig}
+                    <div className="flex justify-center p-4 mx-2">
+                      {`Are you sure you want to remove the version "${versionToRemove}" ?`}
+                      <input
+                        type="hidden"
+                        name="walletAddress"
+                        value={toolConfig.walletAddress || ''}
                       />
+                      <input
+                        type="hidden"
+                        name="version"
+                        value={versionToRemove}
+                      />
+                      <input type="hidden" name="intent" value="delete" />
                     </div>
-                    <div className="flex justify-end space-x-4">
+                    <div className="flex justify-center space-x-4 mt-4">
                       <Button
-                        aria-label={`import config`}
+                        className="bg-red-500 hover:bg-red-600"
+                        aria-label="remove version"
                         disabled={isSubmitting}
                         type="submit"
-                        value="import"
-                        name="intent"
                       >
-                        {isSubmitting ? 'Importing...' : 'Import'}
+                        {isSubmitting ? 'Removing...' : 'Remove'}
                       </Button>
                     </div>
                   </fieldset>
-                </importFetcher.Form>
+                </deleteFetcher.Form>
               </div>
             </div>
           </Dialog.Panel>

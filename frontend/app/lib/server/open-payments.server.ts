@@ -9,25 +9,29 @@ import {
 import { createId } from '@paralleldrive/cuid2'
 import { toWalletAddressUrl } from '../utils.js'
 
-async function createClient() {
+async function createClient(env: Env) {
   return await createAuthenticatedClient({
-    keyId: process.env.OP_KEY_ID!,
-    privateKey: Buffer.from(process.env.OP_PRIVATE_KEY!, 'base64'),
-    walletAddressUrl: process.env.OP_WALLET_ADDRESS!
+    keyId: env.OP_KEY_ID,
+    privateKey: Buffer.from(env.OP_PRIVATE_KEY, 'base64'),
+    walletAddressUrl: env.OP_WALLET_ADDRESS,
+    validateResponses: false
   })
 }
 
-export async function getValidWalletAddress(walletAddress: string) {
-  const opClient = await createClient()
-  const response = await getWalletAddress(walletAddress, opClient)
+export async function getValidWalletAddress(env: Env, walletAddress: string) {
+  const opClient = await createClient(env)
+  const response = await getWalletAddress(env, walletAddress, opClient)
   return response
 }
 
-export async function createInteractiveGrant(args: {
-  walletAddress: WalletAddress
-  redirectUrl?: string
-}) {
-  const opClient = await createClient()
+export async function createInteractiveGrant(
+  env: Env,
+  args: {
+    walletAddress: WalletAddress
+    redirectUrl?: string
+  }
+) {
+  const opClient = await createClient(env)
   const clientNonce = crypto.randomUUID()
   const paymentId = createId()
 
@@ -104,8 +108,7 @@ async function createOutgoingPaymentGrant(
         }
       }
     )
-    .catch((error) => {
-      console.log({ error })
+    .catch(() => {
       throw new Error('Could not retrieve outgoing payment grant.')
     })
 
@@ -117,10 +120,11 @@ async function createOutgoingPaymentGrant(
 }
 
 export async function isGrantValidAndAccepted(
+  env: Env,
   payment: PendingGrant,
   interactRef: string
 ): Promise<boolean> {
-  const opClient = await createClient()
+  const opClient = await createClient(env)
 
   const continuation = await opClient.grant.continue(
     {
@@ -141,16 +145,16 @@ export async function isGrantValidAndAccepted(
 }
 
 export async function getWalletAddress(
+  env: Env,
   url: string,
   opClient?: AuthenticatedClient
 ) {
-  opClient = opClient ? opClient : await createClient()
+  opClient ??= await createClient(env)
   const walletAddress = await opClient.walletAddress
     .get({
       url: toWalletAddressUrl(url)
     })
-    .catch((error) => {
-      console.log({ error })
+    .catch(() => {
       throw new Error('Invalid wallet address.')
     })
 

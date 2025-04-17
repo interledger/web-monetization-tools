@@ -40,6 +40,7 @@ export default [
           jsx: 'always'
         }
       ],
+      '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
