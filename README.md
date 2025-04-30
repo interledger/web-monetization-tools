@@ -1,16 +1,17 @@
-# Web Monetization Tools
+# Publisher Tools
 
-<a href="#what-is-web-monetization-tools">
-  <img src="https://github.com/interledger/web-monetization-tools/blob/25fff6ab48b052ac1190cf3734cb96aba99ed9a2/docs/preview.png?raw=true" alt="Web monetization tools preview image">
+<a href="#what-is-the-publisher-tools">
+  <img src="https://github.com/user-attachments/assets/f3776c29-e64d-439d-8321-6b9a03773a9d" alt="publisher tools preview image">
 </a>
 
-## What are Web Monetization Tools?
 
-Web Monetization Tools are marketing tools, that provide website owners with a set of utilities to display payment options as well as information that encourage visitors to use Web Monetization extension alongside payment solution for one-time payments, such as donations.
+## What are the Publisher tools?
 
-These tools enable users with an ILP (Interledger Protocol) wallet address to easily customize and generate components that can be embedded into the website by inserting a script into the sites html.
+The publisher tools are a suite of tools designed to help content owners and publishers set up and promote Web Monetization as a model for users to support their websites.
 
-If you are curious about the Web Monetization Tools architecture , then follow this [link](https://github.com/interledger/web-monetization-tools/blob/25fff6ab48b052ac1190cf3734cb96aba99ed9a2/docs/flow.png?raw=true).
+Inspired by platforms like BuyMeACoffee and Patreon, these tools prioritize accessibility, ease of use, and low technical barriers to adoption. They allow publishers with a Web Monetization-enabled wallet to easily customize and generate embeddable components by inserting a simple script into their website’s HTML.
+
+If you are curious about the Publisher tools architecture , then follow this [link](https://github.com/interledger/web-monetization-tools/blob/25fff6ab48b052ac1190cf3734cb96aba99ed9a2/docs/flow.png?raw=true).
 
 ### New to Interledger?
 
