@@ -1,6 +1,6 @@
 # Publisher Tools
 
-<a href="#what-is-the-publisher-tools">
+<a href="#what-are-the-publisher-tools">
   <img src="https://github.com/user-attachments/assets/f3776c29-e64d-439d-8321-6b9a03773a9d" alt="publisher tools preview image">
 </a>
 
