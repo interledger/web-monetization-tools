@@ -1,10 +1,9 @@
 import { Dialog } from '@headlessui/react'
-import { useFetcher } from '@remix-run/react'
 import type { ElementConfigType } from '~/lib/types.js'
 import { XIcon } from '~/components/icons.js'
 import { Button } from '~/components/index.js'
 import { WalletAddress } from '../WalletAddressInput.js'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 type ImportModalProps = {
   title: string
@@ -27,22 +26,8 @@ export const ImportModal = ({
   setConfigs = () => {},
   setToolConfig = () => {}
 }: ImportModalProps) => {
-  const importFetcher = useFetcher()
-  // const isSubmitting = importFetcher.state !== 'idle'
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<any>(null)
-
-  // useEffect(() => {
-  //   if (importFetcher.data && importFetcher.state === 'idle') {
-  //     // @ts-expect-error TODO
-  //     if (importFetcher.data.default) {
-  //       // @ts-expect-error TODO
-  //       setConfigs(importFetcher.data, 'default')
-  //       sessionStorage.setItem('fullconfig', JSON.stringify(importFetcher.data))
-  //       onClose()
-  //     }
-  //   }
-  // }, [importFetcher.data, importFetcher.state])
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -51,20 +36,22 @@ export const ImportModal = ({
     try {
       const formData = new FormData(event.currentTarget)
       const walletAddress = formData.get('walletAddress')
-      
-      // Make a direct fetch to the backend API
+
       const response = await fetch(`/api/config/banner?walletAddress=${walletAddress}`)
       
       if (!response.ok) {
-        const errorData = await response.json()
-        setErrors(errorData.errors)
+        const data = await response.json()
+        // @ts-ignore
+        setErrors(data.errors)
         setIsSubmitting(false)
         return
       }
       
       const data = await response.json()
       
+      // @ts-ignore
       if (data.default) {
+        // @ts-ignore
         setConfigs(data, 'default')
         sessionStorage.setItem('fullconfig', JSON.stringify(data))
         onClose()
