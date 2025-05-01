@@ -7,7 +7,7 @@ import {
   isPendingGrant
 } from '@interledger/open-payments'
 import { createId } from '@paralleldrive/cuid2'
-import { toWalletAddressUrl } from '../utils/utils.server'
+import { toWalletAddressUrl } from './utils.server'
 
 async function createClient(env: Env) {
   return await createAuthenticatedClient({

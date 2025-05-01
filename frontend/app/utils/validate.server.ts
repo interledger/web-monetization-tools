@@ -4,8 +4,8 @@ import {
   PositionType,
   SlideAnimationType,
   WalletAddressFormatError
-} from '../types.js'
-import { isWalletAddress, toWalletAddressUrl } from '../utils/utils.server.js'
+} from '../lib/types.js'
+import { isWalletAddress, toWalletAddressUrl } from './utils.server.js'
 
 const rangeError = { message: 'Value has to be between 16 and 24' }
 

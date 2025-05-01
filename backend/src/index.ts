@@ -1,0 +1,59 @@
+import { Hono } from 'hono';
+import { ConfigStorageService } from './utils/config-storage';
+import { ConfigVersions } from './types';
+
+export type Env = {
+  AWS_ACCESS_KEY_ID: string;
+  AWS_SECRET_ACCESS_KEY: string;
+  AWS_REGION: string;
+  AWS_BUCKET_NAME: string;
+  AWS_RETRY_MAX_ATTEMPTS: string;
+}
+
+const app = new Hono<{ Bindings: Env }>();
+
+app.use('*', async (c, next) => {
+  try {
+    await next();
+  } catch (error) {
+    return c.json({ error: error instanceof Error ? error.message : 'server error occurred' }, 500);
+  }
+});
+
+app.get('/tools/:wa/:version?', async (c) => {
+  const wa = c.req.param('wa');
+  const version = c.req.param('version') || 'default';
+  console.log('Received request for tools configuration ', wa);
+  
+  if (!wa) {
+    return c.json({ error: 'Wallet Address parameter is required' }, 500);
+  }
+
+  
+  try {
+    const storageService = new ConfigStorageService(c.env);
+    const config = await storageService.getJson<ConfigVersions>(wa);
+
+    return c.json(config[version]);
+  } catch (error) {
+    console.error('S3 Error:', error);
+    return c.json({ error: 'Failed to fetch object from S3' }, 500);
+  }
+});
+
+app.get('/', (c) => {
+  return c.json({
+    status: "ok",
+    message: "Publisher Tools API",
+    endpoints: [
+      { 
+        path: "/tools/:wa/:version", 
+        methods: ["GET"],
+        description: "Get tools configuration for a wallet address" 
+      }
+    ],
+    timestamp: new Date().toISOString()
+  }, 200);
+});
+
+export default app;

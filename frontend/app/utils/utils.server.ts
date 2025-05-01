@@ -1,5 +1,5 @@
 import type { WalletAddress } from '@interledger/open-payments'
-import { CornerType, ElementConfigType, PositionType, SlideAnimationType } from '../types.js'
+import { CornerType, ElementConfigType, PositionType, SlideAnimationType } from '../lib/types.js'
 
 
 export function toWalletAddressUrl(s: string): string {

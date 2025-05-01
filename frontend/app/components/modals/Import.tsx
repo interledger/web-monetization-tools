@@ -53,7 +53,7 @@ export const ImportModal = ({
       const walletAddress = formData.get('walletAddress')
       
       // Make a direct fetch to the backend API
-      const response = await fetch(`http://localhost:5102/api/config/banner?walletAddress=${walletAddress}`)
+      const response = await fetch(`/api/config/banner?walletAddress=${walletAddress}`)
       
       if (!response.ok) {
         const errorData = await response.json()

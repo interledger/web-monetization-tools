@@ -9,7 +9,7 @@ import {
     ConfigVersions,
     ElementConfigType,
     ElementErrors
-  } from '../types.js'
+  } from '../lib/types.js'
   import { commitSession, getSession } from '../utils/session.server.js'
   import { ConfigStorageService } from '../utils/config-storage.server.js'
   import { validateForm } from '../utils/validate.server.js'
@@ -110,7 +110,7 @@ import {
     session.set('wallet-address', walletAddress)
     if (!validForWallet || validForWallet !== walletAddress.id) {
       try {
-        const redirectUrl = `${env.SCRIPT_FRONTEND_URL}grant/${elementType}/`
+        const redirectUrl = `${env.SCRIPT_FRONTEND_URL}api/grant/${elementType}/`
         const grant = await createInteractiveGrant(env, {
           walletAddress,
           redirectUrl

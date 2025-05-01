@@ -1,5 +1,6 @@
 import { AwsClient } from 'aws4fetch'
-import { walletAddressToKey } from '../utils/utils.server.js'
+import { walletAddressToKey } from './utils.js'
+import { Env } from '../index.js'
 
 export class ConfigStorageService {
   private static instance: AwsClient | null = null
@@ -30,23 +31,5 @@ export class ConfigStorageService {
     }
 
     return await response.json()
-  }
-
-  async putJson<T>(walletAddress: string, data: T): Promise<void> {
-    const key = walletAddressToKey(walletAddress)
-    const url = new URL(key, this.endpoint)
-    const jsonString = JSON.stringify(data)
-
-    const response = await this.client.fetch(url, {
-      method: 'PUT',
-      body: jsonString,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-
-    if (!response.ok) {
-      throw new Error(`Failed to upload to S3: ${response.status}`)
-    }
   }
 }

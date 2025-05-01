@@ -1,28 +1,12 @@
 {
-  "include": [
-    "app/**/*.ts",
-    "app/**/*.tsx",
-    "app/types/*.d.ts",
-    "functions/**/*.ts",
-    "node_modules/@types/*"
-  ],
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "lib": ["DOM", "DOM.Iterable", "ES2022"],
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "jsx": "react-jsx",
-    "moduleResolution": "Bundler",
-    "resolveJsonModule": true,
-    "strict": true,
-    "allowJs": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
-    "paths": {
-      "~/*": ["./app/*"]
+    "compilerOptions": {
+      "target": "ES2022",
+      "module": "ESNext",
+      "moduleResolution": "node",
+      "esModuleInterop": true,
+      "strict": true,
+      "lib": ["DOM", "DOM.Iterable", "ES2022"],
+      "outDir": "dist"
     },
-    "noEmit": true
+    "include": ["src/**/*"]
   }
-}
