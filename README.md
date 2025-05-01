@@ -11,7 +11,7 @@ The publisher tools are a suite of tools designed to help content owners and pub
 
 Inspired by platforms like BuyMeACoffee and Patreon, these tools prioritize accessibility, ease of use, and low technical barriers to adoption. They allow publishers with a Web Monetization-enabled wallet to easily customize and generate embeddable components by inserting a simple script into their website’s HTML.
 
-If you are curious about the Publisher tools architecture , then follow this [link](https://github.com/interledger/web-monetization-tools/blob/25fff6ab48b052ac1190cf3734cb96aba99ed9a2/docs/flow.png?raw=true).
+For additional information, check out the [publisher tools architecture diagram](https://github.com/interledger/web-monetization-tools/blob/25fff6ab48b052ac1190cf3734cb96aba99ed9a2/docs/flow.png?raw=true).
 
 ### New to Interledger?
 
