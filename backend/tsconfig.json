@@ -1,15 +1,28 @@
 {
-  "extends": "../tsconfig.base.json",
+  "include": [
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "app/types/*.d.ts",
+    "functions/**/*.ts",
+    "node_modules/@types/*"
+  ],
   "compilerOptions": {
-    "lib": ["ESNext"],
-    "sourceMap": true,
+    "target": "ES2022",
+    "module": "ESNext",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "strict": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@/tests/*": ["./tests/*"]
-    }
-  },
-  "include": ["src/**/*", "tests/**/*"],
-  "exclude": ["node_modules", "**/node_modules/*"],
-  "files": ["src/types/index.ts"]
+      "~/*": ["./app/*"]
+    },
+    "noEmit": true
+  }
 }

@@ -11,7 +11,6 @@
   },
   "author": "Arpi <arpad.lengyel@breakpointit.eu>",
   "scripts": {
-    "build": "pnpm -r build",
     "clean": "pnpm clean:modules && pnpm clean:builds",
     "clean:builds": "find . \\( -name \"dist\" -o -name \".next\" \\) -type d -prune -exec rm -rf '{}' +",
     "clean:modules": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
@@ -19,11 +18,16 @@
     "format:check": "prettier . --check --cache --cache-location='node_modules/.cache/prettiercache'",
     "lint": "eslint . --fix --cache --cache-location 'node_modules/.cache/eslintcache' --max-warnings 0",
     "lint:check": "eslint . --cache --cache-location 'node_modules/.cache/eslintcache' --max-warnings 0",
-    "localenv:install": "pnpm i && pnpm --filter ./backend install && pnpm --filter ./frontend install",
-    "localenv:start": "docker compose -f ./docker/dev/docker-compose.yml build --no-cache && docker compose -f ./docker/dev/docker-compose.yml up -d",
-    "localenv:up": "docker compose -f ./docker/dev/docker-compose.yml",
-    "localenv:stop": "docker compose -f ./docker/dev/docker-compose.yml down",
-    "typecheck": "pnpm -r typecheck"
+    "typecheck": "pnpm -r typecheck",
+    "dev:all": "concurrently \"pnpm run dev:frontend\" \"pnpm run dev:backend\"",
+    "dev:frontend": "cd frontend && pnpm run dev",
+    "dev:backend": "cd backend && pnpm run dev",
+    "build": "pnpm run build:frontend && pnpm run build:backend",
+    "build:frontend": "cd frontend && pnpm run build",
+    "build:backend": "cd backend && pnpm run build",
+    "preview": "concurrently \"pnpm run preview:frontend\" \"pnpm run preview:backend\"",
+    "preview:frontend": "cd frontend && pnpm run preview",
+    "preview:backend": "cd backend && wrangler pages dev ./build/client --port=5102 --binding ALLOWED_ORIGINS=http://localhost:5100 --compatibility-date=2024-09-23 --compatibility-flag=nodejs_compat"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",

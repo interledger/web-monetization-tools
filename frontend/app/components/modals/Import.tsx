@@ -4,7 +4,7 @@ import type { ElementConfigType } from '~/lib/types.js'
 import { XIcon } from '~/components/icons.js'
 import { Button } from '~/components/index.js'
 import { WalletAddress } from '../WalletAddressInput.js'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 type ImportModalProps = {
   title: string
@@ -28,19 +28,53 @@ export const ImportModal = ({
   setToolConfig = () => {}
 }: ImportModalProps) => {
   const importFetcher = useFetcher()
-  const isSubmitting = importFetcher.state !== 'idle'
+  // const isSubmitting = importFetcher.state !== 'idle'
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errors, setErrors] = useState<any>(null)
 
-  useEffect(() => {
-    if (importFetcher.data && importFetcher.state === 'idle') {
-      // @ts-expect-error TODO
-      if (importFetcher.data.default) {
-        // @ts-expect-error TODO
-        setConfigs(importFetcher.data, 'default')
-        sessionStorage.setItem('fullconfig', JSON.stringify(importFetcher.data))
+  // useEffect(() => {
+  //   if (importFetcher.data && importFetcher.state === 'idle') {
+  //     // @ts-expect-error TODO
+  //     if (importFetcher.data.default) {
+  //       // @ts-expect-error TODO
+  //       setConfigs(importFetcher.data, 'default')
+  //       sessionStorage.setItem('fullconfig', JSON.stringify(importFetcher.data))
+  //       onClose()
+  //     }
+  //   }
+  // }, [importFetcher.data, importFetcher.state])
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setIsSubmitting(true)
+    
+    try {
+      const formData = new FormData(event.currentTarget)
+      const walletAddress = formData.get('walletAddress')
+      
+      // Make a direct fetch to the backend API
+      const response = await fetch(`http://localhost:5102/api/config/banner?walletAddress=${walletAddress}`)
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        setErrors(errorData.errors)
+        setIsSubmitting(false)
+        return
+      }
+      
+      const data = await response.json()
+      
+      if (data.default) {
+        setConfigs(data, 'default')
+        sessionStorage.setItem('fullconfig', JSON.stringify(data))
         onClose()
       }
+    } catch (error) {
+      console.error('Error importing configuration:', error)
+    } finally {
+      setIsSubmitting(false)
     }
-  }, [importFetcher.data, importFetcher.state])
+  }
 
   return (
     <Dialog as="div" className="relative z-10" onClose={onClose} open={isOpen}>
@@ -66,16 +100,15 @@ export const ImportModal = ({
                 {title}
               </Dialog.Title>
               <div className="mt-2">
-                <importFetcher.Form
+                <form
                   id="import-form"
                   method="get"
-                  action="/api/config/banner"
+                  onSubmit={handleSubmit}
                 >
                   <fieldset disabled={isSubmitting}>
                     <div className="flex w-full items-center">
                       <WalletAddress
-                        // @ts-expect-error TODO
-                        errors={importFetcher.data?.errors}
+                        errors={errors}
                         config={toolConfig}
                         setToolConfig={setToolConfig}
                       />
@@ -92,7 +125,7 @@ export const ImportModal = ({
                       </Button>
                     </div>
                   </fieldset>
-                </importFetcher.Form>
+                </form>
               </div>
             </div>
           </Dialog.Panel>
