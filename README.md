@@ -5,7 +5,7 @@
 </a>
 
 
-## What are the Publisher tools?
+## What are the publisher tools?
 
 The publisher tools are a suite of tools designed to help content owners and publishers set up and promote Web Monetization as a model for users to support their websites.
 
