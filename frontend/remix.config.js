@@ -10,7 +10,7 @@ export default {
   serverPlatform: 'neutral',
   routes(defineRoutes) {
     return defineRoutes((route) => {
-      route("app/routes", "/");
+      route('app/routes', '/')
     })
   },
   future: {

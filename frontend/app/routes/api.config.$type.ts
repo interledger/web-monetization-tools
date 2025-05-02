@@ -3,7 +3,11 @@ import {
   type ActionFunctionArgs,
   type LoaderFunctionArgs
 } from '@remix-run/cloudflare'
-import { filterDeepProperties, getDefaultData, normalizeWalletAddress } from '../utils/utils.server.js'
+import {
+  filterDeepProperties,
+  getDefaultData,
+  normalizeWalletAddress
+} from '../utils/utils.server.js'
 import { sanitizeConfigFields } from '../utils/sanitize.server.js'
 import type {
   ConfigVersions,

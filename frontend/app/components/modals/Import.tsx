@@ -32,13 +32,15 @@ export const ImportModal = ({
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setIsSubmitting(true)
-    
+
     try {
       const formData = new FormData(event.currentTarget)
       const walletAddress = formData.get('walletAddress')
 
-      const response = await fetch(`/api/config/banner?walletAddress=${walletAddress}`)
-      
+      const response = await fetch(
+        `/api/config/banner?walletAddress=${walletAddress}`
+      )
+
       if (!response.ok) {
         const data = await response.json()
         // @ts-ignore
@@ -46,9 +48,9 @@ export const ImportModal = ({
         setIsSubmitting(false)
         return
       }
-      
+
       const data = await response.json()
-      
+
       // @ts-ignore
       if (data.default) {
         // @ts-ignore
@@ -87,11 +89,7 @@ export const ImportModal = ({
                 {title}
               </Dialog.Title>
               <div className="mt-2">
-                <form
-                  id="import-form"
-                  method="get"
-                  onSubmit={handleSubmit}
-                >
+                <form id="import-form" method="get" onSubmit={handleSubmit}>
                   <fieldset disabled={isSubmitting}>
                     <div className="flex w-full items-center">
                       <WalletAddress

@@ -1,12 +1,12 @@
 {
-    "compilerOptions": {
-      "target": "ES2022",
-      "module": "ESNext",
-      "moduleResolution": "node",
-      "esModuleInterop": true,
-      "strict": true,
-      "lib": ["DOM", "DOM.Iterable", "ES2022"],
-      "outDir": "dist"
-    },
-    "include": ["src/**/*"]
-  }
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true,
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "outDir": "dist"
+  },
+  "include": ["src/**/*"]
+}
