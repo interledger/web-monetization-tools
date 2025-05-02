@@ -35,7 +35,7 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
   session.set('is-grant-response', isGrantResponse)
   session.set('grant-response', grantResponse)
 
-  return redirect(`/${elementType}`, {
+  return redirect(`/create/${elementType}`, {
     headers: {
       'Set-Cookie': await commitSession(session)
     }
