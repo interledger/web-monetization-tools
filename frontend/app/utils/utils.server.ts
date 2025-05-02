@@ -1,11 +1,6 @@
 import type { WalletAddress } from '@interledger/open-payments'
-import type {
-  ElementConfigType} from '../lib/types.js';
-import {
-  CornerType,
-  PositionType,
-  SlideAnimationType
-} from '../lib/types.js'
+import type { ElementConfigType } from '../lib/types.js'
+import { CornerType, PositionType, SlideAnimationType } from '../lib/types.js'
 
 export function toWalletAddressUrl(s: string): string {
   return s.startsWith('$') ? s.replace('$', 'https://') : s
