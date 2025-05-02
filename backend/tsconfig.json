@@ -1,15 +1,12 @@
 {
-  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "lib": ["ESNext"],
-    "sourceMap": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"],
-      "@/tests/*": ["./tests/*"]
-    }
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true,
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "outDir": "dist"
   },
-  "include": ["src/**/*", "tests/**/*"],
-  "exclude": ["node_modules", "**/node_modules/*"],
-  "files": ["src/types/index.ts"]
+  "include": ["src/**/*"]
 }

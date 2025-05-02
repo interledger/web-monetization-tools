@@ -3,22 +3,24 @@ import {
   type ActionFunctionArgs,
   type LoaderFunctionArgs
 } from '@remix-run/cloudflare'
-import { filterDeepProperties } from '../lib/server/utils.server'
-import { sanitizeConfigFields } from '../lib/server/sanitize.server'
+import {
+  filterDeepProperties,
+  getDefaultData,
+  normalizeWalletAddress
+} from '../utils/utils.server.js'
+import { sanitizeConfigFields } from '../utils/sanitize.server.js'
 import type {
   ConfigVersions,
   ElementConfigType,
   ElementErrors
 } from '../lib/types.js'
-import { commitSession, getSession } from '../lib/server/session.server'
-import { ConfigStorageService } from '../lib/server/config-storage.server'
-import { getDefaultData } from '../lib/utils.js'
-import { validateForm } from '~/lib/server/validate.server'
+import { commitSession, getSession } from '../utils/session.server.js'
+import { ConfigStorageService } from '../utils/config-storage.server.js'
+import { validateForm } from '../utils/validate.server.js'
 import {
   createInteractiveGrant,
   getValidWalletAddress
-} from '~/lib/server/open-payments.server'
-import { normalizeWalletAddress } from './api.grant.$type'
+} from '../utils/open-payments.server.js'
 
 export async function loader({ request, params, context }: LoaderFunctionArgs) {
   try {

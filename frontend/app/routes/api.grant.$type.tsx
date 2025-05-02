@@ -1,9 +1,6 @@
-import { redirect } from '@remix-run/react'
-import { commitSession, getSession } from '../lib/server/session.server'
-import { isGrantValidAndAccepted } from '../lib/server/open-payments.server'
-import type { LoaderFunctionArgs } from '@remix-run/cloudflare'
-import type { WalletAddress } from '@interledger/open-payments'
-import { toWalletAddressUrl } from '../lib/utils.js'
+import { commitSession, getSession } from '../utils/session.server'
+import { isGrantValidAndAccepted } from '../utils/open-payments.server'
+import { redirect, type LoaderFunctionArgs } from '@remix-run/cloudflare'
 
 export async function loader({ params, request, context }: LoaderFunctionArgs) {
   const { env } = context.cloudflare
@@ -44,26 +41,3 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
     }
   })
 }
-
-export function normalizeWalletAddress(walletAddress: WalletAddress): string {
-  const IS_INTERLEDGER_CARDS =
-    walletAddress.authServer === 'https://auth.interledger.cards'
-  const url = new URL(toWalletAddressUrl(walletAddress.id))
-  if (IS_INTERLEDGER_CARDS && url.host === 'ilp.dev') {
-    // For Interledger Cards we can have two types of wallet addresses:
-    //  - ilp.interledger.cards
-    //  - ilp.dev (just a proxy behind ilp.interledger.cards for certain wallet addresses)
-    //
-    // `ilp.dev` wallet addresses are only used for wallet addresses that are
-    // linked to a card.
-    //
-    // `ilp.interledger.cards` used for the other wallet addresses (user created)
-    //
-    // Not all `ilp.interledger.cards` wallet addresses can be used with `ilp.dev`.
-    // Manually created wallet addresses cannot be used with `ilp.dev`.
-    return walletAddress.id.replace('ilp.dev', 'ilp.interledger.cards')
-  }
-  return walletAddress.id
-}
-
-//
