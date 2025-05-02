@@ -1,10 +1,9 @@
 import { Dialog } from '@headlessui/react'
-import { useFetcher } from '@remix-run/react'
-import type { ElementConfigType } from '~/lib/types.js'
+import type { ElementConfigType, ElementErrors } from '~/lib/types.js'
 import { XIcon } from '~/components/icons.js'
 import { Button } from '~/components/index.js'
 import { WalletAddress } from '../WalletAddressInput.js'
-import { useEffect } from 'react'
+import { useState } from 'react'
 
 type ImportModalProps = {
   title: string
@@ -27,20 +26,44 @@ export const ImportModal = ({
   setConfigs = () => {},
   setToolConfig = () => {}
 }: ImportModalProps) => {
-  const importFetcher = useFetcher()
-  const isSubmitting = importFetcher.state !== 'idle'
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errors, setErrors] = useState<ElementErrors>()
 
-  useEffect(() => {
-    if (importFetcher.data && importFetcher.state === 'idle') {
-      // @ts-expect-error TODO
-      if (importFetcher.data.default) {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setIsSubmitting(true)
+
+    try {
+      const formData = new FormData(event.currentTarget)
+      const walletAddress = formData.get('walletAddress')
+
+      const response = await fetch(
+        `/api/config/banner?walletAddress=${walletAddress}`
+      )
+
+      if (!response.ok) {
+        const data = await response.json()
         // @ts-expect-error TODO
-        setConfigs(importFetcher.data, 'default')
-        sessionStorage.setItem('fullconfig', JSON.stringify(importFetcher.data))
+        setErrors(data.errors)
+        setIsSubmitting(false)
+        return
+      }
+
+      const data = await response.json()
+
+      // @ts-expect-error TODO
+      if (data.default) {
+        // @ts-expect-error TODO
+        setConfigs(data, 'default')
+        sessionStorage.setItem('fullconfig', JSON.stringify(data))
         onClose()
       }
+    } catch (error) {
+      console.error('Error importing configuration:', error)
+    } finally {
+      setIsSubmitting(false)
     }
-  }, [importFetcher.data, importFetcher.state])
+  }
 
   return (
     <Dialog as="div" className="relative z-10" onClose={onClose} open={isOpen}>
@@ -66,16 +89,11 @@ export const ImportModal = ({
                 {title}
               </Dialog.Title>
               <div className="mt-2">
-                <importFetcher.Form
-                  id="import-form"
-                  method="get"
-                  action="/api/config/banner"
-                >
+                <form id="import-form" method="get" onSubmit={handleSubmit}>
                   <fieldset disabled={isSubmitting}>
                     <div className="flex w-full items-center">
                       <WalletAddress
-                        // @ts-expect-error TODO
-                        errors={importFetcher.data?.errors}
+                        errors={errors}
                         config={toolConfig}
                         setToolConfig={setToolConfig}
                       />
@@ -92,7 +110,7 @@ export const ImportModal = ({
                       </Button>
                     </div>
                   </fieldset>
-                </importFetcher.Form>
+                </form>
               </div>
             </div>
           </Dialog.Panel>

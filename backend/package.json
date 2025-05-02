@@ -1,45 +1,25 @@
 {
   "name": "@wm-tools/backend",
   "version": "1.0.0",
-  "type": "module",
-  "description": "Small utility (REST API) that reads and writes configs for the WM Tools to AWS S3",
   "scripts": {
-    "start": "build & node dist/server.js",
-    "build": "pnpm tsc --build tsconfig.build.json && tsc-alias -p tsconfig.build.json",
-    "typecheck": "tsc --noEmit"
+    "dev": "wrangler dev",
+    "build": "tsc --project tsconfig.json",
+    "deploy:cloudflare": "wrangler deploy"
   },
   "keywords": [],
-  "author": "Arpi <arpad.lengyel@breakpointit.eu>",
-  "devDependencies": {
-    "@types/express": "^4.17.21",
-    "@types/he": "^1.2.3",
-    "@types/node": "^20.14.2",
-    "@types/sanitize-html": "^2.13.0",
-    "nodemon": "^3.1.7",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"
-  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.645.0",
-    "@remix-run/node": "^2.14.0",
-    "@smithy/node-http-handler": "^3.2.3",
-    "@types/express-session": "^1.18.1",
-    "@types/underscore": "^1.11.15",
-    "cookie-parser": "^1.4.7",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "express-session": "^1.18.1",
-    "he": "^1.2.0",
-    "module-alias": "^2.2.3",
-    "sanitize-html": "^2.14.0",
-    "tsc-alias": "^1.8.10",
-    "tsx": "^4.19.0",
-    "underscore": "^1.13.7"
+    "aws4fetch": "^1.0.20",
+    "hono": "^4.7.8"
   },
-  "_moduleAliases": {
-    "@controllers": "./src/controllers",
-    "@routes": "./src/routes",
-    "@data": "./src/data"
+  "devDependencies": {
+    "typescript": "5.1.6",
+    "wrangler": "^4.9.1"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   },
   "packageManager": "pnpm@9.12.1"
 }
