@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
-import { ConfigStorageService } from './utils/config-storage'
-import { ConfigVersions } from './types'
+import { ConfigStorageService } from './utils/config-storage.js'
+import type { ConfigVersions } from './types.js'
 
 export type Env = {
   AWS_ACCESS_KEY_ID: string

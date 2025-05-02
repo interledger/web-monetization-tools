@@ -1,6 +1,6 @@
 import { AwsClient } from 'aws4fetch'
 import { walletAddressToKey } from './utils.js'
-import { Env } from '../index.js'
+import type { Env } from '../index.js'
 
 export class ConfigStorageService {
   private static instance: AwsClient | null = null

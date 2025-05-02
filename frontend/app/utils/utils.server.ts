@@ -1,7 +1,8 @@
 import type { WalletAddress } from '@interledger/open-payments'
+import type {
+  ElementConfigType} from '../lib/types.js';
 import {
   CornerType,
-  ElementConfigType,
   PositionType,
   SlideAnimationType
 } from '../lib/types.js'

@@ -1,5 +1,5 @@
 import { Dialog } from '@headlessui/react'
-import type { ElementConfigType } from '~/lib/types.js'
+import type { ElementConfigType, ElementErrors } from '~/lib/types.js'
 import { XIcon } from '~/components/icons.js'
 import { Button } from '~/components/index.js'
 import { WalletAddress } from '../WalletAddressInput.js'
@@ -27,7 +27,7 @@ export const ImportModal = ({
   setToolConfig = () => {}
 }: ImportModalProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [errors, setErrors] = useState<any>(null)
+  const [errors, setErrors] = useState<ElementErrors>()
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -43,7 +43,7 @@ export const ImportModal = ({
 
       if (!response.ok) {
         const data = await response.json()
-        // @ts-ignore
+        // @ts-expect-error TODO
         setErrors(data.errors)
         setIsSubmitting(false)
         return
@@ -51,9 +51,9 @@ export const ImportModal = ({
 
       const data = await response.json()
 
-      // @ts-ignore
+      // @ts-expect-error TODO
       if (data.default) {
-        // @ts-ignore
+        // @ts-expect-error TODO
         setConfigs(data, 'default')
         sessionStorage.setItem('fullconfig', JSON.stringify(data))
         onClose()
