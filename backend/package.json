@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "wrangler dev",
     "build": "tsc --project tsconfig.json",
-    "deploy:cloudflare": "wrangler deploy --compatibility-date 2024-09-23 --compatibility-flag nodejs_compat"
+    "deploy:cloudflare": "wrangler deploy"
   },
   "keywords": [],
   "author": "",

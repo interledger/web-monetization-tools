@@ -20,24 +20,24 @@ app.use('*', async (c, next) => {
   }
 });
 
-app.get('/tools/:wa/:version?', async (c) => {
-  const wa = c.req.param('wa');
-  const version = c.req.param('version') || 'default';
+app.get('/tools/config/:wa/:version?', async ({ req, json, env }) => {
+  const wa = req.param('wa');
+  const version = req.param('version') || 'default';
   console.log('Received request for tools configuration ', wa);
   
   if (!wa) {
-    return c.json({ error: 'Wallet Address parameter is required' }, 500);
+    return json({ error: 'Wallet Address parameter is required' }, 500);
   }
 
   
   try {
-    const storageService = new ConfigStorageService(c.env);
+    const storageService = new ConfigStorageService(env);
     const config = await storageService.getJson<ConfigVersions>(wa);
 
-    return c.json(config[version]);
+    return json(config[version]);
   } catch (error) {
     console.error('S3 Error:', error);
-    return c.json({ error: 'Failed to fetch object from S3' }, 500);
+    return json({ error: 'Failed to fetch object from S3' }, 500);
   }
 });
 
@@ -47,7 +47,7 @@ app.get('/', (c) => {
     message: "Publisher Tools API",
     endpoints: [
       { 
-        path: "/tools/:wa/:version", 
+        path: "/tools/config/:wa/:version", 
         methods: ["GET"],
         description: "Get tools configuration for a wallet address" 
       }
