@@ -130,3 +130,8 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+# Build outputs
+dist/
+build/
+public/
+embed/public/

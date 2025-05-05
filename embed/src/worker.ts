@@ -31,7 +31,6 @@ export default {
         });
       }
       
-      // Handle other routes or root path
       return new Response('Web Monetization Embed Script', {
         status: 200,
         headers: { 'Content-Type': 'text/plain' }
