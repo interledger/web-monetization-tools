@@ -2,7 +2,7 @@
   "name": "init",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "type": "module",
   "scripts": {
     "build:init": "vite build --config vite.script.config.ts",
     "deploy": "pnpm build:init && pnpm wrangler deploy",
@@ -14,7 +14,7 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240501.0",
     "typescript": "^5.1.6",
-    "wrangler": "^3.24.0"
+    "wrangler": "^4.14.1"
   },
   "keywords": [],
   "author": "",

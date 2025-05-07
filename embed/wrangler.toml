@@ -6,8 +6,3 @@ compatibility_flags = ["nodejs_compat"]
 [assets]
 directory = "./public"
 binding = "ASSETS"
-
-[vars]
-VITE_SCRIPT_FRONTEND_URL = "https://frontend-url/"
-VITE_SCRIPT_API_URL = "https://api-url/"
-VITE_SCRIPT_ILPAY_URL = "https://ilpay-url/"
