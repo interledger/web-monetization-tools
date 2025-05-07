@@ -58,15 +58,12 @@ importers:
         specifier: ^5.4.11
         version: 5.4.11(@types/node@22.9.0)
     devDependencies:
-      '@cloudflare/workers-types':
-        specifier: ^4.20240501.0
-        version: 4.20250410.0
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
       wrangler:
         specifier: ^4.14.1
-        version: 4.14.1(@cloudflare/workers-types@4.20250410.0)
+        version: 4.14.1
 
   frontend:
     dependencies:
@@ -8742,7 +8739,7 @@ snapshots:
       '@cloudflare/workerd-linux-arm64': 1.20250428.0
       '@cloudflare/workerd-windows-64': 1.20250428.0
 
-  wrangler@4.14.1(@cloudflare/workers-types@4.20250410.0):
+  wrangler@4.14.1:
     dependencies:
       '@cloudflare/kv-asset-handler': 0.4.0
       '@cloudflare/unenv-preset': 2.3.1(unenv@2.0.0-rc.15)(workerd@1.20250428.0)
@@ -8753,7 +8750,6 @@ snapshots:
       unenv: 2.0.0-rc.15
       workerd: 1.20250428.0
     optionalDependencies:
-      '@cloudflare/workers-types': 4.20250410.0
       fsevents: 2.3.3
       sharp: 0.33.5
     transitivePeerDependencies:

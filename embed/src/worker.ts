@@ -1,5 +1,3 @@
-import type { ExecutionContext } from '@cloudflare/workers-types'
-
 export interface Env {
   ASSETS: {
     fetch: typeof fetch
@@ -7,7 +5,7 @@ export interface Env {
 }
 
 export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext) {
+  async fetch(request: Request, env: Env) {
     try {
       const url = new URL(request.url)
 
