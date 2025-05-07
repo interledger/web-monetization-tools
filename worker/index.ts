@@ -1,7 +1,7 @@
 import initScript from '../embed/public/init.js?raw'
 
 export default {
-  fetch(request: Request, env: Env) {
+  fetch(request: Request) {
     const url = new URL(request.url)
 
     if (url.pathname === '/init.js') {
