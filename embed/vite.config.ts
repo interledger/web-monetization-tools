@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import { resolve } from 'path'
 
 export default defineConfig(({ mode }) => {
   const isDevelopment = mode === 'development'
@@ -7,7 +8,7 @@ export default defineConfig(({ mode }) => {
     build: {
       lib: {
         // entry point for the script file
-        entry: './script/index.tsx',
+        entry: resolve(__dirname, 'script/index.tsx'),
         formats: ['iife'],
         name: 'InitScript',
         fileName: () => 'init.js'
@@ -17,9 +18,15 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: false,
       rollupOptions: {
         output: {
-          entryFileNames: 'init.js'
+          entryFileNames: 'init.js',
+          // ensure all code is in one file
+          inlineDynamicImports: true,
+          compact: !isDevelopment,
+          manualChunks: undefined
         }
       },
+      cssCodeSplit: false,
+      minify: !isDevelopment,
       watch: isDevelopment ? {} : null
     },
     server: {

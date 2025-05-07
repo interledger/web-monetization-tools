@@ -4,16 +4,11 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "build:init": "vite build --config vite.script.config.ts",
-    "deploy": "pnpm build:init && pnpm wrangler deploy",
-    "dev": "pnpm build:init && pnpm wrangler dev"
-  },
-  "dependencies": {
-    "vite": "^5.4.11"
+    "build": "vite build --config vite.config.ts"
   },
   "devDependencies": {
     "typescript": "^5.1.6",
-    "wrangler": "^4.14.1"
+    "vite": "^6.3.5"
   },
   "keywords": [],
   "author": "",
