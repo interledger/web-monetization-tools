@@ -131,7 +131,7 @@ dist
 .pnp.*
 
 # Cloudflare generated files
-worker-configuration.d.ts
+worker/worker-configuration.d.ts
 
 # Build outputs
 dist/
