@@ -130,6 +130,9 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+# Cloudflare generated files
+worker-configuration.d.ts
+
 # Build outputs
 dist/
 build/

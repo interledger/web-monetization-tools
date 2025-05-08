@@ -11,13 +11,14 @@ export default {
           'X-Content-Type-Options': 'nosniff',
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, OPTIONS',
-          // cache for 24 hours
-          'Cache-Control': 'public, max-age=86400'
+          // cache for 5 minutes
+          'Cache-Control': 'public, max-age=300'
         }
       })
     }
 
     return new Response(`Web Monetization Tools Worker`, {
+      status: 404,
       headers: {
         'Content-Type': 'text/plain'
       }

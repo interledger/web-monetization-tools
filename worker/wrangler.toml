@@ -1,4 +1,4 @@
-name = "cloudflare-vite-get-started"
+name = "publisher-tools-cdn"
 compatibility_date = "2025-04-03"
 main = "./index.ts"
 

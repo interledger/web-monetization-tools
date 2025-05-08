@@ -5,15 +5,16 @@ export default defineConfig(({ mode }) => {
   const isDevelopment = mode === 'development'
 
   return {
+    envDir: resolve(__dirname),
     build: {
       lib: {
         // entry point for the script file
-        entry: resolve(__dirname, 'script/index.tsx'),
+        entry: resolve(__dirname, 'src/index.ts'),
         formats: ['iife'],
         name: 'InitScript',
         fileName: () => 'init.js'
       },
-      outDir: './public',
+      outDir: resolve(__dirname, 'public'),
       // don't clear the directory when building
       emptyOutDir: false,
       rollupOptions: {
@@ -23,7 +24,8 @@ export default defineConfig(({ mode }) => {
           inlineDynamicImports: true,
           compact: !isDevelopment,
           manualChunks: undefined
-        }
+        },
+        external: []
       },
       cssCodeSplit: false,
       minify: !isDevelopment,
