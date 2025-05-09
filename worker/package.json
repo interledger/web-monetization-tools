@@ -1,0 +1,17 @@
+{
+  "name": "cloudflare-vite-get-started",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "npm run build && vite preview",
+    "deploy": "npm run build && wrangler deploy"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.1.1",
+    "vite": "^6.3.5",
+    "wrangler": "^4.14.3"
+  }
+}

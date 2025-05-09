@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "build": "remix vite:build",
-    "build:init": "vite build --config vite.script.config.ts",
     "dev": "remix vite:dev --port 5101",
     "preview": "wrangler pages dev ./build/client --port=5100 --binding SCRIPT_FRONTEND_URL=http://localhost:5100/ --compatibility-date=2024-09-23 --compatibility-flag=nodejs_compat"
   },

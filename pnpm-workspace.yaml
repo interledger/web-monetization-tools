@@ -1,3 +1,5 @@
 packages:
   - 'backend'
   - 'frontend'
+  - 'worker'
+  - 'embed'

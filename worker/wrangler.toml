@@ -1,0 +1,6 @@
+name = "publisher-tools-cdn"
+compatibility_date = "2025-04-03"
+main = "./index.ts"
+
+[vars]
+SCRIPT = "embed"
