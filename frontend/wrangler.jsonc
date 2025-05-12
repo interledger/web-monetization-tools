@@ -1,0 +1,13 @@
+{
+  "name": "publisher-tools-frontend",
+  "compatibility_date": "2024-09-23",
+  "main": "worker.ts",
+  "assets": {
+    "directory": "./build/client/",
+    "not_found_handling": "404-page"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "compatibility_flags": ["nodejs_compat"]
+}

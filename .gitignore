@@ -132,6 +132,7 @@ dist
 
 # Cloudflare generated files
 worker/worker-configuration.d.ts
+frontend/worker-configuration.d.ts
 
 # Build outputs
 dist/
