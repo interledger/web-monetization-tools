@@ -13,10 +13,10 @@
     "@headlessui/react": "^1.7.19",
     "@interledger/open-payments": "^6.13.2",
     "@paralleldrive/cuid2": "^2.2.2",
-    "@remix-run/cloudflare": "^2.16.5",
+    "@remix-run/cloudflare": "^2.16.6",
     "@remix-run/cloudflare-pages": "^2.16.6",
-    "@remix-run/react": "^2.16.5",
-    "@remix-run/serve": "^2.16.5",
+    "@remix-run/react": "^2.16.6",
+    "@remix-run/serve": "^2.16.6",
     "@tippyjs/react": "^4.2.6",
     "autoprefixer": "^10.4.20",
     "aws4fetch": "^1.0.20",
@@ -38,7 +38,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@remix-run/dev": "^2.14.0",
+    "@remix-run/dev": "^2.16.6",
     "@tailwindcss/forms": "^0.5.9",
     "@types/he": "^1.2.3",
     "@types/node": "^22.15.17",
