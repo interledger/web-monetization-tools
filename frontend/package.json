@@ -6,14 +6,13 @@
   "scripts": {
     "build": "remix vite:build",
     "dev": "remix vite:dev --port 5101",
-    "preview": "pnpm run build && wrangler dev --config wrangler.jsonc --port 5100",
-    "deploy": "pnpm build && wrangler deploy"
+    "preview": "wrangler pages dev ./build/client --port=5100 --binding SCRIPT_FRONTEND_URL=http://localhost:5100/ --compatibility-date=2024-09-23 --compatibility-flag=nodejs_compat"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.19",
     "@interledger/open-payments": "^6.13.2",
     "@paralleldrive/cuid2": "^2.2.2",
-    "@remix-run/cloudflare": "^2.16.6",
+    "@remix-run/cloudflare": "^2.16.5",
     "@remix-run/react": "^2.16.5",
     "@remix-run/serve": "^2.16.5",
     "@tippyjs/react": "^4.2.6",
@@ -23,6 +22,7 @@
     "class-variance-authority": "^0.7.0",
     "he": "^1.2.0",
     "isbot": "^4.4.0",
+    "itty-router": "^5.0.18",
     "postcss": "^8.4.49",
     "react": "^18.3.1",
     "react-click-away-listener": "^2.2.3",
@@ -32,14 +32,14 @@
     "tailwindcss": "^3.4.14",
     "tippy.js": "^6.3.7",
     "uuid": "^9.0.1",
+    "vite": "^5.4.11",
     "yaml": "^2.6.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@remix-run/dev": "^2.16.6",
+    "@remix-run/dev": "^2.14.0",
     "@tailwindcss/forms": "^0.5.9",
     "@types/he": "^1.2.3",
-    "@types/node": "^22.15.17",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.2",
     "@types/sanitize-html": "^2.15.0",
@@ -47,7 +47,6 @@
     "concurrently": "^8.2.2",
     "eslint": "^8.57.1",
     "typescript": "5.1.6",
-    "vite": "^6.3.5",
     "vite-tsconfig-paths": "^4.3.2",
     "wrangler": "^4.9.1"
   },
