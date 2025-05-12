@@ -6,7 +6,7 @@
   "scripts": {
     "build": "remix vite:build",
     "dev": "remix vite:dev --port 5101",
-    "preview": "pnpm run build && wrangler pages dev ./build/client",
+    "preview": "pnpm run build && wrangler pages dev",
     "deploy": "pnpm run build && wrangler pages deploy"
   },
   "dependencies": {

@@ -1,6 +1,7 @@
 name = "publisher-tools-api"
 compatibility_flags = ["nodejs_compat"]
 compatibility_date = "2024-09-23"
+pages_build_output_dir = "./build/client"
 
 [dev]
 port = 5101
