@@ -265,11 +265,12 @@ export const encodeAndCompressParameters = async (params: string) => {
     .pipeThrough(new CompressionStream('gzip'))
     .getReader()
 
-  while (true) {
+  let reading = true
+  while (reading) {
     const { done, value } = await reader.read()
     if (done) {
       reader.releaseLock()
-      break
+      reading = false
     } else {
       for (let i = 0; i < value.length; i++) {
         // decoding as utf-8 will make btoa reject the string
