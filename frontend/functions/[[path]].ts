@@ -5,5 +5,5 @@ import { createPagesFunctionHandler } from '@remix-run/cloudflare-pages'
 // eslint-disable-next-line import/no-unresolved
 import * as build from '../build/server'
 
-// @ts-expect-error
+// @ts-expect-error - cloudflare pages function handler types don't fully match remix types
 export const onRequest = createPagesFunctionHandler({ build })
