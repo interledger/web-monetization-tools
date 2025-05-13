@@ -2,12 +2,12 @@
 
 ## Getting started <!-- omit in toc -->
 
-Thank you for contributing to Web monetization tools :tada: Your contributions are essential to making this project better.
+Thank you for contributing to Publisher tools :tada: Your contributions are essential to making this project better.
 
 ## Before you begin
 
 - Have you read the [code of conduct](CODE_OF_CONDUCT.md)?
-- Check out the [existing issues](https://github.com/interledger/web-monetization-tools/issues) & see if we [accept contributions](#types-of-contributions) for your type of issue.
+- Check out the [existing issues](https://github.com/interledger/publisher-tools/issues) & see if we [accept contributions](#types-of-contributions) for your type of issue.
 
 ## Table of Contents <!-- omit in toc -->
 
@@ -35,7 +35,7 @@ You can contribute to Test Wallet and e-commerce in several ways.
 
 Discussions are where we have conversations about Test network.
 
-If you would like to discuss topics about the broader ecosystem, have a new idea, or want to show off your work - join us in [discussions](https://github.com/interledger/web-monetization-tools/discussions).
+If you would like to discuss topics about the broader ecosystem, have a new idea, or want to show off your work - join us in [discussions](https://github.com/interledger/publisher-tools/discussions).
 
 ### :hammer_and_wrench: Pull requests
 
@@ -47,9 +47,9 @@ The team will review your pull request as soon as possible.
 
 The project is new and available documentation is a work in progress.
 
-## Working in the Web monetization tools repository
+## Working in the Publisher tools repository
 
-This project uses `pnpm`. A list of steps for setting up a [local development environment](https://github.com/interledger/web-monetization-tools#local-development-environment) can be found in the Readme.
+This project uses `pnpm`. A list of steps for setting up a [local development environment](https://github.com/interledger/publisher-tools#local-development-environment) can be found in the Readme.
 
 > **Warning**
 > DO NOT use `npm install`. This will cause the project to spontaneously self-destruct :boom:.
@@ -117,7 +117,7 @@ The workflows can be found in `.github/workflows`
 
 ### Reporting Issues
 
-If you encounter any issues or have a feature request, please [create a new issue](https://github.com/interledger/web-monetization-tools/issues/new) and provide the following details:
+If you encounter any issues or have a feature request, please [create a new issue](https://github.com/interledger/publisher-tools/issues/new) and provide the following details:
 
 - A clear and descriptive title.
 - A detailed description of the issue, including steps to reproduce if applicable.
@@ -126,7 +126,7 @@ If you encounter any issues or have a feature request, please [create a new issu
 
 ### Submitting Pull Requests
 
-1. [Fork](https://github.com/interledger/web-monetization-tools) the repository.
+1. [Fork](https://github.com/interledger/publisher-tools) the repository.
 2. Create a new branch from `main`.
 3. Make your changes and commit them.
 4. Create a pull request (PR) to `main`.

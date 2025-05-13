@@ -4,7 +4,7 @@ import { availableTools } from '~/lib/presets.js'
 
 export const meta: MetaFunction = () => {
   return [
-    { title: 'WebMonetization Tools' },
+    { title: 'Publisher Tools' },
     { name: 'description', content: 'Choose and configure your elements!' }
   ]
 }

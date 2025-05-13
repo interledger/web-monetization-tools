@@ -10,7 +10,7 @@ The publisher tools are a suite of tools designed to help content owners and pub
 
 Inspired by platforms like BuyMeACoffee and Patreon, these tools prioritize accessibility, ease of use, and low technical barriers to adoption. They allow publishers with a Web Monetization-enabled wallet to easily customize and generate embeddable components by inserting a simple script into their website’s HTML.
 
-For additional information, check out the [publisher tools architecture diagram](https://github.com/interledger/web-monetization-tools/blob/25fff6ab48b052ac1190cf3734cb96aba99ed9a2/docs/flow.png?raw=true).
+For additional information, check out the [publisher tools architecture diagram](https://github.com/interledger/web-publisher/blob/25fff6ab48b052ac1190cf3734cb96aba99ed9a2/docs/flow.png?raw=true).
 
 ### New to Interledger?
 
@@ -83,7 +83,7 @@ openssl req -x509 -newkey rsa:2048 -keyout ./certs/key.pem -out ./certs/cert.pem
 
 ### Environment Variables
 
-For the Web monetization tools to function localy, it is also necessary to configure the environment variables appropriately. You must duplicate the example environment file, `.env.example`, into your local environment file, `.env`.
+For the Publisher tools to function locally, it is also necessary to configure the environment variables appropriately. You must duplicate the example environment file, `.env.example`, into your local environment file, `.env`.
 
 > **Note**
 > The local environment file (`.env`) is **NOT** tracked in the version control system, and should **NOT** be included in any commits.
