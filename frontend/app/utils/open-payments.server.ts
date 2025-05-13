@@ -102,7 +102,7 @@ async function createOutgoingPaymentGrant(
           start: ['redirect'],
           finish: {
             method: 'redirect',
-            uri: `${redirectUrl ?? process.env.OP_REDIRECT_URL}?paymentId=${paymentId}`,
+            uri: `${redirectUrl}?paymentId=${paymentId}`,
             nonce: nonce || ''
           }
         }

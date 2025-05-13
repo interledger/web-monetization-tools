@@ -1,13 +1,11 @@
 name = "publisher-tools-api"
-main = "functions/[[worker]].ts"
-compatibility_flags = [ "nodejs_compat" ]
+compatibility_flags = ["nodejs_compat"]
 compatibility_date = "2024-09-23"
+pages_build_output_dir = "./build/client"
 
 [dev]
-port = 5100
-
-[site]
-bucket = "./public"
+port = 3001
 
 [vars]
-NODE_ENV = "development"
+SCRIPT_ILPAY_URL = "https://interledgerpay.com/extension/"
+SCRIPT_EMBED_URL = "https://cdn.webmonetization.org/"
