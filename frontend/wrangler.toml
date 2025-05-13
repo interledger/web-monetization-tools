@@ -4,10 +4,8 @@ compatibility_date = "2024-09-23"
 pages_build_output_dir = "./build/client"
 
 [dev]
-port = 5101
+port = 5102
 
 [vars]
-SCRIPT_API_URL = "https://localhost:5101/"
-SCRIPT_FRONTEND_URL = "http://localhost:5101/"
 SCRIPT_ILPAY_URL = "https://interledgerpay.com/extension/"
 SCRIPT_EMBED_URL = "https://cdn.webmonetization.org/"

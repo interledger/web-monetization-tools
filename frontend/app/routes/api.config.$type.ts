@@ -114,7 +114,8 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
   session.set('wallet-address', walletAddress)
   if (!validForWallet || validForWallet !== walletAddress.id) {
     try {
-      const redirectUrl = `${env.SCRIPT_FRONTEND_URL}api/grant/${elementType}/`
+      const location = new URL(request.url)
+      const redirectUrl = `${location.origin}/api/grant/${elementType}/`
       const grant = await createInteractiveGrant(env, {
         walletAddress,
         redirectUrl

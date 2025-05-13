@@ -129,8 +129,6 @@ import '@remix-run/cloudflare'
 
 declare global {
   interface Env {
-    SCRIPT_API_URL: string
-    SCRIPT_FRONTEND_URL: string
     SCRIPT_ILPAY_URL: string
     SCRIPT_EMBED_URL: string
 
