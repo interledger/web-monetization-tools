@@ -136,5 +136,4 @@ worker/worker-configuration.d.ts
 # Build outputs
 dist/
 build/
-public/
 embed/public/

@@ -17,7 +17,7 @@ export default {
       })
     }
 
-    return new Response(`Web Monetization Tools Worker`, {
+    return new Response(`Publisher Tools Worker`, {
       status: 404,
       headers: {
         'Content-Type': 'text/plain'
