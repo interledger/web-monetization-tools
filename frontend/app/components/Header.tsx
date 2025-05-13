@@ -8,7 +8,7 @@ export const Header = () => {
         <img
           className="ml-6 cursor-pointer"
           src="/images/wm_logo.svg"
-          alt="Web Monetization Tools"
+          alt="Publisher Tools"
           onClick={() => {
             navigate(`/`)
           }}
@@ -19,7 +19,7 @@ export const Header = () => {
             navigate(`/`)
           }}
         >
-          Web Monetization Tools
+          Publisher Tools
         </h1>
       </div>
     </div>

@@ -1,13 +1,13 @@
 {
-  "name": "@interledger/web-monetization-tools",
+  "name": "@interledger/publisher-tools",
   "version": "1.0.2",
-  "homepage": "https://github.com/interledger/web-monetization-tools#readme",
-  "bugs": "https://github.com/interledger/web-monetization-tools/issues",
+  "homepage": "https://github.com/interledger/publisher-tools#readme",
+  "bugs": "https://github.com/interledger/publisher-tools/issues",
   "license": "Apache-2.0",
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/interledger/web-monetization-tools"
+    "url": "https://github.com/interledger/publisher-tools"
   },
   "author": "Arpi <arpad.lengyel@breakpointit.eu>",
   "scripts": {

@@ -151,7 +151,7 @@ export function ErrorBoundary() {
 }
 
 export const meta: MetaFunction = () => [
-  { title: 'WebMonetization Tools' },
+  { title: 'Publisher Tools' },
   { charset: 'utf-8' },
   { name: 'viewport', content: 'width=device-width,initial-scale=1' }
 ]
@@ -160,19 +160,19 @@ export const links: LinksFunction = () => [
   {
     rel: 'apple-touch-icon',
     sizes: '180x180',
-    href: '/images/favicon.png'
+    href: '/images/favicon-96x96.png'
   },
   {
     rel: 'icon',
     type: 'image/png',
     sizes: '32x32',
-    href: '/images/favicon.png'
+    href: '/images/favicon-96x96.png'
   },
   {
     rel: 'icon',
     type: 'image/png',
     sizes: '16x16',
-    href: '/images/favicon.png'
+    href: '/images/favicon-96x96.png'
   },
   {
     rel: 'icon',
