@@ -4,7 +4,7 @@ compatibility_date = "2024-09-23"
 pages_build_output_dir = "./build/client"
 
 [dev]
-port = 5102
+port = 3001
 
 [vars]
 SCRIPT_ILPAY_URL = "https://interledgerpay.com/extension/"
