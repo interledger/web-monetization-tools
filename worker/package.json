@@ -7,7 +7,7 @@
     "dev": "vite dev",
     "build": "vite build",
     "preview": "npm run build && vite preview",
-    "deploy": "npm run build && wrangler deploy"
+    "deploy": "wrangler deploy"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.1.1",

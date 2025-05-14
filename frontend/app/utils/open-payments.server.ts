@@ -108,7 +108,8 @@ async function createOutgoingPaymentGrant(
         }
       }
     )
-    .catch(() => {
+    .catch((error) => {
+      console.log(error)
       throw new Error('Could not retrieve outgoing payment grant.')
     })
 
