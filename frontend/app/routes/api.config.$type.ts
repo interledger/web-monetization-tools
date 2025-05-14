@@ -135,7 +135,8 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
           }
         }
       )
-    } catch {
+    } catch(error) {
+      console.error(error)
       errors.fieldErrors = {
         walletAddress: ['Could not verify ownership of wallet address']
       }
