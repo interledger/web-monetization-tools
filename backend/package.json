@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "wrangler dev",
     "build": "tsc --project tsconfig.json",
+    "preview": "wrangler dev",
     "deploy:cloudflare": "wrangler deploy"
   },
   "keywords": [],
