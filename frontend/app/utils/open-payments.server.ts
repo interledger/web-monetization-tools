@@ -109,7 +109,20 @@ async function createOutgoingPaymentGrant(
       }
     )
     .catch((error) => {
-      console.log(error)
+      console.error(error)
+      
+      const errorMessage = error.description || error.message
+      const errorCode = error.code
+      const errorStatus = error.status
+
+      console.error({
+        errorCode,
+        errorStatus,
+        errorMessage,
+        url: redirectUrl,
+        walletAddress
+      })
+
       throw new Error('Could not retrieve outgoing payment grant.')
     })
 
