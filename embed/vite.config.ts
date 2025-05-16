@@ -5,7 +5,11 @@ export default defineConfig(({ mode }) => {
   const isDevelopment = mode === 'development'
 
   return {
-    envDir: resolve(__dirname),
+    define: {
+      'import.meta.env.VITE_SCRIPT_FRONTEND_URL': JSON.stringify("https://webmonetization.org.pages.dev/tools/"),
+      'import.meta.env.VITE_SCRIPT_API_URL': JSON.stringify("https://api.webmonetization.org.pages.dev/"),
+      'import.meta.env.VITE_SCRIPT_ILPAY_URL': JSON.stringify("https://interledgerpay.com/extension/")
+    },
     build: {
       lib: {
         // entry point for the script file

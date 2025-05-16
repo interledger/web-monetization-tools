@@ -12,6 +12,12 @@ declare module '@remix-run/cloudflare' {
 }
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      crypto: './crypto-polyfill.js',
+      'node:crypto': './crypto-polyfill.js'
+    }
+  },
   plugins: [
     remixCloudflareDevProxy(),
     remix({
@@ -24,5 +30,9 @@ export default defineConfig({
       }
     }),
     tsconfigPaths()
-  ]
+  ],
+  build: {
+    sourcemap: process.env.NODE_ENV === 'development' ? 'inline' : false,
+    target: 'esnext'
+  }
 })
