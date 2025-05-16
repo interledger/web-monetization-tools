@@ -1,16 +1,5 @@
 /** @type {import('@remix-run/dev').AppConfig} */
 export default {
-  vite: (viteConfig) => {
-    viteConfig.resolve = {
-      ...viteConfig.resolve,
-      alias: {
-        ...viteConfig.resolve?.alias,
-        crypto: './crypto-polyfill.js',
-        'node:crypto': './crypto-polyfill.js'
-      }
-    };
-    return viteConfig;
-  },
   serverBuildTarget: 'cloudflare-pages',
   ignoredRouteFiles: ['**/.*'],
   appDirectory: 'app',
