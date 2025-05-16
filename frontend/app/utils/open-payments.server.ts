@@ -5,7 +5,7 @@ import {
   createAuthenticatedClient,
   isFinalizedGrant,
   isPendingGrant
-} from '@interledger/open-payments'
+} from './open-payments-wrapper'
 import { createId } from '@paralleldrive/cuid2'
 import { toWalletAddressUrl } from './utils.server'
 
