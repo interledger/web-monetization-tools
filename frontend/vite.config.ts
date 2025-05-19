@@ -3,7 +3,6 @@ import {
   cloudflareDevProxyVitePlugin as remixCloudflareDevProxy
 } from '@remix-run/dev'
 import { defineConfig } from 'vite'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 declare module '@remix-run/cloudflare' {
@@ -13,19 +12,19 @@ declare module '@remix-run/cloudflare' {
 }
 
 export default defineConfig({
+  resolve: {
+    alias: [
+            {
+        find:'node:crypto',
+        replacement: './crypto-polyfill.js',
+      },
+      {
+        find:'crypto',
+        replacement: './crypto-polyfill.js',
+      }
+    ]
+  },
   plugins: [
-    nodePolyfills({
-      include: ['crypto'],
-      globals: {
-        Buffer: false,
-        global: true,
-        process: true
-      },
-      overrides: {
-        crypto: 'crypto'
-      },
-      protocolImports: true
-    }),
     remixCloudflareDevProxy(),
     remix({
       future: {

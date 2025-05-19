@@ -4,6 +4,7 @@ import { CreateAuthenticatedClientArgs } from '@interledger/open-payments/dist/c
 
 function registerCryptoPolyfill() {
     globalThis.crypto = cryptoPolyfill;
+    global.crypto = cryptoPolyfill;
 }
 
 export function createPolyfillAuthenticatedClient(options: CreateAuthenticatedClientArgs) {
@@ -11,4 +12,18 @@ export function createPolyfillAuthenticatedClient(options: CreateAuthenticatedCl
   return openPayments.createAuthenticatedClient(options);
 }
 
-export * from '@interledger/open-payments';
+export const {
+  createAuthenticatedClient,
+  isPendingGrant, 
+  isFinalizedGrant
+} = openPayments;
+
+export type {
+  WalletAddress,
+  PendingGrant,
+  AuthenticatedClient,
+  Grant,
+  GrantContinuation,
+} from '@interledger/open-payments';
+
+// export * from '@interledger/open-payments';

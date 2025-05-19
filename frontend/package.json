@@ -50,7 +50,6 @@
     "concurrently": "^8.2.2",
     "eslint": "^8.57.1",
     "typescript": "5.1.6",
-    "vite-plugin-node-polyfills": "^0.23.0",
     "vite-tsconfig-paths": "^4.3.2",
     "wrangler": "^4.9.1"
   },
