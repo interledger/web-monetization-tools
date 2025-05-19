@@ -15,10 +15,11 @@ declare module '@remix-run/cloudflare' {
 export default defineConfig({
   plugins: [
     nodePolyfills({
+      include: ['crypto'],
       globals: {
-        Buffer: false, 
+        Buffer: true,
         global: true,
-        process: 'build'
+        process: true
       },
       overrides: {
         crypto: 'crypto'
