@@ -17,7 +17,7 @@ export default defineConfig({
     nodePolyfills({
       include: ['crypto'],
       globals: {
-        Buffer: true,
+        Buffer: false,
         global: true,
         process: true
       },
