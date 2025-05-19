@@ -13,9 +13,36 @@ declare module '@remix-run/cloudflare' {
 
 export default defineConfig({
   resolve: {
-    alias: {
-      crypto: './crypto-polyfill.js',
-      'node:crypto': './crypto-polyfill.js'
+    alias: [
+      {
+        find:'node:crypto',
+        replacement: './crypto-polyfill.js',
+      },
+      {
+        find:'crypto',
+        replacement: './crypto-polyfill.js',
+      }
+    ]
+  },
+  optimizeDeps: {
+    include: ['@interledger/open-payments'],
+    esbuildOptions: {
+      // This helps ensure Node.js built-ins are properly excluded
+      define: {
+        global: 'globalThis',
+      },
+      // Force resolution of our polyfills
+      plugins: [
+        {
+          name: 'alias-node-modules',
+          setup(build) {
+            // When crypto is imported, redirect to our polyfill
+            build.onResolve({ filter: /^(node:)?crypto$/ }, args => {
+              return { path: './crypto-polyfill.js' };
+            });
+          }
+        }
+      ]
     }
   },
   plugins: [
