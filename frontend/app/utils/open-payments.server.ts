@@ -4,13 +4,13 @@ import {
   type WalletAddress,
   isFinalizedGrant,
   isPendingGrant,
-  createPolyfillAuthenticatedClient
-} from './open-payments-wrapper'
+  createAuthenticatedClient
+} from '@interledger/open-payments'
 import { createId } from '@paralleldrive/cuid2'
 import { toWalletAddressUrl } from './utils.server'
 
 async function createClient(env: Env) {
-  return await createPolyfillAuthenticatedClient({
+  return await createAuthenticatedClient({
     keyId: env.OP_KEY_ID,
     privateKey: Buffer.from(env.OP_PRIVATE_KEY, 'base64'),
     walletAddressUrl: env.OP_WALLET_ADDRESS,

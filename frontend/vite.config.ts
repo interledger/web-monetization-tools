@@ -3,6 +3,7 @@ import {
   cloudflareDevProxyVitePlugin as remixCloudflareDevProxy
 } from '@remix-run/dev'
 import { defineConfig } from 'vite'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 declare module '@remix-run/cloudflare' {
@@ -12,40 +13,18 @@ declare module '@remix-run/cloudflare' {
 }
 
 export default defineConfig({
-  resolve: {
-    alias: [
-      {
-        find:'node:crypto',
-        replacement: './crypto-polyfill.js',
-      },
-      {
-        find:'crypto',
-        replacement: './crypto-polyfill.js',
-      }
-    ]
-  },
-  optimizeDeps: {
-    include: ['@interledger/open-payments'],
-    esbuildOptions: {
-      // This helps ensure Node.js built-ins are properly excluded
-      define: {
-        global: 'globalThis',
-      },
-      // Force resolution of our polyfills
-      plugins: [
-        {
-          name: 'alias-node-modules',
-          setup(build) {
-            // When crypto is imported, redirect to our polyfill
-            build.onResolve({ filter: /^(node:)?crypto$/ }, args => {
-              return { path: './crypto-polyfill.js' };
-            });
-          }
-        }
-      ]
-    }
-  },
   plugins: [
+    nodePolyfills({
+      globals: {
+        Buffer: false, 
+        global: true,
+        process: 'build'
+      },
+      overrides: {
+        crypto: 'crypto'
+      },
+      protocolImports: true
+    }),
     remixCloudflareDevProxy(),
     remix({
       future: {
