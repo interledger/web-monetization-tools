@@ -67,8 +67,8 @@ importers:
         specifier: ^1.7.19
         version: 1.7.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@interledger/open-payments':
-        specifier: ^6.13.2
-        version: 6.14.1
+        specifier: ^7.0.0
+        version: 7.0.0
       '@noble/ed25519':
         specifier: ^2.2.3
         version: 2.2.3
@@ -737,8 +737,8 @@ packages:
   '@interledger/http-signature-utils@2.0.3':
     resolution: {integrity: sha512-/vn6+FxZ3g1A5ZC3vOVivjFns5A6F4lhEmdAGg3W9mD2uADXI575rIBcMdqI3wTOJo7qOXRutPXOG/jXONFs/Q==}
 
-  '@interledger/open-payments@6.14.1':
-    resolution: {integrity: sha512-nINTIoiPdY3wC639UVHOnRDdTz2gB9MSx2lhzd4qlvNysgS6bSq7WlfWUQw190T6XdZoGw7L+25/kqSXkXg3WQ==}
+  '@interledger/open-payments@7.0.0':
+    resolution: {integrity: sha512-6xPR5d1lStKvOFoQHatchoh5mYSmrbHE2dZotoTq/jhmxU+/Zk56hCJx7VvNcAz4F8Zqkgne/hM8ppcCEDKgtg==}
 
   '@interledger/openapi@2.0.3':
     resolution: {integrity: sha512-5wGncgpc/WVHd+RNE9oZHzdNdZK8UjaOqLmMnPm6kyNfXBtcZmDOumE00jEYa4BOXbaIm82qB4zD/dLc46AjRA==}
@@ -5324,7 +5324,7 @@ snapshots:
       jose: 4.15.9
       uuid: 9.0.1
 
-  '@interledger/open-payments@6.14.1':
+  '@interledger/open-payments@7.0.0':
     dependencies:
       '@interledger/http-signature-utils': 2.0.3
       '@interledger/openapi': 2.0.3
