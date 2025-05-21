@@ -35,13 +35,14 @@ interface ContentHeaders {
 }
 type Headers = SignatureHeaders & Partial<ContentHeaders>
 
+let client: AuthenticatedClient;
 /**
  * Creates an authenticated Open Payments client for making signed requests.
  * Based on the Interledger Web Monetization Extension implementation:
  * @see https://github.com/interledger/web-monetization-extension/blob/main/src/background/services/openPayments.ts#L163
  */
 async function createClient(env: Env) {
-  return await createAuthenticatedClient({
+  client ??= await createAuthenticatedClient({
     validateResponses: false,
     requestTimeoutMs: 10000,
     walletAddressUrl: env.OP_WALLET_ADDRESS,
@@ -80,6 +81,8 @@ async function createClient(env: Env) {
       return initialRequest as typeof request
     }
   })
+
+  return client
 }
 
 export async function getValidWalletAddress(env: Env, walletAddress: string) {
