@@ -12,6 +12,7 @@ import { createContentDigestHeader } from 'httpbis-digest-headers'
 import { signMessage } from 'http-message-signatures/lib/httpbis'
 import type { Request } from 'http-message-signatures'
 import * as ed from '@noble/ed25519'
+import { Header } from '~/components'
 
 interface RequestLike extends Request {
   body?: string
@@ -35,6 +36,11 @@ interface ContentHeaders {
 }
 type Headers = SignatureHeaders & Partial<ContentHeaders>
 
+/**
+ * Creates an authenticated Open Payments client for making signed requests.
+ * Based on the Interledger Web Monetization Extension implementation:
+ * @see https://github.com/interledger/web-monetization-extension/blob/main/src/background/services/openPayments.ts#L163
+ */
 async function createClient(env: Env) {
   return await createAuthenticatedClient({
     validateResponses: false,
@@ -51,9 +57,7 @@ async function createClient(env: Env) {
         request: {
           method: request.method,
           url: request.url,
-          headers: JSON.parse(
-            JSON.stringify(Object.fromEntries(request.headers))
-          ),
+          headers: Object.fromEntries(request.headers.entries()),
           body: request.body ? JSON.stringify(await request.json()) : undefined
         },
         privateKey: extractPrivateKeyFromBase64PEM(env.OP_PRIVATE_KEY),
@@ -169,8 +173,10 @@ async function createOutgoingPaymentGrant(
         }
       }
     )
-    .catch(() => {
-      throw new Error('Could not retrieve outgoing payment grant.')
+    .catch((error) => {
+      throw new Error('Could not retrieve outgoing payment grant.', {
+        cause: error
+      })
     })
 
   if (!isPendingGrant(grant)) {
@@ -314,12 +320,9 @@ function extractPrivateKeyFromBase64PEM(key: string): Uint8Array {
     .replace('-----END PRIVATE KEY-----', '')
     .replace(/\s/g, '')
 
-  const derBytes = atob(base64Content)
+  const derBytesString = atob(base64Content)
 
-  const bytes = new Uint8Array(derBytes.length)
-  for (let i = 0; i < derBytes.length; i++) {
-    bytes[i] = derBytes.charCodeAt(i)
-  }
+  const bytes = Uint8Array.from(derBytesString, (char) => char.charCodeAt(0))
 
   return bytes.slice(-32)
 }
