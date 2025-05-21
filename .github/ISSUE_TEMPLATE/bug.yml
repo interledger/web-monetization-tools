@@ -2,6 +2,7 @@ name: Bug report
 description: File a bug report
 title: '[BUG] '
 labels: ['bug', 'triage']
+type: Bug
 body:
   - type: markdown
     attributes:
@@ -60,21 +61,7 @@ body:
         - Monetization Widget
         - Banner
         - Revenue Share
-    validations:
-      required: true
-
-  - type: dropdown
-    id: os
-    attributes:
-      label: Operating system
-      description: What operating system are you seeing the problem on?
-      multiple: true
-      options:
-        - Windows
-        - macOS
-        - Linux
-        - Android
-        - iOS
+        - Others
     validations:
       required: true
 
@@ -119,11 +106,3 @@ body:
     attributes:
       label: Browser version
       description: What version of the browser(s) are you seeing the problem on?
-
-  - type: input
-    id: version
-    attributes:
-      label: Publisher Tools version
-      description: What version of our tools are you running?
-    validations:
-      required: true
