@@ -12,7 +12,6 @@ import { createContentDigestHeader } from 'httpbis-digest-headers'
 import { signMessage } from 'http-message-signatures/lib/httpbis'
 import type { Request } from 'http-message-signatures'
 import * as ed from '@noble/ed25519'
-import { Header } from '~/components'
 
 interface RequestLike extends Request {
   body?: string
