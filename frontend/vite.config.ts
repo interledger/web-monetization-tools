@@ -24,5 +24,14 @@ export default defineConfig({
       }
     }),
     tsconfigPaths()
-  ]
+  ],
+  resolve: {
+    alias: {
+      crypto: 'crypto-browserify'
+    }
+  },
+  build: {
+    sourcemap: true,
+    target: 'esnext'
+  }
 })
