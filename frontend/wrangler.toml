@@ -2,6 +2,7 @@ name = "publisher-tools"
 compatibility_flags = ["nodejs_compat"]
 compatibility_date = "2025-05-05"
 pages_build_output_dir = "./build/client"
+upload_source_maps = true
 
 [dev]
 port = 3001
