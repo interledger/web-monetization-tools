@@ -8,12 +8,12 @@ export default defineConfig(({ mode }) => {
     define: {
       'import.meta.env.VITE_SCRIPT_FRONTEND_URL': JSON.stringify(
         isDevelopment
-          ? 'http://localhost:3000'
+          ? 'http://localhost:3000/'
           : 'https://webmonetization.org.pages.dev/tools/'
       ),
       'import.meta.env.VITE_SCRIPT_API_URL': JSON.stringify(
         isDevelopment
-          ? 'http://localhost:8787'
+          ? 'http://localhost:8787/'
           : 'https://api.webmonetization.org.pages.dev/'
       ),
       'import.meta.env.VITE_SCRIPT_ILPAY_URL': JSON.stringify(
