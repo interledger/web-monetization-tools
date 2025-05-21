@@ -59,7 +59,7 @@ async function createClient(env: Env) {
           headers: Object.fromEntries(request.headers.entries()),
           body: request.body ? JSON.stringify(await request.json()) : undefined
         },
-        privateKey: extractPrivateKeyFromBase64PEM(env.OP_PRIVATE_KEY),
+        privateKey: Buffer.from(env.OP_PRIVATE_KEY, 'base64'),
         keyId: env.OP_KEY_ID
       })
 
@@ -303,25 +303,4 @@ function createSigner(key: Uint8Array, keyId: string) {
       return Buffer.from(await ed.signAsync(data, key))
     }
   }
-}
-
-function extractPrivateKeyFromBase64PEM(key: string): Uint8Array {
-  const pemString = atob(key)
-  if (
-    !pemString.includes('BEGIN PRIVATE KEY') ||
-    !pemString.includes('END PRIVATE KEY')
-  ) {
-    throw new Error('Invalid PEM format')
-  }
-
-  const base64Content = pemString
-    .replace('-----BEGIN PRIVATE KEY-----', '')
-    .replace('-----END PRIVATE KEY-----', '')
-    .replace(/\s/g, '')
-
-  const derBytesString = atob(base64Content)
-
-  const bytes = Uint8Array.from(derBytesString, (char) => char.charCodeAt(0))
-
-  return bytes.slice(-32)
 }
