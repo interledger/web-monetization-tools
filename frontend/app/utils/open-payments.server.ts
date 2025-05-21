@@ -35,7 +35,7 @@ interface ContentHeaders {
 }
 type Headers = SignatureHeaders & Partial<ContentHeaders>
 
-let client: AuthenticatedClient;
+let client: AuthenticatedClient
 /**
  * Creates an authenticated Open Payments client for making signed requests.
  * Based on the Interledger Web Monetization Extension implementation:
