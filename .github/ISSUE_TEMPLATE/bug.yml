@@ -79,12 +79,6 @@ body:
     validations:
       required: true
 
-  - type: input
-    id: os-version
-    attributes:
-      label: Operating system version
-      description: What version of the operating system(s) are you seeing the problem on?
-
   - type: dropdown
     id: browsers
     attributes:
