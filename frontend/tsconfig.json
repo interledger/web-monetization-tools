@@ -3,7 +3,8 @@
     "app/**/*.ts",
     "app/**/*.tsx",
     "app/types/*.d.ts",
-    "functions/**/*.ts",
+    "worker.ts",
+    "worker-configuration.d.ts",
     "node_modules/@types/*"
   ],
   "compilerOptions": {
