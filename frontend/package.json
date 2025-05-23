@@ -7,7 +7,7 @@
     "build": "remix vite:build",
     "dev": "remix vite:dev --port 3000",
     "preview": "pnpm run build && wrangler dev",
-    "deploy": "pnpm run build && wrangler deploy"
+    "deploy": "wrangler deploy"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.19",
