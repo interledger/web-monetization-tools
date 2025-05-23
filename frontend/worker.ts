@@ -16,6 +16,12 @@ const requestHandler = createRequestHandler(build as unknown as ServerBuild)
 export default {
   async fetch(request, env, ctx) {
     try {
+      const url = new URL(request.url)
+
+      if (url.pathname === '/') {
+        return Response.redirect(new URL('/tools/', request.url), 302)
+      }
+
       return await requestHandler(request, {
         cloudflare: { env, ctx }
       })
