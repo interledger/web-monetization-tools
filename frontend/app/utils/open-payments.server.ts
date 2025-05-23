@@ -126,8 +126,7 @@ export interface Amount {
 
 type CreateOutgoingPaymentParams = {
   walletAddress: WalletAddress
-  debitAmount?: Amount
-  receiveAmount?: Amount
+  debitAmount: Amount
   nonce?: string
   paymentId: string
   opClient: AuthenticatedClient
@@ -139,7 +138,6 @@ async function createOutgoingPaymentGrant(
   const {
     walletAddress,
     debitAmount,
-    receiveAmount,
     nonce,
     paymentId,
     opClient,
@@ -159,8 +157,7 @@ async function createOutgoingPaymentGrant(
               type: 'outgoing-payment',
               actions: ['create', 'read'],
               limits: {
-                debitAmount: debitAmount,
-                receiveAmount: receiveAmount
+                debitAmount: debitAmount
               }
             }
           ]
