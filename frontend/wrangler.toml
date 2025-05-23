@@ -7,6 +7,11 @@ upload_source_maps = true
 [assets]
 directory = "./build/client"
 
+[observability.logs]
+enabled = true
+invocation_logs = true
+head_sampling_rate = 1.00
+
 [dev]
 port = 3001
 
