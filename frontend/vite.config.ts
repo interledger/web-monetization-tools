@@ -10,7 +10,7 @@ export default defineConfig({
     remixCloudflareDevProxy(),
     remix({
       ssr: true,
-      basename: '/',
+      basename: '/tools',
       ignoredRouteFiles: ['**/.*'],
       appDirectory: 'app',
       buildDirectory: 'build',
@@ -31,6 +31,7 @@ export default defineConfig({
     }
   },
   build: {
+    assetsDir: 'tools/assets',
     sourcemap: true,
     target: 'esnext'
   }
