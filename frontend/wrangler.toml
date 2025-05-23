@@ -2,8 +2,10 @@ name = "publisher-tools"
 compatibility_flags = ["nodejs_compat"]
 compatibility_date = "2025-05-05"
 main = "worker.ts"
-directory = "./build/client"
 upload_source_maps = true
+
+[assets]
+directory = "./build/client"
 
 [observability.logs]
 enabled = true
