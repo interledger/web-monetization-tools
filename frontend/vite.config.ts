@@ -5,12 +5,14 @@ import {
 import { defineConfig } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
+const basepath = process.env.APP_BASEPATH ?? '/tools'
+
 export default defineConfig({
   plugins: [
     remixCloudflareDevProxy(),
     remix({
       ssr: true,
-      basename: '/tools',
+      basename: basepath,
       ignoredRouteFiles: ['**/.*'],
       appDirectory: 'app',
       buildDirectory: 'build',
@@ -31,7 +33,7 @@ export default defineConfig({
     }
   },
   build: {
-    assetsDir: 'tools/assets',
+    assetsDir: `${basepath.replace('/', '')}/assets`,
     sourcemap: true,
     target: 'esnext'
   }
