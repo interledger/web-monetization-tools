@@ -55,7 +55,7 @@ export default defineConfig({
     }
   },
   build: {
-    assetsDir: `${APP_BASEPATH.replace('/', '')}/assets`,
+    assetsDir: `${APP_BASEPATH.replace(/^\//, '')}/assets`,
     sourcemap: true,
     target: 'esnext'
   }
