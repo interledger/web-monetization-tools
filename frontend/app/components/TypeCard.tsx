@@ -24,7 +24,7 @@ export const TypeCard = ({
       <div className={cx('flex py-6 rounded-lg bg-gradient-to-r', bgColor)}>
         <img
           className="max-h-24 mx-auto"
-          src={`images/${image ?? 'placeholder.svg'}`}
+          src={`/images/${image ?? 'placeholder.svg'}`}
           alt={title}
         />
       </div>
