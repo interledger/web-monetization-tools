@@ -9,12 +9,12 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.VITE_SCRIPT_FRONTEND_URL': JSON.stringify(
         isDevelopment
           ? 'http://localhost:3000/'
-          : 'https://webmonetization.org.pages.dev/tools/'
+          : 'https://webmonetization.org/tools/'
       ),
       'import.meta.env.VITE_SCRIPT_API_URL': JSON.stringify(
         isDevelopment
           ? 'http://localhost:8787/'
-          : 'https://api.webmonetization.org.pages.dev/'
+          : 'https://tools-api.webmonetization.org/'
       ),
       'import.meta.env.VITE_SCRIPT_ILPAY_URL': JSON.stringify(
         'https://interledgerpay.com/extension/'
