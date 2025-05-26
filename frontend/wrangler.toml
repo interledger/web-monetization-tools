@@ -16,6 +16,5 @@ head_sampling_rate = 1.00
 port = 3001
 
 [vars]
-APP_BASEPATH = "/tools"
 SCRIPT_ILPAY_URL = "https://interledgerpay.com/extension/"
 SCRIPT_EMBED_URL = "https://cdn.webmonetization.org/"
