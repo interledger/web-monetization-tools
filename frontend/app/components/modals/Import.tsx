@@ -7,6 +7,7 @@ import { useState } from 'react'
 
 type ImportModalProps = {
   title: string
+  basepath: string
   isOpen: boolean
   toolConfig: ElementConfigType
   setConfigs: (
@@ -20,6 +21,7 @@ type ImportModalProps = {
 
 export const ImportModal = ({
   title,
+  basepath,
   isOpen,
   onClose,
   toolConfig,
@@ -38,7 +40,7 @@ export const ImportModal = ({
       const walletAddress = formData.get('walletAddress')
 
       const response = await fetch(
-        `/api/config/banner?walletAddress=${walletAddress}`
+        `${basepath}/api/config/banner?walletAddress=${walletAddress}`
       )
 
       if (!response.ok) {

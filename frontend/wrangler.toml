@@ -1,12 +1,21 @@
 name = "publisher-tools"
 compatibility_flags = ["nodejs_compat"]
 compatibility_date = "2025-05-05"
-pages_build_output_dir = "./build/client"
+main = "worker.ts"
 upload_source_maps = true
+
+[assets]
+directory = "./build/client"
+
+[observability.logs]
+enabled = true
+invocation_logs = true
+head_sampling_rate = 1.00
 
 [dev]
 port = 3001
 
 [vars]
+APP_BASEPATH = "/tools"
 SCRIPT_ILPAY_URL = "https://interledgerpay.com/extension/"
 SCRIPT_EMBED_URL = "https://cdn.webmonetization.org/"
