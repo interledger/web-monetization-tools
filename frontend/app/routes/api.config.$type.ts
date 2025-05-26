@@ -7,20 +7,20 @@ import {
   filterDeepProperties,
   getDefaultData,
   normalizeWalletAddress
-} from '../utils/utils.server.js'
-import { sanitizeConfigFields } from '../utils/sanitize.server.js'
+} from '~/utils/utils.server.js'
+import { sanitizeConfigFields } from '~/utils/sanitize.server.js'
 import type {
   ConfigVersions,
   ElementConfigType,
   ElementErrors
-} from '../lib/types.js'
-import { commitSession, getSession } from '../utils/session.server.js'
-import { ConfigStorageService } from '../utils/config-storage.server.js'
-import { validateForm } from '../utils/validate.server.js'
+} from '~/lib/types.js'
+import { commitSession, getSession } from '~/utils/session.server.js'
+import { ConfigStorageService } from '~/utils/config-storage.server.js'
+import { validateForm } from '~/utils/validate.server.js'
 import {
   createInteractiveGrant,
   getValidWalletAddress
-} from '../utils/open-payments.server.js'
+} from '~/utils/open-payments.server.js'
 import { APP_BASEPATH } from '~/lib/constants.js'
 
 export async function loader({ request, params, context }: LoaderFunctionArgs) {

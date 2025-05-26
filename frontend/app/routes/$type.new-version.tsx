@@ -1,5 +1,5 @@
-import { NewVersionModal } from '~/components/modals/index.js'
 import { useNavigate, useOutletContext } from '@remix-run/react'
+import { NewVersionModal } from '~/components/modals/index.js'
 import type { ElementConfigType } from '~/lib/types.js'
 import type { ModalType } from '~/lib/presets.js'
 

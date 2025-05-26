@@ -2,10 +2,7 @@
   "include": [
     "app/**/*.ts",
     "app/**/*.tsx",
-    "app/types/*.d.ts",
-    "worker.ts",
-    "worker-configuration.d.ts",
-    "node_modules/@types/*"
+    "worker.ts"
   ],
   "compilerOptions": {
     "target": "ES2022",
@@ -24,6 +21,6 @@
     "paths": {
       "~/*": ["./app/*"]
     },
-    "noEmit": true
+    "types": ["./worker-configuration.d.ts", "vite/client"]
   }
 }

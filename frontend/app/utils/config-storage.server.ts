@@ -1,12 +1,20 @@
 import { AwsClient } from 'aws4fetch'
 import { walletAddressToKey } from './utils.server.js'
 
+type Secrets = Pick<
+  Env,
+  | 'AWS_ACCESS_KEY_ID'
+  | 'AWS_SECRET_ACCESS_KEY'
+  | 'AWS_REGION'
+  | 'AWS_BUCKET_NAME'
+>
+
 export class ConfigStorageService {
   private static instance: AwsClient | null = null
   private client: AwsClient
   private endpoint: string
 
-  constructor(env: Env) {
+  constructor(env: Secrets) {
     if (!ConfigStorageService.instance) {
       ConfigStorageService.instance = new AwsClient({
         accessKeyId: env.AWS_ACCESS_KEY_ID,

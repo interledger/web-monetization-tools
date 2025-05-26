@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
         name: 'InitScript',
         fileName: () => 'init.js'
       },
-      outDir: resolve(__dirname, 'public'),
+      outDir: resolve(__dirname, 'dist'),
       // don't clear the directory when building
       emptyOutDir: false,
       rollupOptions: {
@@ -39,7 +39,7 @@ export default defineConfig(({ mode }) => {
       watch: {
         // ensures file polling for file changes
         usePolling: true,
-        ignored: ['node_modules/**', 'public/**']
+        ignored: ['node_modules/**', 'dist/**']
       }
     }
   }

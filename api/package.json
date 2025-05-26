@@ -1,11 +1,11 @@
 {
-  "name": "@wm-tools/backend",
+  "name": "publisher-tools-api",
   "version": "1.0.0",
   "scripts": {
     "dev": "wrangler dev",
     "build": "tsc --project tsconfig.json",
     "preview": "wrangler dev",
-    "deploy:cloudflare": "wrangler deploy"
+    "deploy": "wrangler deploy"
   },
   "keywords": [],
   "author": "",
@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "typescript": "5.1.6",
-    "wrangler": "^4.9.1"
+    "wrangler": "^4.16.1"
   },
   "engines": {
     "node": ">=20.0.0"

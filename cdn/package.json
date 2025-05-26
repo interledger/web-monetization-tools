@@ -1,5 +1,5 @@
 {
-  "name": "cloudflare-vite-get-started",
+  "name": "publisher-tools-cdn",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -7,11 +7,13 @@
     "dev": "vite dev",
     "build": "vite build",
     "preview": "npm run build && vite preview",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "prepare": "wrangler types"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.1.1",
+    "publisher-tools-embed": "workspace:^",
     "vite": "^6.3.5",
-    "wrangler": "^4.14.3"
+    "wrangler": "^4.16.1"
   }
 }
