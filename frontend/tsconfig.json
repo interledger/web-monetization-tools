@@ -1,9 +1,5 @@
 {
-  "include": [
-    "app/**/*.ts",
-    "app/**/*.tsx",
-    "worker.ts"
-  ],
+  "include": ["app/**/*.ts", "app/**/*.tsx", "worker.ts"],
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
