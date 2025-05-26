@@ -5,21 +5,7 @@ export default defineConfig(({ mode }) => {
   const isDevelopment = mode === 'development'
 
   return {
-    define: {
-      'import.meta.env.VITE_SCRIPT_FRONTEND_URL': JSON.stringify(
-        isDevelopment
-          ? 'http://localhost:3000/'
-          : 'https://webmonetization.org/tools/'
-      ),
-      'import.meta.env.VITE_SCRIPT_API_URL': JSON.stringify(
-        isDevelopment
-          ? 'http://localhost:8787/'
-          : 'https://tools-api.webmonetization.org/'
-      ),
-      'import.meta.env.VITE_SCRIPT_ILPAY_URL': JSON.stringify(
-        'https://interledgerpay.com/extension/'
-      )
-    },
+    envDir: resolve(__dirname),
     build: {
       lib: {
         // entry point for the script file
@@ -58,5 +44,3 @@ export default defineConfig(({ mode }) => {
     }
   }
 })
-
-// FIND THE BUG
