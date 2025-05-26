@@ -2,29 +2,24 @@ import {
   vitePlugin as remix,
   cloudflareDevProxyVitePlugin as remixCloudflareDevProxy
 } from '@remix-run/dev'
-import type { IncomingMessage, ServerResponse } from 'http'
-import { defineConfig, type ViteDevServer } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
-
-const APP_BASEPATH = '/tools'
+import { APP_BASEPATH } from './app/lib/constants.ts'
 
 /**
  * Custom plugin to handle root redirects to basepath in dev
  */
-const devRedirectPlugin = () => ({
+const devRedirectPlugin = (): Plugin => ({
   name: 'dev-redirect',
-  configureServer(server: ViteDevServer) {
-    server.middlewares.use(
-      '/',
-      (req: IncomingMessage, res: ServerResponse, next: () => void) => {
-        if (req.url === '/') {
-          res.writeHead(302, { Location: APP_BASEPATH + '/' })
-          res.end()
-          return
-        }
-        next()
+  configureServer(server) {
+    server.middlewares.use('/', (req, res, next) => {
+      if (req.url === '/') {
+        res.writeHead(302, { Location: APP_BASEPATH + '/' })
+        res.end()
+        return
       }
-    )
+      next()
+    })
   }
 })
 

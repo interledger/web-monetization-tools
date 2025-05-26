@@ -1,4 +1,5 @@
 import * as build from './build/server/index.js' // eslint-disable-line import/no-unresolved
+import { APP_BASEPATH } from '~/lib/constants.js'
 
 import { createRequestHandler, type ServerBuild } from '@remix-run/cloudflare'
 
@@ -19,10 +20,7 @@ export default {
       const url = new URL(request.url)
 
       if (url.pathname === '/') {
-        return Response.redirect(
-          new URL(`${env.APP_BASEPATH}/`, request.url),
-          302
-        )
+        return Response.redirect(new URL(`${APP_BASEPATH}/`, request.url), 302)
       }
 
       return await requestHandler(request, {

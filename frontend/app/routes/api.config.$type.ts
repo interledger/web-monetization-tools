@@ -21,6 +21,7 @@ import {
   createInteractiveGrant,
   getValidWalletAddress
 } from '../utils/open-payments.server.js'
+import { APP_BASEPATH } from '~/lib/constants.js'
 
 export async function loader({ request, params, context }: LoaderFunctionArgs) {
   try {
@@ -115,7 +116,7 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
   if (!validForWallet || validForWallet !== walletAddress.id) {
     try {
       const location = new URL(request.url)
-      const baseUrl = location.origin + env.APP_BASEPATH
+      const baseUrl = location.origin + APP_BASEPATH
       const redirectUrl = `${baseUrl}/api/grant/${elementType}/`
       const grant = await createInteractiveGrant(env, {
         walletAddress,
