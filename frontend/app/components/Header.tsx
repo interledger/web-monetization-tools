@@ -1,4 +1,5 @@
 import { useNavigate } from '@remix-run/react'
+import { APP_BASEPATH } from '~/lib/constants.js'
 
 export const Header = () => {
   const navigate = useNavigate()
@@ -7,7 +8,7 @@ export const Header = () => {
       <div className="flex w-full">
         <img
           className="ml-6 cursor-pointer"
-          src="/images/wm_logo.svg"
+          src={`${APP_BASEPATH}/images/wm_logo.svg`}
           alt="Publisher Tools"
           onClick={() => {
             navigate(`/`)

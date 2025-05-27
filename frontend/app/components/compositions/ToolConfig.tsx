@@ -28,6 +28,7 @@ import {
   FontSize
 } from '../index.js'
 import { tooltips } from '~/lib/tooltips.js'
+import { APP_BASEPATH } from '~/lib/constants.js'
 
 type ToolConfigProps = {
   type?: string
@@ -628,7 +629,7 @@ export const ToolConfig = ({
                 'flex max-h-24 mr-2',
                 isSubmiting ? 'animate-spin' : ''
               )}
-              src={`/images/refresh.svg`}
+              src={`${APP_BASEPATH}/images/refresh.svg`}
               alt="generate"
             />
             <span>Generate</span>

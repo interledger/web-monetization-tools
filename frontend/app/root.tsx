@@ -20,6 +20,7 @@ import stylesheet from '~/tailwind.css?url'
 import { Button, Footer, Header, Snackbar } from './components/index.js'
 import { XCircle } from './components/icons.js'
 import { cx } from 'class-variance-authority'
+import { APP_BASEPATH } from '~/lib/constants.js'
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url)
@@ -61,7 +62,7 @@ export default function App() {
             className={cx(
               'h-full flex flex-col',
               !contentOnly
-                ? 'bg-[url(/images/bg-tile.svg)] bg-[auto_25em]'
+                ? `bg-[url(${APP_BASEPATH}/images/bg-tile.svg)] bg-[auto_25em]`
                 : 'bg-transparent'
             )}
           >
@@ -160,23 +161,23 @@ export const links: LinksFunction = () => [
   {
     rel: 'apple-touch-icon',
     sizes: '180x180',
-    href: '/images/favicon.png'
+    href: `${APP_BASEPATH}/images/favicon.png`
   },
   {
     rel: 'icon',
     type: 'image/png',
     sizes: '32x32',
-    href: '/images/favicon.png'
+    href: `${APP_BASEPATH}/images/favicon.png`
   },
   {
     rel: 'icon',
     type: 'image/png',
     sizes: '16x16',
-    href: '/images/favicon.png'
+    href: `${APP_BASEPATH}/images/favicon.png`
   },
   {
     rel: 'icon',
-    href: '/favicon.ico',
+    href: `${APP_BASEPATH}/favicon.ico`,
     type: 'image/x-icon'
   },
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },

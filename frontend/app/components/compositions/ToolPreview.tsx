@@ -12,6 +12,7 @@ import {
   getWebMonetizationLink
 } from '~/lib/utils.js'
 import { WidgetFooter, NotFoundConfig } from '../index.js'
+import { APP_BASEPATH } from '~/lib/constants.js'
 
 const ButtonConfig = ({ config }: { config: ElementConfigType }) => {
   return (
@@ -47,7 +48,7 @@ const BannerConfig = ({ config }: { config: ElementConfigType }) => {
             onMouseEnter={() => setTriggerAnimation(true)}
             onMouseLeave={() => setTriggerAnimation(false)}
             className="cursor-progress"
-            src={`/images/eye.svg`}
+            src={`${APP_BASEPATH}/images/eye.svg`}
             alt="check"
           />
         </div>
