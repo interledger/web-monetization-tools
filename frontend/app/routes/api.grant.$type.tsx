@@ -1,6 +1,6 @@
-import { commitSession, getSession } from '../utils/session.server'
-import { isGrantValidAndAccepted } from '../utils/open-payments.server'
 import { redirect, type LoaderFunctionArgs } from '@remix-run/cloudflare'
+import { commitSession, getSession } from '~/utils/session.server'
+import { isGrantValidAndAccepted } from '~/utils/open-payments.server'
 
 export async function loader({ params, request, context }: LoaderFunctionArgs) {
   const { env } = context.cloudflare

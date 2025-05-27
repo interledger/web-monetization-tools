@@ -2,14 +2,13 @@ import { Transition } from '@headlessui/react'
 import { cx } from 'class-variance-authority'
 import type { FC } from 'react'
 import { Fragment, useEffect } from 'react'
-import type { Message } from '../lib/server/message.server.js'
-import { CheckCircleSolid, XIcon, XCircleSolid } from '../components/icons.js'
+import { CheckCircleSolid, XIcon, XCircleSolid } from './icons.js'
 
 interface SnackbarProps {
   id: string
   show?: boolean
   // The label value.
-  message: Message | null
+  message: { type: 'success' | 'error'; content: string } | null
   action?: string
   icon?: string
   onClose(): void

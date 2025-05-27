@@ -4,7 +4,7 @@ import {
 } from '@remix-run/dev'
 import { defineConfig, type Plugin } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
-import { APP_BASEPATH } from './app/lib/constants.ts'
+import { APP_BASEPATH } from './app/lib/constants.js'
 
 /**
  * Custom plugin to handle root redirects to basepath in dev
