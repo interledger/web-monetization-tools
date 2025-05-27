@@ -7,7 +7,6 @@ export type Env = {
   AWS_SECRET_ACCESS_KEY: string
   AWS_REGION: string
   AWS_BUCKET_NAME: string
-  AWS_RETRY_MAX_ATTEMPTS: string
 }
 
 const app = new Hono<{ Bindings: Env }>()

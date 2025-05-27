@@ -1,6 +1,7 @@
 import type { LinkProps } from '@remix-run/react'
 import { cx } from 'class-variance-authority'
 import { Button, InfoWithTooltip } from './index.js'
+import placeholderImg from '~/assets/images/placeholder.svg'
 
 export type TypeCardProps = {
   image: string
@@ -24,7 +25,7 @@ export const TypeCard = ({
       <div className={cx('flex py-6 rounded-lg bg-gradient-to-r', bgColor)}>
         <img
           className="max-h-24 mx-auto"
-          src={`/images/${image ?? 'placeholder.svg'}`}
+          src={image || placeholderImg}
           alt={title}
         />
       </div>
