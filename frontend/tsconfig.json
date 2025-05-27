@@ -21,6 +21,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
+    "types": ["./worker-configuration.d.ts", "vite/client"],
     "paths": {
       "~/*": ["./app/*"]
     },

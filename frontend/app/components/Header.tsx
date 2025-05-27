@@ -1,4 +1,5 @@
 import { useNavigate } from '@remix-run/react'
+import wmLogo from '~/assets/images/wm_logo.svg?url'
 
 export const Header = () => {
   const navigate = useNavigate()
@@ -7,7 +8,7 @@ export const Header = () => {
       <div className="flex w-full">
         <img
           className="ml-6 cursor-pointer"
-          src="/images/wm_logo.svg"
+          src={wmLogo}
           alt="Publisher Tools"
           onClick={() => {
             navigate(`/`)

@@ -9,6 +9,8 @@ import {
   triggerColorPresets
 } from '~/lib/presets.js'
 import { isColorLight } from '~/lib/utils.js'
+import checkSvg from '~/assets/images/check.svg'
+import colorPickerSvg from '~/assets/images/color_picker.svg'
 
 type ColorPickerProps = ComponentPropsWithoutRef<'div'> & {
   label?: string
@@ -69,7 +71,7 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
                     'flex max-h-24 mx-auto',
                     isColorLight(color) && 'invert'
                   )}
-                  src={`/images/check.svg`}
+                  src={checkSvg}
                   alt="check"
                 />
               )}
@@ -87,7 +89,7 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
               >
                 <img
                   className="flex max-h-24 mx-auto"
-                  src={`/images/color_picker.svg`}
+                  src={colorPickerSvg}
                   alt="picker"
                 />
               </div>
