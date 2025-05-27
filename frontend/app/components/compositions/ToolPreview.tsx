@@ -12,6 +12,8 @@ import {
   getWebMonetizationLink
 } from '~/lib/utils.js'
 import { WidgetFooter, NotFoundConfig } from '../index.js'
+import eyeSvg from '~/assets/images/eye.svg'
+import wmLogoAnimated from '~/assets/images/wm_logo_animated.svg?url'
 
 const ButtonConfig = ({ config }: { config: ElementConfigType }) => {
   return (
@@ -47,7 +49,7 @@ const BannerConfig = ({ config }: { config: ElementConfigType }) => {
             onMouseEnter={() => setTriggerAnimation(true)}
             onMouseLeave={() => setTriggerAnimation(false)}
             className="cursor-progress"
-            src={`/images/eye.svg`}
+            src={eyeSvg}
             alt="check"
           />
         </div>
@@ -121,7 +123,7 @@ const WidgetConfig = ({
 
   const triggerIcon = config?.widgetTriggerIcon
     ? config?.widgetTriggerIcon
-    : `/images/wm_logo_animated.svg`
+    : wmLogoAnimated
 
   return (
     <div className="flex flex-col items-end wm_widget">

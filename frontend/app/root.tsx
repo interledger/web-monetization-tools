@@ -20,6 +20,9 @@ import stylesheet from '~/tailwind.css?url'
 import { Button, Footer, Header, Snackbar } from './components/index.js'
 import { XCircle } from './components/icons.js'
 import { cx } from 'class-variance-authority'
+import bgTileSvg from '~/assets/images/bg-tile.svg?url'
+import faviconPng from '~/assets/images/favicon.png?url'
+import faviconIco from '~/assets/images/favicon.ico?url'
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url)
@@ -58,11 +61,12 @@ export default function App() {
       <body className="h-screen">
         <main className="h-auto min-h-full flex flex-col justify-between">
           <div
+            style={{
+              backgroundImage: !contentOnly ? `url(${bgTileSvg})` : undefined
+            }}
             className={cx(
               'h-full flex flex-col',
-              !contentOnly
-                ? 'bg-[url(/images/bg-tile.svg)] bg-[auto_25em]'
-                : 'bg-transparent'
+              !contentOnly ? `bg-[auto_25em]` : 'bg-transparent'
             )}
           >
             {!contentOnly && <Header />}
@@ -160,23 +164,23 @@ export const links: LinksFunction = () => [
   {
     rel: 'apple-touch-icon',
     sizes: '180x180',
-    href: '/images/favicon.png'
+    href: faviconPng
   },
   {
     rel: 'icon',
     type: 'image/png',
     sizes: '32x32',
-    href: '/images/favicon.png'
+    href: faviconPng
   },
   {
     rel: 'icon',
     type: 'image/png',
     sizes: '16x16',
-    href: '/images/favicon.png'
+    href: faviconPng
   },
   {
     rel: 'icon',
-    href: '/favicon.ico',
+    href: faviconIco,
     type: 'image/x-icon'
   },
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },

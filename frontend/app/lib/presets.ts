@@ -1,5 +1,10 @@
 import { tooltips } from './tooltips.js'
 import { CornerType, SlideAnimationType, PositionType } from './types.js'
+import bannerImg from '~/assets/images/banner_representation.svg'
+import widgetImg from '~/assets/images/widget_representation.svg'
+import buttonImg from '~/assets/images/button_representation.svg'
+import linkImg from '~/assets/images/link_representation.svg'
+// import exclusiveImg from '~/assets/images/exclusive_representation.svg'
 
 export const validConfigTypes = ['button', 'banner', 'widget']
 export const modalTypes = [
@@ -122,7 +127,7 @@ export const availableTools = [
   {
     enabled: true,
     title: 'Banner',
-    image: 'banner_representation.svg',
+    image: bannerImg,
     bgColor: 'from-wm-dark-green to-wm-dark-green-fade',
     link: 'banner', // 'https://wmtools.interledger-test.dev/banner',
     tooltip: tooltips.banner,
@@ -132,7 +137,7 @@ export const availableTools = [
   {
     enabled: false,
     title: 'Widget',
-    image: 'widget_representation.svg',
+    image: widgetImg,
     bgColor: 'from-wm-red to-wm-red-fade',
     link: 'create/widget',
     tooltip: tooltips.widget,
@@ -142,7 +147,7 @@ export const availableTools = [
   {
     enabled: false,
     title: 'Button',
-    image: 'button_representation.svg',
+    image: buttonImg,
     bgColor: 'from-wm-green to-wm-green-fade',
     link: 'create/button',
     tooltip: '',
@@ -152,7 +157,7 @@ export const availableTools = [
   {
     enabled: true,
     title: 'Link',
-    image: 'link_representation.svg',
+    image: linkImg,
     bgColor: 'from-wm-red to-wm-red-fade',
     link: `https://webmonetization.org/tools/link-tag/`,
     tooltip: tooltips.linkTagGenerator,
@@ -162,7 +167,7 @@ export const availableTools = [
   {
     enabled: true,
     title: 'Revenue Share',
-    image: 'widget_representation.svg',
+    image: widgetImg,
     bgColor: 'from-wm-red to-wm-green-fade',
     link: `https://webmonetization.org/tools/prob-revshare/`,
     tooltip: tooltips.revShareGenerator,
@@ -172,7 +177,7 @@ export const availableTools = [
   {
     enabled: false,
     title: 'Exclusive content',
-    image: 'exclusive_representation.svg',
+    image: widgetImg,
     bgColor: 'from-wm-green to-wm-green-fade',
     link: 'create/exclusive',
     tooltip: '',
