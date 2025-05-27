@@ -1,4 +1,4 @@
-import initScript from '../embed/public/init.js?raw'
+import initScript from 'publisher-tools-embed/dist/init.js?raw'
 
 export default {
   fetch(request: Request) {

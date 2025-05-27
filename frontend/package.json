@@ -7,7 +7,9 @@
     "build": "remix vite:build",
     "dev": "remix vite:dev --port 3000",
     "preview": "pnpm run build && wrangler dev",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "prepare": "wrangler types",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.19",
@@ -15,21 +17,17 @@
     "@noble/ed25519": "^2.2.3",
     "@paralleldrive/cuid2": "^2.2.2",
     "@remix-run/cloudflare": "^2.16.6",
-    "@remix-run/cloudflare-pages": "^2.16.6",
     "@remix-run/react": "^2.16.6",
-    "@remix-run/serve": "^2.16.6",
     "@tailwindcss/postcss": "^4.1.6",
     "@tippyjs/react": "^4.2.6",
     "autoprefixer": "^10.4.20",
     "aws4fetch": "^1.0.20",
-    "axios": "^1.7.7",
     "class-variance-authority": "^0.7.0",
     "crypto-browserify": "^3.12.1",
     "he": "^1.2.0",
     "http-message-signatures": "^1.0.4",
     "httpbis-digest-headers": "^1.0.0",
     "isbot": "^4.4.0",
-    "postcss": "^8.4.49",
     "react": "^18.3.1",
     "react-click-away-listener": "^2.2.3",
     "react-colorful": "^5.6.1",
@@ -37,9 +35,6 @@
     "sanitize-html": "^2.14.0",
     "tailwindcss": "^3.4.14",
     "tippy.js": "^6.3.7",
-    "uuid": "^9.0.1",
-    "vite": "^5.4.11",
-    "yaml": "^2.6.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -53,9 +48,11 @@
     "@types/uuid": "^9.0.8",
     "concurrently": "^8.2.2",
     "eslint": "^8.57.1",
+    "postcss": "^8.4.49",
     "typescript": "5.1.6",
+    "vite": "^5.4.11",
     "vite-tsconfig-paths": "^4.3.2",
-    "wrangler": "^4.9.1"
+    "wrangler": "^4.16.1"
   },
   "engines": {
     "node": ">=20.0.0"
