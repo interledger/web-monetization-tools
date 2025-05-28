@@ -1,6 +1,4 @@
-import * as build from './build/server/index.js' // eslint-disable-line import/no-unresolved
 import { APP_BASEPATH } from '~/lib/constants.js'
-
 import { createRequestHandler, type ServerBuild } from '@remix-run/cloudflare'
 
 declare module '@remix-run/cloudflare' {
@@ -12,8 +10,6 @@ declare module '@remix-run/cloudflare' {
   }
 }
 
-const requestHandler = createRequestHandler(build as unknown as ServerBuild)
-
 export default {
   async fetch(request, env, ctx) {
     try {
@@ -22,6 +18,13 @@ export default {
       if (url.pathname === '/') {
         return Response.redirect(new URL(`${APP_BASEPATH}/`, request.url), 302)
       }
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore it may not be built during type checking stage
+      const build = await import('./build/server/index.js')
+      const requestHandler = createRequestHandler(
+        build as unknown as ServerBuild
+      )
 
       return await requestHandler(request, {
         cloudflare: { env, ctx }

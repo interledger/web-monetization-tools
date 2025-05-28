@@ -41,8 +41,9 @@ export const sanitizeConfigFields = <T extends Partial<SanitizedFields>>(
   }
 
   for (const field of htmlFields) {
-    if (typeof config[field] === 'string' && config[field]) {
-      const decoded = he.decode(config[field].replace(/&nbsp;/g, '').trim())
+    const value = config[field]
+    if (value && typeof value === 'string') {
+      const decoded = he.decode(value.replace(/&nbsp;/g, '').trim())
       const sanitizedHTML = sanitizeHtml(decoded, {
         allowedTags: [],
         allowedAttributes: {},
