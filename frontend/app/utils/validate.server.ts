@@ -182,13 +182,13 @@ async function isValidWalletAddress(
   }
 
   const msgInvalidWalletAddress = 'Provided URL is not a valid wallet address.'
-  const json = (await response.json().catch((error) => {
+  const json = await response.json().catch((error) => {
     throw new WalletAddressFormatError(msgInvalidWalletAddress, {
       cause: error
     })
-  })) as Record<string, unknown>
+  })
 
-  if (!isWalletAddress(json)) {
+  if (!isWalletAddress(json as Record<string, unknown>)) {
     throw new WalletAddressFormatError(msgInvalidWalletAddress)
   }
 

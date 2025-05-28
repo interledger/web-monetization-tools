@@ -20,7 +20,7 @@ export default {
       }
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+      // @ts-nocheck it may not be built during type checking stage
       const build = await import('./build/server/index.js')
       const requestHandler = createRequestHandler(
         build as unknown as ServerBuild
