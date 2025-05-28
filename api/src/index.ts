@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { cors } from 'hono/cors'
 import { ConfigStorageService } from './utils/config-storage.js'
 import type { ConfigVersions } from './types.js'
 
@@ -10,6 +11,16 @@ export type Env = {
 }
 
 const app = new Hono<{ Bindings: Env }>()
+
+app.use(
+  '*',
+  cors({
+    origin: '*',
+    allowMethods: ['GET', 'OPTIONS'],
+    // seconds the browser should cache the preflight response
+    maxAge: 7200
+  })
+)
 
 app.use('*', async (c, next) => {
   try {
