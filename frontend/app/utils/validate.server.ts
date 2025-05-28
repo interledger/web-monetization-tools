@@ -6,6 +6,7 @@ import {
   WalletAddressFormatError
 } from '~/lib/types.js'
 import { isWalletAddress, toWalletAddressUrl } from './utils.server.js'
+import type { WalletAddress } from '@interledger/open-payments'
 
 const rangeError = { message: 'Value has to be between 16 and 24' }
 
@@ -182,11 +183,11 @@ async function isValidWalletAddress(
   }
 
   const msgInvalidWalletAddress = 'Provided URL is not a valid wallet address.'
-  const json = await response.json().catch((error) => {
+  const json = (await response.json().catch((error) => {
     throw new WalletAddressFormatError(msgInvalidWalletAddress, {
       cause: error
     })
-  })
+  })) as WalletAddress
 
   if (!isWalletAddress(json)) {
     throw new WalletAddressFormatError(msgInvalidWalletAddress)
