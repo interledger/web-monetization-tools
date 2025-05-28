@@ -1,4 +1,3 @@
-import type { LinkProps } from '@remix-run/react'
 import { cx } from 'class-variance-authority'
 import { Button, InfoWithTooltip } from './index.js'
 import placeholderImg from '~/assets/images/placeholder.svg'
