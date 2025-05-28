@@ -17,10 +17,8 @@ app.use(
   cors({
     origin: '*',
     allowMethods: ['GET', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Accept'],
-    exposeHeaders: ['Content-Length'],
-    credentials: false,
-    maxAge: 300
+    // seconds the browser should cache the preflight response
+    maxAge: 7200
   })
 )
 
