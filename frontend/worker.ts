@@ -19,6 +19,8 @@ export default {
         return Response.redirect(new URL(`${APP_BASEPATH}/`, request.url), 302)
       }
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       const build = await import('./build/server/index.js')
       const requestHandler = createRequestHandler(
         build as unknown as ServerBuild

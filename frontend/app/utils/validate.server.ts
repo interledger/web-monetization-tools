@@ -187,7 +187,7 @@ async function isValidWalletAddress(
     throw new WalletAddressFormatError(msgInvalidWalletAddress, {
       cause: error
     })
-  })) as WalletAddress
+  })) as Record<string, unknown>
 
   if (!isWalletAddress(json)) {
     throw new WalletAddressFormatError(msgInvalidWalletAddress)
