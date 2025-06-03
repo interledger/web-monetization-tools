@@ -6,6 +6,11 @@ export default defineConfig(({ mode }) => {
 
   return {
     envDir: resolve(__dirname),
+    resolve: {
+      alias: {
+        '@shared': resolve(__dirname, '../frontend/shared')
+      }
+    },
     build: {
       lib: {
         // entry point for the script file
@@ -25,7 +30,8 @@ export default defineConfig(({ mode }) => {
           compact: !isDevelopment,
           manualChunks: undefined
         },
-        external: []
+        external: [],
+        treeshake: false
       },
       cssCodeSplit: false,
       minify: !isDevelopment,

@@ -2,6 +2,8 @@ import {
   type PendingGrant,
   type WalletAddress,
   type AuthenticatedClient,
+  type OutgoingPayment,
+  type Quote,
   isFinalizedGrant,
   isPendingGrant,
   createAuthenticatedClient
@@ -127,6 +129,7 @@ export interface Amount {
 type CreateOutgoingPaymentParams = {
   walletAddress: WalletAddress
   debitAmount: Amount
+  receiveAmount?: Amount
   nonce?: string
   paymentId: string
   opClient: AuthenticatedClient
@@ -141,7 +144,8 @@ async function createOutgoingPaymentGrant(
     nonce,
     paymentId,
     opClient,
-    redirectUrl
+    redirectUrl,
+    receiveAmount
   } = params
 
   const grant = await opClient.grant
@@ -185,6 +189,60 @@ async function createOutgoingPaymentGrant(
   return grant
 }
 
+async function createIncomingPaymentGrant(
+  urlAuthServer: string,
+  opClient: AuthenticatedClient
+) {
+  const nonInteractiveGrant = await opClient.grant.request(
+    {
+      url: urlAuthServer
+    },
+    {
+      access_token: {
+        access: [
+          {
+            type: 'incoming-payment',
+            actions: ['read', 'create', 'complete']
+          }
+        ]
+      }
+    }
+  )
+
+  if (isPendingGrant(nonInteractiveGrant)) {
+    throw new Error('Expected non-interactive grant')
+  }
+
+  return nonInteractiveGrant
+}
+
+type QuoteGrantParams = {
+  authServer: string
+  opClient: AuthenticatedClient
+}
+
+async function createQuoteGrant({ authServer, opClient }: QuoteGrantParams) {
+  return await opClient.grant
+    .request(
+      {
+        url: authServer
+      },
+      {
+        access_token: {
+          access: [
+            {
+              type: 'quote',
+              actions: ['create', 'read']
+            }
+          ]
+        }
+      }
+    )
+    .catch(() => {
+      throw new Error('Could not retrieve quote grant.')
+    })
+}
+
 export async function isGrantValidAndAccepted(
   env: Env,
   payment: PendingGrant,
@@ -210,6 +268,115 @@ export async function isGrantValidAndAccepted(
   return continuation?.access_token?.value ? true : false
 }
 
+export type QuoteResponse = Quote & { incomingPaymentGrantToken: string }
+
+export async function fetchQuote(
+  args: {
+    walletAddress: string
+    amount: number
+    note?: string
+  },
+  receiver: WalletAddress,
+  env: Env
+): Promise<QuoteResponse> {
+  const opClient = await createClient(env)
+  const walletAddress = await getWalletAddress(
+    env,
+    args.walletAddress,
+    opClient
+  )
+
+  const amountObj = {
+    value: BigInt(
+      (args.amount * 10 ** walletAddress.assetScale).toFixed()
+    ).toString(),
+    assetCode: walletAddress.assetCode,
+    assetScale: walletAddress.assetScale
+  }
+
+  const incomingPaymentGrant = await createIncomingPaymentGrant(
+    receiver.authServer,
+    opClient
+  )
+
+  // create incoming payment without incoming amount
+  const incomingPayment = await createIncomingPayment({
+    accessToken: incomingPaymentGrant.access_token.value,
+    walletAddress: receiver,
+    note: args.note || '',
+    opClient
+  })
+
+  const quoteGrant = await createQuoteGrant({
+    authServer: walletAddress.authServer,
+    opClient: opClient
+  })
+
+  if (isPendingGrant(quoteGrant)) {
+    throw new Error('Expected non-interactive grant')
+  }
+
+  // create quote with debit amount, you don't care how much money receiver gets
+  const quote = await opClient.quote
+    .create(
+      {
+        url: walletAddress.resourceServer,
+        accessToken: quoteGrant.access_token.value
+      },
+      {
+        method: 'ilp',
+        walletAddress: walletAddress.id,
+        receiver: incomingPayment.id,
+        debitAmount: amountObj
+      }
+    )
+    .catch(() => {
+      throw new Error(
+        `Could not create quote for receiver ${receiver.publicName}.`
+      )
+    })
+
+  const response = {
+    incomingPaymentGrantToken: incomingPaymentGrant.access_token.value,
+    ...quote
+  }
+
+  return response
+}
+
+type CreateIncomingPaymentParams = {
+  accessToken: string
+  walletAddress: WalletAddress
+  note: string
+  opClient: AuthenticatedClient
+}
+
+async function createIncomingPayment({
+  accessToken,
+  walletAddress,
+  note,
+  opClient
+}: CreateIncomingPaymentParams) {
+  // create incoming payment without amount
+  return await opClient.incomingPayment
+    .create(
+      {
+        url: walletAddress.resourceServer,
+        accessToken: accessToken
+      },
+      {
+        expiresAt: new Date(Date.now() + 6000 * 60).toISOString(),
+        walletAddress: walletAddress.id,
+        metadata: {
+          description: note
+        }
+      }
+    )
+    .catch(() => {
+      throw new Error('Unable to create incoming payment.')
+    })
+}
+
 export async function getWalletAddress(
   env: Env,
   url: string,
@@ -225,6 +392,130 @@ export async function getWalletAddress(
     })
 
   return walletAddress
+}
+
+export async function initializePayment(
+  args: {
+    walletAddress: string
+    debitAmount: Amount
+    receiveAmount: Amount
+  },
+  env: Env
+): Promise<PendingGrant> {
+  const opClient = await createClient(env)
+  const walletAddress = await getWalletAddress(
+    env,
+    args.walletAddress,
+    opClient
+  )
+  const clientNonce = crypto.randomUUID()
+  const paymentId = createId()
+
+  const outgoingPaymentGrant = await createOutgoingPaymentGrant({
+    walletAddress: walletAddress,
+    debitAmount: args.debitAmount,
+    receiveAmount: args.receiveAmount,
+    nonce: clientNonce,
+    paymentId: paymentId,
+    opClient,
+    redirectUrl: `http://localhost:3000/tools/payment-confirmation`
+  })
+
+  return outgoingPaymentGrant
+}
+
+export async function finishPayment(
+  outgoingGrant: PendingGrant,
+  quote: Quote,
+  walletAddress: WalletAddress,
+  interactRef: string,
+  env: Env
+): Promise<{ url: string; accessToken: string }> {
+  const opClient = await createClient(env)
+
+  console.log('!!! FINISH PAYMENT', {
+    payment: outgoingGrant,
+    quote,
+    walletAddress,
+    interactRef
+  })
+
+  const continuation = await opClient.grant.continue(
+    {
+      accessToken: outgoingGrant.continue.access_token.value,
+      url: outgoingGrant.continue.uri
+    },
+    {
+      interact_ref: interactRef
+    }
+  )
+
+  console.log('!!! CONTINUATION', continuation)
+
+  if (!isFinalizedGrant(continuation)) {
+    throw new Error('Expected finalized grant.')
+  }
+
+  const url = walletAddress.resourceServer
+
+  const outgoingPayment = await opClient.outgoingPayment
+    .create(
+      {
+        url: url,
+        accessToken: continuation.access_token.value
+      },
+      {
+        walletAddress: walletAddress.id,
+        quoteId: quote.id,
+        metadata: {
+          description: 'Tools Payment'
+        }
+      }
+    )
+    .catch((error) => {
+      throw new Error('Could not create outgoing payment.')
+    })
+
+  return {
+    url: outgoingPayment.id,
+    accessToken: continuation.access_token.value
+  }
+}
+
+export async function checkOutgoingPayment(
+  finishPaymentUrl: string,
+  accessToken: string,
+  accessTokenIncomingPayment: string,
+  receiver: string,
+  env: Env
+): Promise<OutgoingPayment> {
+  const opClient = await createClient(env)
+  await timeout(3000)
+
+  // get outgoing payment, to check if there was enough balance
+  const checkOutgoingPaymentResponse = await opClient.outgoingPayment.get({
+    url: finishPaymentUrl,
+    accessToken: accessToken
+  })
+
+  if (!(Number(checkOutgoingPaymentResponse.sentAmount.value) > 0)) {
+    throw new Error('Payment failed. Check your balance and try again.')
+  }
+
+  await opClient.incomingPayment
+    .complete({
+      url: receiver,
+      accessToken: accessTokenIncomingPayment
+    })
+    .catch(() => {
+      throw new Error('Could not complete incoming payment.')
+    })
+
+  return checkOutgoingPaymentResponse
+}
+
+function timeout(delay: number) {
+  return new Promise((res) => setTimeout(res, delay))
 }
 
 async function createHeaders({

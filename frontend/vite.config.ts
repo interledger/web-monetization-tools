@@ -53,5 +53,14 @@ export default defineConfig({
     assetsDir: `${APP_BASEPATH.replace(/^\//, '')}/assets`,
     sourcemap: true,
     target: 'esnext'
+  },
+  esbuild: {
+    target: 'esnext',
+    tsconfigRaw: {
+      compilerOptions: {
+        experimentalDecorators: true,
+        useDefineForClassFields: false
+      }
+    }
   }
 })

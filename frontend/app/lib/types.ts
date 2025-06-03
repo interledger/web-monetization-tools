@@ -126,7 +126,6 @@ export interface WalletAddress {
 
 declare global {
   interface Env {
-    SCRIPT_ILPAY_URL: string
     SCRIPT_EMBED_URL: string
 
     OP_KEY_ID: string

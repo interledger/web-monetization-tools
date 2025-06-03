@@ -44,14 +44,12 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
   session.unset('is-grant-response')
 
   const defaultConfig = getDefaultData()
-  const ilpayUrl = env.SCRIPT_ILPAY_URL
   const scriptInitUrl = env.SCRIPT_EMBED_URL
 
   return json(
     {
       elementType,
       defaultConfig,
-      ilpayUrl,
       scriptInitUrl,
       walletAddress,
       contentOnlyParam,
@@ -72,7 +70,6 @@ export default function Create() {
   const {
     elementType,
     defaultConfig,
-    ilpayUrl,
     scriptInitUrl,
     walletAddress,
     contentOnlyParam,
@@ -319,7 +316,6 @@ export default function Create() {
                 toolConfig={toolConfig}
                 openWidget={openWidget}
                 setOpenWidget={setOpenWidget}
-                ilpayUrl={ilpayUrl}
               />
               <ToolConfig
                 type={elementType}
