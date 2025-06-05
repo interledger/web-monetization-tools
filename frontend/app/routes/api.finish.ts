@@ -31,10 +31,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
       interactRef,
       env
     )
-
-    console.log('### Payment finished response: ', finishPaymentResponse)
-
-    const outgoingPayment = await checkOutgoingPayment(
+    const paymentResult = await checkOutgoingPayment(
       finishPaymentResponse.url,
       finishPaymentResponse.accessToken,
       quote.incomingPaymentGrantToken,
@@ -42,9 +39,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
       env
     )
 
-    console.log('### Payment finished successfully? ', outgoingPayment)
-
-    return json({ outgoingPayment } as const)
+    return json({ ...paymentResult })
   } catch (error) {
     console.error('Payment API error:', error)
     return json(

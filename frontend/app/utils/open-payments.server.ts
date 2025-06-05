@@ -307,6 +307,12 @@ export async function fetchQuote(
     opClient
   })
 
+  // revoke grant to avoid leaving users with unused, dangling grants.
+  await opClient.grant.cancel({
+    url: incomingPaymentGrant.continue.uri,
+    accessToken: incomingPaymentGrant.continue.access_token.value
+  })
+
   const quoteGrant = await createQuoteGrant({
     authServer: walletAddress.authServer,
     opClient: opClient
@@ -433,13 +439,6 @@ export async function finishPayment(
 ): Promise<{ url: string; accessToken: string }> {
   const opClient = await createClient(env)
 
-  console.log('!!! FINISH PAYMENT', {
-    payment: outgoingGrant,
-    quote,
-    walletAddress,
-    interactRef
-  })
-
   const continuation = await opClient.grant.continue(
     {
       accessToken: outgoingGrant.continue.access_token.value,
@@ -449,8 +448,6 @@ export async function finishPayment(
       interact_ref: interactRef
     }
   )
-
-  console.log('!!! CONTINUATION', continuation)
 
   if (!isFinalizedGrant(continuation)) {
     throw new Error('Expected finalized grant.')
@@ -472,7 +469,7 @@ export async function finishPayment(
         }
       }
     )
-    .catch((error) => {
+    .catch(() => {
       throw new Error('Could not create outgoing payment.')
     })
 
@@ -488,7 +485,7 @@ export async function checkOutgoingPayment(
   accessTokenIncomingPayment: string,
   receiver: string,
   env: Env
-): Promise<OutgoingPayment> {
+): Promise<CheckPaymentResult> {
   const opClient = await createClient(env)
   await timeout(3000)
 
@@ -499,7 +496,13 @@ export async function checkOutgoingPayment(
   })
 
   if (!(Number(checkOutgoingPaymentResponse.sentAmount.value) > 0)) {
-    throw new Error('Payment failed. Check your balance and try again.')
+    return {
+      success: false,
+      error: {
+        code: 'INSUFFICIENT_BALANCE',
+        message: 'Insufficient funds. Check your balance and try again.'
+      }
+    }
   }
 
   await opClient.incomingPayment
@@ -508,15 +511,28 @@ export async function checkOutgoingPayment(
       accessToken: accessTokenIncomingPayment
     })
     .catch(() => {
-      throw new Error('Could not complete incoming payment.')
+      return {
+        success: false,
+        error: {
+          code: 'INCOMING_PAYMENT_FAILED',
+          message: 'Could not complete incoming payment.'
+        }
+      }
     })
 
-  return checkOutgoingPaymentResponse
+  return { success: true }
 }
 
 function timeout(delay: number) {
   return new Promise((res) => setTimeout(res, delay))
 }
+
+type CheckPaymentResult =
+  | { success: true }
+  | {
+      success: false
+      error: { code: string; message: string; details?: Error }
+    }
 
 async function createHeaders({
   request,

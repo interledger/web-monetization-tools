@@ -249,15 +249,9 @@ export class PaymentWidget extends LitElement {
     )
   }
 
-  private handlePaymentRejected() {
-    this.walletAddress = null
-    this.currentView = 'home'
-  }
-
   private async handleInteractionCompleted(e: CustomEvent) {
     const { interact_ref } = e.detail
 
-    console.log('!!! Interaction completed with ref:')
     const response = await fetch(`http://localhost:3000/tools/api/finish`, {
       method: 'POST',
       headers: {
@@ -353,7 +347,6 @@ export class PaymentWidget extends LitElement {
         .note=${this.config.note || ''}
         @back=${this.navigateToHome}
         @payment-confirmed=${this.navigateToInteraction}
-        @payment-rejected=${this.handlePaymentRejected}
       ></wm-payment-confirmation>
     `
   }
@@ -361,9 +354,13 @@ export class PaymentWidget extends LitElement {
   private renderInteractionView() {
     return html`
       <wm-payment-interaction
-        .interactUrl=${this.outgoingGrant.interact?.redirect || ''}
+        .interactUrl=${this.outgoingGrant.interact!.redirect}
+        .senderWalletAddress=${this.walletAddress!.id}
+        .grant=${this.outgoingGrant}
+        .quote=${this.quote}
         @interaction-completed=${this.handleInteractionCompleted}
         @interaction-cancelled=${this.handleInteractionCancelled}
+        @back=${this.navigateToHome}
       ></wm-payment-interaction>
     `
   }

@@ -1,8 +1,17 @@
 import { html, css, LitElement } from 'lit'
-import { property } from 'lit/decorators.js'
+import { property, state } from 'lit/decorators.js'
 
 export class PaymentInteraction extends LitElement {
   @property({ type: String }) interactUrl = ''
+  @property({ type: String }) senderWalletAddress = ''
+  @property({ type: Object }) grant: {
+    interact?: { redirect?: string }
+  } = {}
+  @property({ type: Object }) quote = {}
+
+  @state() private currentView: 'authorizing' | 'success' | 'failed' =
+    'authorizing'
+  @state() private errorMessage = ''
 
   static styles = css`
     :host {
@@ -41,11 +50,44 @@ export class PaymentInteraction extends LitElement {
       }
     }
 
+    .status-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .success-icon {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+
+    .error-icon {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+
+    .status-icon svg {
+      width: 32px;
+      height: 32px;
+    }
+
     .status-title {
       margin: 0 0 8px 0;
       font-size: 1.125rem;
       font-weight: 600;
       color: var(--text-color, #000);
+    }
+
+    .status-title.success {
+      color: #16a34a;
+    }
+
+    .status-title.error {
+      color: #dc2626;
     }
 
     .status-description {
@@ -55,15 +97,34 @@ export class PaymentInteraction extends LitElement {
       color: var(--text-color, #000);
     }
 
-    .cancel-button {
-      padding: 8px 16px;
-      background: transparent;
-      border: 2px solid #dc2626;
-      border-radius: 6px;
+    .error-code {
+      font-weight: 600;
       color: #dc2626;
+      font-size: 0.75rem;
+      margin-bottom: 4px;
+    }
+
+    .error-message {
+      color: #dc2626;
+      font-size: 0.875rem;
+      line-height: 1.4;
+    }
+
+    .action-button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
       cursor: pointer;
       font-size: 14px;
+      font-weight: 500;
       transition: all 0.2s ease;
+      min-width: 120px;
+    }
+
+    .cancel-button {
+      background: transparent;
+      border: 2px solid #dc2626;
+      color: #dc2626;
     }
 
     .cancel-button:hover {
@@ -71,14 +132,22 @@ export class PaymentInteraction extends LitElement {
       color: white;
     }
 
-    .error-message {
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      border-radius: 6px;
-      padding: 12px;
-      margin-bottom: 16px;
-      color: #dc2626;
-      font-size: 0.875rem;
+    .success-button {
+      background: #16a34a;
+      color: white;
+    }
+
+    .success-button:hover {
+      background: #15803d;
+    }
+
+    .retry-button {
+      background: #dc2626;
+      color: white;
+    }
+
+    .retry-button:hover {
+      background: #b91c1c;
     }
   `
 
@@ -102,35 +171,20 @@ export class PaymentInteraction extends LitElement {
     const { paymentId, hash, interact_ref, result } = event.data
 
     if (result === 'grant_rejected') {
-      return this.dispatchEvent(
-        new CustomEvent('interaction-rejected', {
-          bubbles: true,
-          composed: true
-        })
-      )
+      this.currentView = 'failed'
+      this.errorMessage = 'Payment authorization was rejected'
+      this.requestUpdate()
+      return
     }
 
     if (!paymentId || !interact_ref) {
-      return this.dispatchEvent(
-        new CustomEvent('interaction-error', {
-          bubbles: true,
-          composed: true
-        })
-      )
+      this.currentView = 'failed'
+      this.errorMessage = 'Invalid payment response received'
+      this.requestUpdate()
+      return
     }
 
-    console.log('!!! Interaction completed:')
-    console.log('Payment ID:', paymentId)
-    console.log('Hash:', hash)
-    console.log('Interact Reference:', interact_ref)
-
-    return this.dispatchEvent(
-      new CustomEvent('interaction-completed', {
-        detail: { interact_ref, hash, paymentId },
-        bubbles: true,
-        composed: true
-      })
-    )
+    this.handleInteractionCompleted(interact_ref)
   }
 
   private cancel() {
@@ -142,7 +196,56 @@ export class PaymentInteraction extends LitElement {
     )
   }
 
-  render() {
+  private goBack() {
+    this.dispatchEvent(
+      new CustomEvent('back', {
+        bubbles: true,
+        composed: true
+      })
+    )
+  }
+
+  private async handleInteractionCompleted(interactRef: string) {
+    try {
+      const response = await fetch(`http://localhost:3000/tools/api/finish`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          walletAddress: this.senderWalletAddress,
+          grant: this.grant,
+          quote: this.quote,
+          interactRef
+        })
+      })
+
+      if (!response.ok) {
+        this.currentView = 'failed'
+        this.errorMessage = 'Failed to process payment. Please try again.'
+        this.requestUpdate()
+        return
+      }
+
+      const result = (await response.json()) as CheckPaymentResult
+      console.log('Payment result:', result)
+      if (result.success === false) {
+        this.currentView = 'failed'
+        this.errorMessage = result.error.message
+        this.requestUpdate()
+        return
+      }
+
+      this.currentView = 'success'
+      this.requestUpdate()
+    } catch {
+      this.currentView = 'failed'
+      this.errorMessage = 'There was an issues with your request.'
+      this.requestUpdate()
+    }
+  }
+
+  private renderAuthorizingView() {
     return html`
       <div class="interaction-container">
         <div class="spinner"></div>
@@ -150,10 +253,79 @@ export class PaymentInteraction extends LitElement {
         <p class="status-description">
           Please complete the authorization in the opened tab
         </p>
-        <button class="cancel-button" @click=${this.cancel}>Cancel</button>
+        <button class="action-button cancel-button" @click=${this.cancel}>
+          Cancel
+        </button>
       </div>
     `
   }
+
+  private renderSuccessView() {
+    return html`
+      <div class="interaction-container">
+        <div class="status-icon success-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        </div>
+        <h3 class="status-title success">Payment Complete!</h3>
+        <p class="status-description">
+          Your payment has been processed successfully.
+        </p>
+        <button class="action-button success-button" @click=${this.goBack}>
+          Done
+        </button>
+      </div>
+    `
+  }
+
+  private renderFailedView() {
+    return html`
+      <div class="interaction-container">
+        <div class="status-icon error-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </div>
+        <h3 class="status-title error">${this.errorMessage}</h3>
+
+        <div style="display: flex; gap: 12px;">
+          <button class="action-button cancel-button" @click=${this.goBack}>
+            Go to homepage
+          </button>
+        </div>
+      </div>
+    `
+  }
+
+  render() {
+    switch (this.currentView) {
+      case 'success':
+        return this.renderSuccessView()
+      case 'failed':
+        return this.renderFailedView()
+      case 'authorizing':
+      default:
+        return this.renderAuthorizingView()
+    }
+  }
 }
+
+type CheckPaymentResult =
+  | { success: true }
+  | {
+      success: false
+      error: { code: string; message: string; details?: Error }
+    }
 
 customElements.define('wm-payment-interaction', PaymentInteraction)

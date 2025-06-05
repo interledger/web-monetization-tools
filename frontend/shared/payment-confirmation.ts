@@ -362,15 +362,15 @@ export class PaymentConfirmation extends LitElement {
     return symbols[this.walletAddress!.assetCode.toLowerCase()]
   }
 
-  //   private debouncedProcessPayment(amount: string) {
-  //     if (this.debounceTimer) {
-  //       clearTimeout(this.debounceTimer)
-  //     }
+  private debouncedProcessPayment(amount: string) {
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer)
+    }
 
-  //     this.debounceTimer = window.setTimeout(() => {
-  //       this.processPaymentForAmount(amount)
-  //     }, 500)
-  //   }
+    this.debounceTimer = window.setTimeout(() => {
+      this.processPaymentForAmount(amount)
+    }, 700)
+  }
 
   private async processPaymentForAmount(amount: string) {
     if (!amount || amount === '0' || parseFloat(amount) <= 0) {
