@@ -350,12 +350,7 @@ export class OpenPaymentsService {
       },
       {
         access_token: {
-          access: [
-            {
-              type: 'quote',
-              actions: ['create', 'read']
-            }
-          ]
+          access: [{ type: 'quote', actions: ['create', 'read'] }]
         }
       }
     ).catch(() => {
@@ -372,6 +367,7 @@ export class OpenPaymentsService {
       nonce,
       paymentId,
       redirectUrl,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       receiveAmount
     } = params
 
