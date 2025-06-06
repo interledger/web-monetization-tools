@@ -1,4 +1,7 @@
 name = "publisher-tools-api"
-main = "dist/index.js"
+main = "dist/index.ts"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
+
+[vars]
+FRONTEND_URL = "https://webmonetization.org/tools/"
