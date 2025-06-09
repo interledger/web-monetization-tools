@@ -3,3 +3,4 @@ packages:
   - 'frontend'
   - 'embed'
   - 'cdn'
+  - 'components'

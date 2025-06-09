@@ -88,7 +88,21 @@ importers:
         specifier: ^4.16.1
         version: 4.16.1(@cloudflare/workers-types@4.20250507.0)
 
+  components:
+    dependencies:
+      lit:
+        specifier: ^3.1.0
+        version: 3.3.0
+    devDependencies:
+      typescript:
+        specifier: ^5.3.3
+        version: 5.8.3
+
   embed:
+    dependencies:
+      '@web-monetization-tools/components':
+        specifier: workspace:*
+        version: link:../components
     devDependencies:
       typescript:
         specifier: ^5.1.6
@@ -126,6 +140,9 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^8.33.0
         version: 8.33.0(eslint@9.27.0(jiti@2.4.2))(typescript@5.8.3)
+      '@web-monetization-tools/components':
+        specifier: workspace:*
+        version: link:../components
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.21(postcss@8.5.3)

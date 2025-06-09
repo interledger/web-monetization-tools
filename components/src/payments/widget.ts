@@ -1,7 +1,7 @@
 import { html, css, LitElement } from 'lit'
 import { property, state } from 'lit/decorators.js'
-import './payment-confirmation.js'
-import './payment-interaction.js'
+import './confirmation.js'
+import './interaction.js'
 
 export interface PaymentConfig {
   walletAddress: string
@@ -283,8 +283,6 @@ export class PaymentWidget extends LitElement {
 
   private navigateToInteraction(e: CustomEvent) {
     const { grant, quote } = e.detail
-
-    console.log('!!!! Navigating to interaction with grant:', grant)
 
     this.outgoingGrant = grant
     this.quote = quote

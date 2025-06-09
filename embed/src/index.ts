@@ -1,4 +1,4 @@
-import '@shared/payment-component.ts'
+import '@web-monetization-tools/components/payments/widget'
 
 /* eslint-disable no-case-declarations */
 const FRONTEND_URL = import.meta.env.VITE_SCRIPT_FRONTEND_URL

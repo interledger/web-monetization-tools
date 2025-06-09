@@ -1,6 +1,6 @@
 import { html, css, LitElement } from 'lit'
 import { property, state } from 'lit/decorators.js'
-import type { WalletAddress } from './payment-component'
+import type { WalletAddress } from './widget.js'
 
 export interface PaymentDetails {
   walletAddress: string
@@ -13,6 +13,7 @@ export interface PaymentDetails {
 }
 
 export class PaymentConfirmation extends LitElement {
+  @property({ type: String }) inputWidth = ''
   @property({ type: Object }) walletAddress: WalletAddress | null = null
   @property({ type: String }) receiverAddress = ''
   @property({ type: String }) note = ''
@@ -62,10 +63,10 @@ export class PaymentConfirmation extends LitElement {
       background: transparent;
       border: none;
       outline: none;
-      text-align: left;
-      min-width: 60px;
-      max-width: 200px;
+      text-align: center;
       caret-color: var(--primary-color);
+      width: var(--input-width, 50px);
+      max-width: 200px;
     }
 
     .amount-input::placeholder {
@@ -368,8 +369,9 @@ export class PaymentConfirmation extends LitElement {
     }
 
     this.debounceTimer = window.setTimeout(() => {
-      this.processPaymentForAmount(amount)
-    }, 700)
+      const formatted = amount.replace(/,/g, '')
+      this.processPaymentForAmount(formatted)
+    }, 750)
   }
 
   private async processPaymentForAmount(amount: string) {
@@ -384,7 +386,6 @@ export class PaymentConfirmation extends LitElement {
     this.requestUpdate()
 
     try {
-      // USE THIS INSTEAD
       const paymentData = {
         walletAddress: this.walletAddress!.id,
         receiver: this.receiverAddress,
@@ -425,43 +426,47 @@ export class PaymentConfirmation extends LitElement {
 
   private handleAmountInput(e: Event) {
     const input = e.target as HTMLInputElement
-    let value = input.value
 
-    // allow only numbers and decimal point
-    value = value.replace(/[^0-9.]/g, '')
-
-    // ensure only one decimal point
-    const parts = value.split('.')
-    if (parts.length > 2) {
-      value = parts[0] + '.' + parts.slice(1).join('')
-    }
-
-    // limit to 2 decimal places
-    if (parts[1] && parts[1].length > 2) {
-      value = parts[0] + '.' + parts[1].substring(0, 2)
-    }
-
-    this.inputAmount = value
-    this.debouncedProcessPayment(value)
+    // this.inputAmount = value
+    const formatted = this.formatAmount(input.value)
+    this.inputAmount = formatted
+    this.inputWidth = this.calculateInputWidth(formatted)
+    this.debouncedProcessPayment(this.inputAmount)
     this.requestUpdate()
   }
 
-  private handleAmountKeyDown(e: KeyboardEvent) {
-    // allow: backspace, delete, tab, escape, enter
-    if (
-      [8, 9, 27, 13, 46].indexOf(e.keyCode) !== -1 ||
-      // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
-      (e.keyCode === 65 && e.ctrlKey === true) ||
-      (e.keyCode === 67 && e.ctrlKey === true) ||
-      (e.keyCode === 86 && e.ctrlKey === true) ||
-      (e.keyCode === 88 && e.ctrlKey === true) ||
-      // Allow: home, end, left, right
-      (e.keyCode >= 35 && e.keyCode <= 39)
-    ) {
+  /** Formats the input amount to 2 decimal places and adds commas */
+  formatAmount(value: string) {
+    if (!value) return ''
+
+    const numericValue = value.replace(/[^0-9.]/g, '')
+
+    const parts = numericValue.split('.')
+    if (parts.length > 2) {
+      return parts[0] + '.' + parts.slice(1).join('')
+    }
+
+    if (parts[1] && parts[1].length > 2) {
+      parts[1] = parts[1].substring(0, 2)
+    }
+
+    const number = parseFloat(parts.join('.'))
+    if (isNaN(number)) return ''
+
+    return new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    }).format(number)
+  }
+
+  private handleKeyDown(e: KeyboardEvent) {
+    // allow only: backspace (8) and delete (46)
+    if ([8, 46, 37, 39].includes(e.keyCode)) {
       return
     }
-    // allow: numbers, decimal point
+
     if (
+      // allow only numbers (48-57, 96-105) and decimal point (190, 110)
       (e.shiftKey || e.keyCode < 48 || e.keyCode > 57) &&
       (e.keyCode < 96 || e.keyCode > 105) &&
       e.keyCode !== 190 &&
@@ -469,6 +474,25 @@ export class PaymentConfirmation extends LitElement {
     ) {
       e.preventDefault()
     }
+
+    // only allow one decimal point
+    const input = e.target as HTMLInputElement
+    if ((e.keyCode === 190 || e.keyCode === 110) && input.value.includes('.')) {
+      e.preventDefault()
+    }
+  }
+
+  /** Measures the width of the input field using a temporary canvas */
+  calculateInputWidth(input: string) {
+    const canvas = document.createElement('canvas')
+    const context = canvas.getContext('2d')
+    context!.font = '2.5rem Arial' // match the input font size
+    const width = context!.measureText(input || '$0.00').width
+    return input ? width + 20 + 'px' : '50px'
+  }
+
+  updated(): void {
+    this.style.setProperty('--input-width', this.inputWidth)
   }
 
   private async getPaymentQuote(paymentData: {
@@ -518,7 +542,6 @@ export class PaymentConfirmation extends LitElement {
       this.dispatchEvent(
         new CustomEvent('payment-confirmed', {
           detail: {
-            // @ts-expect-error todo: add types
             grant: { ...outgoingPaymentGrant },
             quote: this.paymentDetails?.quote
           },
@@ -588,7 +611,8 @@ export class PaymentConfirmation extends LitElement {
             placeholder="0"
             .value=${this.inputAmount}
             @input=${this.handleAmountInput}
-            @keydown=${this.handleAmountKeyDown}
+            @paste=${(e: Event) => e.preventDefault()}
+            @keydown=${this.handleKeyDown}
             autocomplete="off"
             spellcheck="false"
           />

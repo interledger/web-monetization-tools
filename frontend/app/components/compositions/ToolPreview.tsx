@@ -9,8 +9,8 @@ import {
 import { generateConfigCss, getWebMonetizationLink } from '~/lib/utils.js'
 import { NotFoundConfig } from '../index.js'
 import eyeSvg from '~/assets/images/eye.svg'
-import '../../../shared/payment-component.js'
-import type { PaymentConfig } from '../../../shared/payment-component'
+import '@web-monetization-tools/components/payments/widget'
+import type { PaymentConfig } from '@web-monetization-tools/components'
 
 const ButtonConfig = ({ config }: { config: ElementConfigType }) => {
   return (
