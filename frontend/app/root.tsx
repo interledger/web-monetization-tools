@@ -1,6 +1,5 @@
 import {
   type LinksFunction,
-  type LoaderFunctionArgs,
   type MetaFunction,
   json
 } from '@remix-run/cloudflare'
