@@ -15,6 +15,7 @@ type ImportModalProps = {
     versionName: string
   ) => void
   setToolConfig: React.Dispatch<React.SetStateAction<ElementConfigType>>
+  elementType: string
   onClose: () => void
   onImport?: (walletAddress: string) => void
 }
@@ -25,6 +26,7 @@ export const ImportModal = ({
   isOpen,
   onClose,
   toolConfig,
+  elementType,
   setConfigs = () => {},
   setToolConfig = () => {}
 }: ImportModalProps) => {
@@ -40,7 +42,7 @@ export const ImportModal = ({
       const walletAddress = formData.get('walletAddress')
 
       const response = await fetch(
-        `${basepath}/api/config/banner?walletAddress=${walletAddress}`
+        `${basepath}/api/config/${elementType}?walletAddress=${walletAddress}`
       )
 
       if (!response.ok) {

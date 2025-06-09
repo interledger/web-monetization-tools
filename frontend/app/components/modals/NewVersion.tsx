@@ -16,6 +16,7 @@ type NewVersionModalProps = {
     config: Record<string, ElementConfigType>,
     versionName: string
   ) => void
+  elementType: string
   setModalOpen: React.Dispatch<React.SetStateAction<ModalType | undefined>>
 }
 
@@ -26,6 +27,7 @@ export const NewVersionModal = ({
   toolConfig,
   setToolConfig,
   setConfigs,
+  elementType,
   setModalOpen
 }: NewVersionModalProps) => {
   const versionFetcher = useFetcher()
@@ -85,7 +87,7 @@ export const NewVersionModal = ({
                 <versionFetcher.Form
                   id="new-version-form"
                   method="post"
-                  action="/api/config/banner"
+                  action={`/api/config/${elementType}`}
                 >
                   <fieldset disabled={isSubmitting}>
                     <div className="flex w-full items-center">

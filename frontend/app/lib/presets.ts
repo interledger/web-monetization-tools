@@ -135,11 +135,11 @@ export const availableTools = [
       "The banner informs visitors who don't have the Web Monetization extension active, with a call-to-action linking to the extension or providing details about the options available. It also adds your wallet address for your site to be monetized."
   },
   {
-    enabled: false,
+    enabled: true,
     title: 'Widget',
     image: widgetImg,
     bgColor: 'from-wm-red to-wm-red-fade',
-    link: 'create/widget',
+    link: 'widget',
     tooltip: tooltips.widget,
     description:
       'You can add a widget to provide a brief explanation or description, along with a donation or one-time payment option, even for users without the Web Monetization extension. It also adds your wallet address for your site to be monetized.'
@@ -149,7 +149,7 @@ export const availableTools = [
     title: 'Button',
     image: buttonImg,
     bgColor: 'from-wm-green to-wm-green-fade',
-    link: 'create/button',
+    link: 'button',
     tooltip: '',
     description:
       'You can place a custom button with a short tooltip on your site that triggers a payment option in a full-page overlay, offering a convenient way for visitors to support your work or content.'
