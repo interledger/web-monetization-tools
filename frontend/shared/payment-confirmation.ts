@@ -388,7 +388,7 @@ export class PaymentConfirmation extends LitElement {
       const paymentData = {
         walletAddress: this.walletAddress!.id,
         receiver: this.receiverAddress,
-        amount: amount,
+        amount: Number(amount),
         note: this.note
       }
 
@@ -474,7 +474,7 @@ export class PaymentConfirmation extends LitElement {
   private async getPaymentQuote(paymentData: {
     walletAddress: string
     receiver: string
-    amount: string
+    amount: number
     note: string
   }): Promise<{
     walletAddress: string

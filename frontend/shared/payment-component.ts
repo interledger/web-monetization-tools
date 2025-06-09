@@ -335,8 +335,7 @@ export class PaymentWidget extends LitElement {
     return html`
       <wm-payment-confirmation
         .walletAddress=${this.walletAddress}
-        .receiverAddress=${this.config.receiverAddress ||
-        'https://ilp.interledger-test.dev/darianusd'}
+        .receiverAddress=${this.config.receiverAddress}
         .note=${this.config.note || ''}
         @back=${this.navigateToHome}
         @payment-confirmed=${this.navigateToInteraction}
