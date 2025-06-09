@@ -16,6 +16,7 @@ type RemoveVersionModalProps = {
     config: Record<string, ElementConfigType>,
     versionName: string
   ) => void
+  elementType: string
   setModalOpen: React.Dispatch<React.SetStateAction<ModalType | undefined>>
 }
 
@@ -26,6 +27,7 @@ export const RemoveVersionModal = ({
   onClose,
   toolConfig,
   setConfigs,
+  elementType,
   setModalOpen
 }: RemoveVersionModalProps) => {
   const deleteFetcher = useFetcher()
@@ -81,7 +83,7 @@ export const RemoveVersionModal = ({
                 <deleteFetcher.Form
                   id="remove-version-form"
                   method="delete"
-                  action="/api/config/banner"
+                  action={`/api/config/${elementType}`}
                 >
                   <fieldset disabled={isSubmitting}>
                     <div className="flex justify-center p-4 mx-2">

@@ -8,14 +8,12 @@ import { Chevron } from './icons.js'
 export const PageHeader = ({
   elementType,
   title,
-  contentOnlyLink,
   versionOptions,
   selectedVersion,
   onsetSelectVersion
 }: {
   elementType: string | undefined
   title: string
-  contentOnlyLink: string
   versionOptions: SelectOption[]
   selectedVersion: string
   onsetSelectVersion: (value: string) => void
@@ -74,7 +72,7 @@ export const PageHeader = ({
           className="mr-2"
           aria-label="back"
           onClick={() => {
-            navigate(contentOnlyLink)
+            navigate('/')
           }}
         >
           <Chevron direction="left" className="w-3 h-3 mr-1 -ml-1" /> Back
