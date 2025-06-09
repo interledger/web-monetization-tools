@@ -28,8 +28,6 @@ import { commitSession, getSession } from '~/utils/session.server.js'
 export async function loader({ params, request, context }: LoaderFunctionArgs) {
   const { env } = context.cloudflare
   const elementType = params.type
-  const url = new URL(request.url)
-  const contentOnlyParam = url.searchParams.get('contentOnly')
 
   const session = await getSession(request.headers.get('Cookie'))
   const walletAddress = session.get('wallet-address')
@@ -54,7 +52,6 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
       ilpayUrl,
       scriptInitUrl,
       walletAddress,
-      contentOnlyParam,
       grantResponse,
       isGrantResponse,
       isGrantAccepted,
@@ -75,14 +72,12 @@ export default function Create() {
     ilpayUrl,
     scriptInitUrl,
     walletAddress,
-    contentOnlyParam,
     isGrantAccepted,
     grantResponse,
     isGrantResponse
   } = useLoaderData<typeof loader>()
   const navigation = useNavigation()
   const isSubmitting = navigation.state === 'submitting'
-  const contentOnly = contentOnlyParam != null
 
   const saveFetcher = useFetcher()
   const [openWidget, setOpenWidget] = useState(false)
@@ -286,7 +281,6 @@ export default function Create() {
       <PageHeader
         title={`Create ${elementType}`}
         elementType={elementType}
-        contentOnlyLink={contentOnly ? '/?contentOnly' : '/'}
         versionOptions={versionOptions}
         selectedVersion={selectedVersion}
         onsetSelectVersion={onSelectVersion}

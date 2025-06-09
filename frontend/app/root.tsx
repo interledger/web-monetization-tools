@@ -1,6 +1,5 @@
 import {
   type LinksFunction,
-  type LoaderFunctionArgs,
   type MetaFunction,
   json
 } from '@remix-run/cloudflare'
@@ -19,29 +18,23 @@ import { useEffect, useState } from 'react'
 import stylesheet from '~/tailwind.css?url'
 import { Button, Footer, Header, Snackbar } from './components/index.js'
 import { XCircle } from './components/icons.js'
-import { cx } from 'class-variance-authority'
 import bgTileSvg from '~/assets/images/bg-tile.svg?url'
 import faviconPng from '~/assets/images/favicon.png?url'
 import faviconIco from '~/assets/images/favicon.ico?url'
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const url = new URL(request.url)
-  const contentOnlyParam = url.searchParams.get('contentOnly')
-
+export const loader = async () => {
   let message
 
   if (!message) {
-    return json({ message: null, contentOnlyParam })
+    return json({ message: null })
   }
 
-  return json({ message, contentOnlyParam })
+  return json({ message })
 }
 
 export default function App() {
-  const { message, contentOnlyParam } = useLoaderData<typeof loader>()
+  const { message } = useLoaderData<typeof loader>()
   const [snackbarOpen, setSnackbarOpen] = useState(false)
-
-  const contentOnly = contentOnlyParam != null
 
   useEffect(() => {
     if (!message) {
@@ -62,17 +55,14 @@ export default function App() {
         <main className="h-auto min-h-full flex flex-col justify-between">
           <div
             style={{
-              backgroundImage: !contentOnly ? `url(${bgTileSvg})` : undefined
+              backgroundImage: `url(${bgTileSvg})`
             }}
-            className={cx(
-              'h-full flex flex-col',
-              !contentOnly ? `bg-[auto_25em]` : 'bg-transparent'
-            )}
+            className={'h-full flex flex-col bg-[auto_25em]'}
           >
-            {!contentOnly && <Header />}
+            <Header />
             <Outlet />
           </div>
-          {!contentOnly && <Footer />}
+          <Footer />
         </main>
         <Snackbar
           id="snackbar"
