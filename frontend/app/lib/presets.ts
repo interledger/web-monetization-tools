@@ -149,7 +149,7 @@ export const availableTools = [
     title: 'Button',
     image: buttonImg,
     bgColor: 'from-wm-green to-wm-green-fade',
-    link: 'create/button',
+    link: 'button',
     tooltip: '',
     description:
       'You can place a custom button with a short tooltip on your site that triggers a payment option in a full-page overlay, offering a convenient way for visitors to support your work or content.'
