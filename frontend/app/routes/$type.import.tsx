@@ -1,4 +1,4 @@
-import { useNavigate, useOutletContext } from '@remix-run/react'
+import { useNavigate, useOutletContext, useParams } from '@remix-run/react'
 import { ImportModal } from '~/components/modals/index.js'
 import { APP_BASEPATH } from '~/lib/constants.js'
 import type { ElementConfigType } from '~/lib/types.js'
@@ -11,6 +11,7 @@ type ContextType = {
 
 export default function ImportRoute() {
   const navigate = useNavigate()
+  const params = useParams<{ type: string }>()
   const { toolConfig, setConfigs, setToolConfig } =
     useOutletContext<ContextType>()
 
@@ -23,6 +24,7 @@ export default function ImportRoute() {
       toolConfig={toolConfig}
       setConfigs={setConfigs}
       setToolConfig={setToolConfig}
+      elementType={params.type!}
     />
   )
 }

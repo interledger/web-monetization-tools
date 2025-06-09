@@ -1,4 +1,4 @@
-import { useNavigate, useOutletContext } from '@remix-run/react'
+import { useNavigate, useOutletContext, useParams } from '@remix-run/react'
 import { RemoveVersionModal } from '~/components/modals/index.js'
 import type { ElementConfigType } from '~/lib/types.js'
 import type { ModalType } from '~/lib/presets.js'
@@ -15,6 +15,7 @@ type ContextType = {
 
 export default function RemoveVersionRoute() {
   const navigate = useNavigate()
+  const params = useParams<{ type: string }>()
   const { toolConfig, setConfigs, setModalOpen, selectedVersion } =
     useOutletContext<ContextType>()
 
@@ -27,6 +28,7 @@ export default function RemoveVersionRoute() {
       toolConfig={toolConfig}
       setConfigs={setConfigs}
       setModalOpen={setModalOpen}
+      elementType={params.type!}
     />
   )
 }

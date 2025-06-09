@@ -272,7 +272,7 @@ export default function Create() {
 
     saveFetcher.submit(formData, {
       method: 'put',
-      action: '/api/config/banner'
+      action: `/api/config/${elementType}`
     })
   }
 
@@ -290,7 +290,7 @@ export default function Create() {
           <saveFetcher.Form
             id="config-form"
             method="put"
-            action="/api/config/banner"
+            action={`/api/config/${elementType}`}
             onSubmit={async (e) => {
               e.preventDefault()
               const formData = new FormData(e.currentTarget)
@@ -303,7 +303,7 @@ export default function Create() {
               formData.set('intent', 'update')
               saveFetcher.submit(formData, {
                 method: 'put',
-                action: '/api/config/banner'
+                action: `/api/config/${elementType}`
               })
             }}
           >
