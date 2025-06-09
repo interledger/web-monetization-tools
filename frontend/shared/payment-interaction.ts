@@ -207,18 +207,21 @@ export class PaymentInteraction extends LitElement {
 
   private async handleInteractionCompleted(interactRef: string) {
     try {
-      const response = await fetch(`http://localhost:3000/tools/api/finish`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          walletAddress: this.senderWalletAddress,
-          grant: this.grant,
-          quote: this.quote,
-          interactRef
-        })
-      })
+      const response = await fetch(
+        `http://localhost:8787/tools/payment/finalize`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            walletAddress: this.senderWalletAddress,
+            grant: this.grant,
+            quote: this.quote,
+            interactRef
+          })
+        }
+      )
 
       if (!response.ok) {
         this.currentView = 'failed'

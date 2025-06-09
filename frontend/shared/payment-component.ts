@@ -21,6 +21,20 @@ export interface PaymentConfig {
   }
 }
 
+export type Quote = {
+  id: string
+  receiveAmount: {
+    value: string
+    assetCode: string
+    assetScale: number
+  }
+  debitAmount: {
+    value: string
+    assetCode: string
+    assetScale: number
+  }
+}
+
 export type WalletAddress = {
   id: string
   publicName: string
@@ -249,30 +263,6 @@ export class PaymentWidget extends LitElement {
     )
   }
 
-  private async handleInteractionCompleted(e: CustomEvent) {
-    const { interact_ref } = e.detail
-
-    const response = await fetch(`http://localhost:3000/tools/api/finish`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        walletAddress: this.walletAddress?.id,
-        grant: this.outgoingGrant,
-        quote: this.quote,
-        interactRef: interact_ref
-      })
-    })
-
-    if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.error || 'Payment failed')
-    }
-
-    this.currentView = 'home'
-  }
-
   private handleInteractionCancelled() {
     this.currentView = 'confirmation'
   }
@@ -293,6 +283,9 @@ export class PaymentWidget extends LitElement {
 
   private navigateToInteraction(e: CustomEvent) {
     const { grant, quote } = e.detail
+
+    console.log('!!!! Navigating to interaction with grant:', grant)
+
     this.outgoingGrant = grant
     this.quote = quote
     this.currentView = 'interact'
@@ -358,7 +351,6 @@ export class PaymentWidget extends LitElement {
         .senderWalletAddress=${this.walletAddress!.id}
         .grant=${this.outgoingGrant}
         .quote=${this.quote}
-        @interaction-completed=${this.handleInteractionCompleted}
         @interaction-cancelled=${this.handleInteractionCancelled}
         @back=${this.navigateToHome}
       ></wm-payment-interaction>

@@ -484,7 +484,7 @@ export class PaymentConfirmation extends LitElement {
     quote: object
     isQuote: boolean
   }> {
-    const response = await fetch(`http://localhost:3000/tools/api/payment`, {
+    const response = await fetch(`http://localhost:8787/tools/payment/quote`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -519,7 +519,7 @@ export class PaymentConfirmation extends LitElement {
         new CustomEvent('payment-confirmed', {
           detail: {
             // @ts-expect-error todo: add types
-            grant: outgoingPaymentGrant.grant,
+            grant: { ...outgoingPaymentGrant },
             quote: this.paymentDetails?.quote
           },
           bubbles: true,
@@ -536,7 +536,7 @@ export class PaymentConfirmation extends LitElement {
     debitAmount: object
     receiveAmount: object
   }) {
-    const response = await fetch(`http://localhost:3000/tools/api/outgoing`, {
+    const response = await fetch(`http://localhost:8787/tools/payment/grant`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -554,8 +554,6 @@ export class PaymentConfirmation extends LitElement {
     }
 
     const outgoingGrant = await response.json()
-    console.log('Outgoing grant response:', outgoingGrant)
-
     return outgoingGrant
   }
 
