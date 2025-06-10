@@ -45,10 +45,10 @@ const createShadowDOM = () => {
   return { shadowHost, shadowRoot }
 }
 
-const appendPaymentPointer = (walletAddress: string) => {
+const appendPaymentPointer = (walletAddressUrl: string) => {
   const monetizationElement = document.createElement('link')
   monetizationElement.rel = 'monetization'
-  monetizationElement.href = `https://${walletAddress}`
+  monetizationElement.href = walletAddressUrl
   document.head.appendChild(monetizationElement)
 }
 
@@ -110,16 +110,19 @@ const drawElement = (
   config: Config
 ) => {
   const { shadowHost, shadowRoot } = createShadowDOM()
+  const walletAddressUrl = !walletAddress.startsWith('https://')
+    ? `https://${walletAddress}`
+    : walletAddress
 
   // add payment pointer / wallet address to target website first
   // so we have something to check against when displaying the banner
-  appendPaymentPointer(walletAddress)
+  appendPaymentPointer(walletAddressUrl)
 
   for (const key in types) {
     const type = types[Number(key)]
     switch (type) {
       case 'widget': {
-        const element = drawWidget(walletAddress, config)
+        const element = drawWidget(walletAddressUrl, config)
         document.body.appendChild(element)
         break
       }
@@ -259,12 +262,12 @@ const getWebMonetizationLinkText = () => {
     : 'Get the extension'
 }
 
-const drawWidget = (walletAddress: string, config: Config) => {
+const drawWidget = (walletAddressUrl: string, config: Config) => {
   const element = document.createElement('wm-payment-widget')
 
   element.config = {
     walletAddress: '',
-    receiverAddress: walletAddress,
+    receiverAddress: walletAddressUrl,
     amount: '1.00',
     currency: 'usd',
     action: config.widgetButtonText || 'Pay',

@@ -97,6 +97,8 @@ const WidgetConfig = ({
     if (widgetRef.current) {
       const widget = widgetRef.current
 
+      widget.requestQuote = false
+      widget.requestPayment = false
       widget.config = {
         walletAddress: '',
         receiverAddress: config.walletAddress || '',

@@ -8,6 +8,7 @@ export class PaymentInteraction extends LitElement {
     interact?: { redirect?: string }
   } = {}
   @property({ type: Object }) quote = {}
+  @property({ type: Boolean }) requestPayment?: boolean = true
 
   @state() private currentView: 'authorizing' | 'success' | 'failed' =
     'authorizing'
@@ -153,6 +154,10 @@ export class PaymentInteraction extends LitElement {
 
   connectedCallback() {
     super.connectedCallback()
+    if (!this.requestPayment) {
+      this.previewInteractionCompleted()
+      return
+    }
     if (!this.interactUrl) return
 
     window.open(this.interactUrl, '_blank')
@@ -165,8 +170,6 @@ export class PaymentInteraction extends LitElement {
   }
 
   private handleMessage(event: MessageEvent) {
-    console.log('Received message from interaction window:', event.data)
-
     if (event.data?.type !== 'GRANT_INTERACTION') return
     const { paymentId, hash, interact_ref, result } = event.data
 
@@ -231,7 +234,6 @@ export class PaymentInteraction extends LitElement {
       }
 
       const result = (await response.json()) as CheckPaymentResult
-      console.log('Payment result:', result)
       if (result.success === false) {
         this.currentView = 'failed'
         this.errorMessage = result.error.message
@@ -246,6 +248,13 @@ export class PaymentInteraction extends LitElement {
       this.errorMessage = 'There was an issues with your request.'
       this.requestUpdate()
     }
+  }
+
+  private previewInteractionCompleted() {
+    setTimeout(() => {
+      this.currentView = 'success'
+      this.requestUpdate()
+    }, 3000)
   }
 
   private renderAuthorizingView() {

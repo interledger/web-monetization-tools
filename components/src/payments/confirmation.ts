@@ -6,9 +6,9 @@ export interface PaymentDetails {
   walletAddress: string
   receiveAmount: string
   debitAmount: string
-  receiverName?: string
   quote: object
   isQuote: boolean
+  receiverName?: string
   note?: string
 }
 
@@ -17,6 +17,8 @@ export class PaymentConfirmation extends LitElement {
   @property({ type: Object }) walletAddress: WalletAddress | null = null
   @property({ type: String }) receiverAddress = ''
   @property({ type: String }) note = ''
+  @property({ type: Boolean }) requestQuote?: boolean = true
+  @property({ type: Boolean }) requestPayment?: boolean = true
 
   @state() private inputAmount = ''
   @state() private paymentDetails: PaymentDetails | null = null
@@ -367,50 +369,46 @@ export class PaymentConfirmation extends LitElement {
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer)
     }
+    this.isLoadingPreview = true
 
-    this.debounceTimer = window.setTimeout(() => {
+    this.debounceTimer = setTimeout(() => {
       const formatted = amount.replace(/,/g, '')
       this.processPaymentForAmount(formatted)
     }, 750)
   }
 
   private async processPaymentForAmount(amount: string) {
-    if (!amount || amount === '0' || parseFloat(amount) <= 0) {
+    if (!amount || amount === '0') {
       this.paymentDetails = null
       this.requestUpdate()
       return
     }
 
-    this.isLoadingPreview = true
-    this.paymentDetails = null
-    this.requestUpdate()
-
-    try {
-      const paymentData = {
-        walletAddress: this.walletAddress!.id,
-        receiver: this.receiverAddress,
-        amount: Number(amount),
-        note: this.note
-      }
-
-      const payment = await this.getPaymentQuote(paymentData)
-
-      this.paymentDetails = {
-        walletAddress: payment.walletAddress,
-        receiveAmount: payment.receiveAmount,
-        debitAmount: payment.debitAmount,
-        receiverName: payment.receiverName,
-        quote: payment.quote,
-        isQuote: payment.isQuote,
-        note: paymentData.note
-      }
-
-      this.isLoadingPreview = false
-    } catch (error) {
-      console.error('Error loading payment preview:', error)
-      this.isLoadingPreview = false
+    const paymentData = {
+      walletAddress: this.walletAddress!.id,
+      receiver: this.receiverAddress,
+      amount: Number(amount),
+      note: this.note
     }
 
+    let payment: PaymentDetails
+    if (this.requestQuote) {
+      payment = await this.getPaymentQuote(paymentData)
+    } else {
+      payment = await this.previewPaymentQuote(paymentData)
+    }
+
+    this.paymentDetails = {
+      walletAddress: payment.walletAddress,
+      receiveAmount: payment.receiveAmount,
+      debitAmount: payment.debitAmount,
+      receiverName: payment.receiverName,
+      quote: payment.quote,
+      isQuote: payment.isQuote,
+      note: paymentData.note
+    }
+
+    this.isLoadingPreview = false
     this.requestUpdate()
   }
 
@@ -421,7 +419,7 @@ export class PaymentConfirmation extends LitElement {
       clearTimeout(this.debounceTimer)
     }
 
-    this.processPaymentForAmount(amount)
+    this.debouncedProcessPayment(amount)
   }
 
   private handleAmountInput(e: Event) {
@@ -500,14 +498,7 @@ export class PaymentConfirmation extends LitElement {
     receiver: string
     amount: number
     note: string
-  }): Promise<{
-    walletAddress: string
-    receiveAmount: string
-    debitAmount: string
-    receiverName: string
-    quote: object
-    isQuote: boolean
-  }> {
+  }): Promise<PaymentDetails> {
     const response = await fetch(`http://localhost:8787/tools/payment/quote`, {
       method: 'POST',
       headers: {
@@ -527,6 +518,35 @@ export class PaymentConfirmation extends LitElement {
     }
 
     return await response.json()
+  }
+
+  private async previewPaymentQuote(paymentData: {
+    walletAddress: string
+    receiver: string
+    amount: number
+    note: string
+  }): Promise<PaymentDetails> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          walletAddress: paymentData.walletAddress,
+          receiveAmount: `${this.getCurrencySymbol()}${paymentData.amount.toString()}`,
+          debitAmount: `${this.getCurrencySymbol()}${paymentData.amount.toString()}`,
+          receiverName: paymentData.receiver,
+          quote: {},
+          isQuote: false
+        })
+      }, 500)
+    })
+  }
+
+  private onPaymentConfirmed = () => {
+    if (!this.requestPayment) {
+      this.previewPaymentConfirmed()
+      return
+    }
+
+    this.handlePaymentConfirmed()
   }
 
   private async handlePaymentConfirmed() {
@@ -552,6 +572,15 @@ export class PaymentConfirmation extends LitElement {
     } catch (error) {
       console.error('Error initializing payment:', error)
     }
+  }
+
+  private previewPaymentConfirmed() {
+    this.dispatchEvent(
+      new CustomEvent('payment-confirmed', {
+        bubbles: true,
+        composed: true
+      })
+    )
   }
 
   private async requestOutgoingGrant(paymentData: {
@@ -717,7 +746,7 @@ export class PaymentConfirmation extends LitElement {
         />
       </div>
 
-      <button class="confirm-button" @click=${this.handlePaymentConfirmed}>
+      <button class="confirm-button" @click=${this.onPaymentConfirmed}>
         Confirm Payment
       </button>
     `

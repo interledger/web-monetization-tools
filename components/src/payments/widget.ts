@@ -58,6 +58,8 @@ export class PaymentWidget extends LitElement {
     interact?: { redirect?: string }
   } = {}
   @property({ type: Object }) quote = {}
+  @property({ type: Boolean }) requestQuote?: boolean = true
+  @property({ type: Boolean }) requestPayment?: boolean = true
 
   @state() private currentView: string = 'home'
 
@@ -276,21 +278,27 @@ export class PaymentWidget extends LitElement {
       case 'interact':
         return this.renderInteractionView()
       default:
-        console.warn(`Unknown view: ${this.currentView}`)
         return this.renderHomeView()
     }
   }
 
-  private navigateToInteraction(e: CustomEvent) {
-    const { grant, quote } = e.detail
-
-    this.outgoingGrant = grant
-    this.quote = quote
+  private navigateToInteraction() {
     this.currentView = 'interact'
   }
 
   private navigateToHome() {
     this.currentView = 'home'
+  }
+
+  private handlePaymentConfirmed(e: CustomEvent) {
+    if (this.requestPayment) {
+      const { grant, quote } = e.detail
+
+      this.outgoingGrant = grant
+      this.quote = quote
+    }
+
+    this.navigateToInteraction()
   }
 
   private renderHomeView() {
@@ -335,8 +343,10 @@ export class PaymentWidget extends LitElement {
         .walletAddress=${this.walletAddress}
         .receiverAddress=${this.config.receiverAddress}
         .note=${this.config.note || ''}
+        .requestQuote=${this.requestQuote}
+        .requestPayment=${this.requestPayment}
         @back=${this.navigateToHome}
-        @payment-confirmed=${this.navigateToInteraction}
+        @payment-confirmed=${this.handlePaymentConfirmed}
       ></wm-payment-confirmation>
     `
   }
@@ -344,10 +354,11 @@ export class PaymentWidget extends LitElement {
   private renderInteractionView() {
     return html`
       <wm-payment-interaction
-        .interactUrl=${this.outgoingGrant.interact!.redirect}
+        .interactUrl=${this.outgoingGrant?.interact?.redirect}
         .senderWalletAddress=${this.walletAddress!.id}
         .grant=${this.outgoingGrant}
         .quote=${this.quote}
+        .requestPayment=${this.requestPayment}
         @interaction-cancelled=${this.handleInteractionCancelled}
         @back=${this.navigateToHome}
       ></wm-payment-interaction>
