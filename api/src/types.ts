@@ -1,3 +1,11 @@
+import type { infer as inferType } from 'zod'
+import type {
+  PaymentFinalizeSchema,
+  PaymentGrantSchema,
+  PaymentQuoteSchema,
+  WalletAddressParamSchema
+} from './schemas/payment.js'
+
 export interface ConfigVersions {
   [key: string]: ElementConfigType
 }
@@ -56,3 +64,8 @@ export enum PositionType {
   Top = 'Top',
   Bottom = 'Bottom'
 }
+
+export type PaymentQuoteInput = inferType<typeof PaymentQuoteSchema>
+export type PaymentGrantInput = inferType<typeof PaymentGrantSchema>
+export type PaymentFinalizeInput = inferType<typeof PaymentFinalizeSchema>
+export type WalletAddressParams = inferType<typeof WalletAddressParamSchema>

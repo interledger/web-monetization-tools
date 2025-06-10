@@ -11,6 +11,5 @@
     "emitDecoratorMetadata": true,
     "useDefineForClassFields": false,
     "noEmit": true
-  },
-  "include": ["src/**/*"]
+  }
 }

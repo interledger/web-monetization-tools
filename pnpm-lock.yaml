@@ -94,6 +94,9 @@ importers:
         specifier: ^3.1.0
         version: 3.3.0
     devDependencies:
+      publisher-tools-api:
+        specifier: workspace:^
+        version: link:../api
       typescript:
         specifier: ^5.3.3
         version: 5.8.3

@@ -1,6 +1,7 @@
 import { html, css, LitElement } from 'lit'
 import { property, state } from 'lit/decorators.js'
 import type { WalletAddress } from './widget.js'
+import type { PaymentQuoteInput } from 'publisher-tools-api'
 
 export interface PaymentDetails {
   walletAddress: string
@@ -509,7 +510,7 @@ export class PaymentConfirmation extends LitElement {
         receiverWalletAddress: paymentData.receiver,
         amount: paymentData.amount,
         note: paymentData.note
-      })
+      } satisfies PaymentQuoteInput)
     })
 
     if (!response.ok) {
