@@ -127,7 +127,6 @@ export interface Amount {
 type CreateOutgoingPaymentParams = {
   walletAddress: WalletAddress
   debitAmount: Amount
-  receiveAmount?: Amount
   nonce?: string
   paymentId: string
   opClient: AuthenticatedClient

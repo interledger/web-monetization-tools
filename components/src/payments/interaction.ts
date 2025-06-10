@@ -171,7 +171,7 @@ export class PaymentInteraction extends LitElement {
 
   private handleMessage(event: MessageEvent) {
     if (event.data?.type !== 'GRANT_INTERACTION') return
-    const { paymentId, hash, interact_ref, result } = event.data
+    const { paymentId, interact_ref, result } = event.data
 
     if (result === 'grant_rejected') {
       this.currentView = 'failed'
