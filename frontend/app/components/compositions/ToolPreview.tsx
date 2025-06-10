@@ -9,7 +9,6 @@ import {
 import { generateConfigCss, getWebMonetizationLink } from '~/lib/utils.js'
 import { NotFoundConfig } from '../index.js'
 import eyeSvg from '~/assets/images/eye.svg'
-import '@web-monetization-tools/components/payments/widget'
 import type { PaymentConfig } from '@web-monetization-tools/components'
 
 const ButtonConfig = ({ config }: { config: ElementConfigType }) => {
@@ -92,6 +91,21 @@ const WidgetConfig = ({
 }) => {
   const [widgetOpen, setWidgetOpen] = useState(false)
   const widgetRef = useRef<HTMLElement>(null)
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  useEffect(() => {
+    const loadWidgetComponent = async () => {
+      try {
+        // dynamic import - ensure component only runs on the client side and not on SSR
+        await import('@web-monetization-tools/components/payments/widget')
+        setIsLoaded(true)
+      } catch (error) {
+        console.error('Failed to load component:', error)
+      }
+    }
+
+    loadWidgetComponent()
+  }, [])
 
   useEffect(() => {
     if (widgetRef.current) {
@@ -124,6 +138,10 @@ const WidgetConfig = ({
       setOpenWidget(false)
     }
   }, [widgetOpen])
+
+  if (!isLoaded) {
+    return <div>Loading...</div>
+  }
 
   return (
     <wm-payment-widget
