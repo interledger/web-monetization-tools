@@ -103,7 +103,7 @@ importers:
 
   embed:
     dependencies:
-      '@web-monetization-tools/components':
+      '@tools/components':
         specifier: workspace:*
         version: link:../components
     devDependencies:
@@ -140,12 +140,12 @@ importers:
       '@tippyjs/react':
         specifier: ^4.2.6
         version: 4.2.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@tools/components':
+        specifier: workspace:*
+        version: link:../components
       '@typescript-eslint/parser':
         specifier: ^8.33.0
         version: 8.33.0(eslint@9.27.0(jiti@2.4.2))(typescript@5.8.3)
-      '@web-monetization-tools/components':
-        specifier: workspace:*
-        version: link:../components
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.21(postcss@8.5.3)

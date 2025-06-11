@@ -9,7 +9,7 @@
     "prepare": "pnpm build"
   },
   "dependencies": {
-    "@web-monetization-tools/components": "workspace:*"
+    "@tools/components": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.1.6",

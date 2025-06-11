@@ -9,7 +9,7 @@ import {
 import { generateConfigCss, getWebMonetizationLink } from '~/lib/utils.js'
 import { NotFoundConfig } from '../index.js'
 import eyeSvg from '~/assets/images/eye.svg'
-import type { WidgetConfig } from '@web-monetization-tools/components'
+import type { WidgetConfig } from '@tools/components'
 
 const ButtonConfig = ({ config }: { config: ElementConfigType }) => {
   return (
@@ -96,7 +96,7 @@ const Widget = ({
     const loadWidgetComponent = async () => {
       try {
         // dynamic import - ensure component only runs on the client side and not on SSR
-        await import('@web-monetization-tools/components/payments/widget')
+        await import('@tools/components/payments/widget')
         setIsLoaded(true)
       } catch (error) {
         console.error('Failed to load component:', error)
