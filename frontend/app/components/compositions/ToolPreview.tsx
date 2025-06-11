@@ -96,7 +96,7 @@ const Widget = ({
     const loadWidgetComponent = async () => {
       try {
         // dynamic import - ensure component only runs on the client side and not on SSR
-        await import('@tools/components/payments/widget')
+        await import('@tools/components/widget')
         setIsLoaded(true)
       } catch (error) {
         console.error('Failed to load component:', error)

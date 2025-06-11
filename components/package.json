@@ -6,9 +6,9 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./payments/widget": "./src/payments/widget.ts",
-    "./payments/confirmation": "./src/payments/confirmation.ts",
-    "./payments/interaction": "./src/payments/interaction.ts"
+    "./widget": "./src/widget.ts",
+    "./confirmation": "./src/confirmation.ts",
+    "./interaction": "./src/interaction.ts"
   },
   "dependencies": {
     "lit": "^3.1.0"
