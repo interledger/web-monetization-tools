@@ -129,13 +129,13 @@ export const availableTools = [
     title: 'Banner',
     image: bannerImg,
     bgColor: 'from-wm-dark-green to-wm-dark-green-fade',
-    link: 'banner', // 'https://wmtools.interledger-test.dev/banner',
+    link: 'banner',
     tooltip: tooltips.banner,
     description:
       "The banner informs visitors who don't have the Web Monetization extension active, with a call-to-action linking to the extension or providing details about the options available. It also adds your wallet address for your site to be monetized."
   },
   {
-    enabled: true,
+    enabled: false,
     title: 'Widget',
     image: widgetImg,
     bgColor: 'from-wm-red to-wm-red-fade',

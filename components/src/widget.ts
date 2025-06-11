@@ -8,6 +8,7 @@ import {
 import { property, state } from 'lit/decorators.js'
 import './confirmation.js'
 import './interaction.js'
+import defaultTriggerIcon from './assets/wm_logo_animated.svg'
 
 export interface WidgetConfig {
   walletAddress: string
@@ -376,7 +377,6 @@ export class PaymentWidget extends LitElement {
   }
 
   render() {
-    const defaultTriggerIcon = '/app/assets/images/wm_logo_animated.svg'
     const triggerIcon = this.config.widgetTriggerIcon || defaultTriggerIcon
 
     return html`
@@ -386,7 +386,7 @@ export class PaymentWidget extends LitElement {
         </div>
 
         <div class="trigger" @click=${this.toggleWidget}>
-          <img src="http://localhost:3000${triggerIcon}" alt="widget trigger" />
+          <img src="${triggerIcon}" alt="widget trigger" />
         </div>
       </div>
     `

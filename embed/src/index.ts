@@ -1,4 +1,4 @@
-import '@tools/components/payments/widget'
+import '@tools/components/widget'
 
 /* eslint-disable no-case-declarations */
 const FRONTEND_URL = import.meta.env.VITE_SCRIPT_FRONTEND_URL
