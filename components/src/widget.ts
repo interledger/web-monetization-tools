@@ -2,8 +2,8 @@ import {
   html,
   css,
   LitElement,
-  ReactiveController,
-  ReactiveControllerHost
+  type ReactiveController,
+  type ReactiveControllerHost
 } from 'lit'
 import { property, state } from 'lit/decorators.js'
 import './confirmation.js'

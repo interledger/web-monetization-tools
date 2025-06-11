@@ -24,7 +24,7 @@ export class PaymentConfirmation extends LitElement {
   @state() private inputAmount = ''
   @state() private paymentDetails: PaymentDetails | null = null
   @state() private isLoadingPreview = false
-  @state() private debounceTimer: number | null = null
+  @state() private debounceTimer: ReturnType<typeof setTimeout> | null = null
 
   static styles = css`
     :host {
