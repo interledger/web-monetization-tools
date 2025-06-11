@@ -12,6 +12,9 @@
     "strict": true,
     "allowJs": true,
     "skipLibCheck": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "useDefineForClassFields": false,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
