@@ -95,6 +95,11 @@ const Widget = ({
   useEffect(() => {
     const loadWidgetComponent = async () => {
       try {
+        if (customElements.get('wm-payment-widget')) {
+          setIsLoaded(true)
+          return
+        }
+
         // dynamic import - ensure component only runs on the client side and not on SSR
         await import('@tools/components/widget')
         setIsLoaded(true)
