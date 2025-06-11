@@ -52,9 +52,9 @@ type CreateOutgoingPaymentParams = {
 export class OpenPaymentsService {
   private client: AuthenticatedClient | null = null
   private static _instance: OpenPaymentsService
-  private readonly redirectUrl: string
+  private readonly frontendUrl: string
   private constructor(env: Env) {
-    this.redirectUrl = env.FRONTEND_URL
+    this.frontendUrl = env.FRONTEND_URL
   }
 
   public static async getInstance(env: Env): Promise<OpenPaymentsService> {
@@ -243,7 +243,7 @@ export class OpenPaymentsService {
       receiveAmount: args.receiveAmount,
       nonce: clientNonce,
       paymentId: paymentId,
-      redirectUrl: this.redirectUrl + 'payment-confirmation'
+      redirectUrl: this.frontendUrl + 'payment-confirmation'
     })
 
     return outgoingPaymentGrant

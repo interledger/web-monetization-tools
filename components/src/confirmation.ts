@@ -490,18 +490,21 @@ export class PaymentConfirmation extends LitElement {
     amount: number
     note: string
   }): Promise<PaymentDetails> {
-    const response = await fetch(`http://localhost:8787/tools/payment/quote`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        senderWalletAddress: paymentData.walletAddress,
-        receiverWalletAddress: paymentData.receiver,
-        amount: paymentData.amount,
-        note: paymentData.note
-      } satisfies PaymentQuoteInput)
-    })
+    const response = await fetch(
+      `${this.configController.config.apiUrl}tools/payment/quote`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          senderWalletAddress: paymentData.walletAddress,
+          receiverWalletAddress: paymentData.receiver,
+          amount: paymentData.amount,
+          note: paymentData.note
+        } satisfies PaymentQuoteInput)
+      }
+    )
 
     if (!response.ok) {
       throw new Error('Failed to fetch payment quote')
@@ -584,17 +587,20 @@ export class PaymentConfirmation extends LitElement {
     debitAmount: object
     receiveAmount: object
   }) {
-    const response = await fetch(`http://localhost:8787/tools/payment/grant`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        senderWalletAddress: paymentData.senderWalletAddress,
-        debitAmount: paymentData.debitAmount,
-        receiveAmount: paymentData.receiveAmount
-      })
-    })
+    const response = await fetch(
+      `${this.configController.config.apiUrl}tools/payment/grant`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          senderWalletAddress: paymentData.senderWalletAddress,
+          debitAmount: paymentData.debitAmount,
+          receiveAmount: paymentData.receiveAmount
+        })
+      }
+    )
 
     if (!response.ok) {
       throw new Error('Failed to request outgoing payment grant')

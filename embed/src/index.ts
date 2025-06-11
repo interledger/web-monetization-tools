@@ -266,6 +266,7 @@ const drawWidget = (walletAddressUrl: string, config: Config) => {
   const element = document.createElement('wm-payment-widget')
 
   element.config = {
+    apiUrl: API_URL,
     receiverAddress: walletAddressUrl,
     action: config.widgetButtonText || 'Pay',
     theme: {

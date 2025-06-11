@@ -1,8 +1,10 @@
 import { html, css, LitElement } from 'lit'
 import { property, state } from 'lit/decorators.js'
 import type { CheckPaymentResult } from 'publisher-tools-api/src/utils/open-payments'
+import type { WidgetController } from './widget'
 
 export class PaymentInteraction extends LitElement {
+  @property({ type: Object }) configController!: WidgetController
   @property({ type: String }) interactUrl = ''
   @property({ type: String }) senderWalletAddress = ''
   @property({ type: Object }) grant: {
@@ -212,7 +214,7 @@ export class PaymentInteraction extends LitElement {
   private async handleInteractionCompleted(interactRef: string) {
     try {
       const response = await fetch(
-        `http://localhost:8787/tools/payment/finalize`,
+        `${this.configController.config.apiUrl}tools/payment/finalize`,
         {
           method: 'POST',
           headers: {

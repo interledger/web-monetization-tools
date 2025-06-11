@@ -365,6 +365,7 @@ export class PaymentWidget extends LitElement {
   private renderInteractionView() {
     return html`
       <wm-payment-interaction
+        .configController=${this.configController}
         .interactUrl=${this.outgoingGrant?.interact?.redirect}
         .senderWalletAddress=${this.walletAddress!.id}
         .grant=${this.outgoingGrant}
