@@ -30,7 +30,7 @@ type CreateIncomingPaymentParams = {
   note?: string
 }
 
-type CheckPaymentResult =
+export type CheckPaymentResult =
   | { success: true }
   | {
       success: false

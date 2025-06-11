@@ -1,5 +1,5 @@
 import { cx } from 'class-variance-authority'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { bgColors } from '~/lib/presets.js'
 import {
   PositionType,
@@ -9,7 +9,7 @@ import {
 import { generateConfigCss, getWebMonetizationLink } from '~/lib/utils.js'
 import { NotFoundConfig } from '../index.js'
 import eyeSvg from '~/assets/images/eye.svg'
-import type { PaymentConfig } from '@web-monetization-tools/components'
+import type { WidgetConfig } from '@web-monetization-tools/components'
 
 const ButtonConfig = ({ config }: { config: ElementConfigType }) => {
   return (
@@ -80,18 +80,17 @@ const BannerConfig = ({ config }: { config: ElementConfigType }) => {
   )
 }
 
-const WidgetConfig = ({
+const Widget = ({
   config,
-  openWidget,
-  setOpenWidget
+  apiUrl,
+  opWallet
 }: {
   config: ElementConfigType
-  openWidget: boolean
-  setOpenWidget: React.Dispatch<React.SetStateAction<boolean>>
+  apiUrl: string
+  opWallet: string
 }) => {
-  const [widgetOpen, setWidgetOpen] = useState(false)
-  const widgetRef = useRef<HTMLElement>(null)
   const [isLoaded, setIsLoaded] = useState(false)
+  const widgetRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     const loadWidgetComponent = async () => {
@@ -107,66 +106,53 @@ const WidgetConfig = ({
     loadWidgetComponent()
   }, [])
 
-  useEffect(() => {
-    if (widgetRef.current) {
-      const widget = widgetRef.current
-
-      widget.requestQuote = false
-      widget.requestPayment = false
-      widget.config = {
-        walletAddress: '',
-        receiverAddress: config.walletAddress || '',
-        amount: '1.00',
-        currency: 'usd',
+  const widgetConfig = useMemo(
+    () =>
+      ({
+        apiUrl,
+        receiverAddress: opWallet,
         action: config.widgetButtonText || 'Pay',
         note: '',
         widgetTitleText: config.widgetTitleText,
         widgetDescriptionText: config.widgetDescriptionText,
-        widgetTriggerIcon: config.widgetTriggerIcon
-      } as PaymentConfig
-    }
-  }, [config])
+        widgetTriggerIcon: config.widgetTriggerIcon,
+        theme: {
+          primaryColor: config.widgetButtonBackgroundColor,
+          backgroundColor: config.widgetBackgroundColor,
+          textColor: config.widgetTextColor,
+          fontFamily: config.widgetFontName,
+          widgetButtonBackgroundColor: config.widgetTriggerBackgroundColor
+        }
+      }) as WidgetConfig,
+    [config]
+  )
 
   useEffect(() => {
-    if (openWidget) {
-      setWidgetOpen(true)
+    if (widgetRef.current && isLoaded) {
+      const widget = widgetRef.current
+      widget.config = widgetConfig
+      widget.requestPayment = false
+      widget.requestQuote = false
     }
-  }, [openWidget, widgetOpen])
-
-  useEffect(() => {
-    if (!widgetOpen) {
-      setOpenWidget(false)
-    }
-  }, [widgetOpen])
+  }, [widgetConfig, isLoaded])
 
   if (!isLoaded) {
     return <div>Loading...</div>
   }
 
-  return (
-    <wm-payment-widget
-      ref={widgetRef}
-      style={{
-        '--wm-primary-color': config.widgetButtonBackgroundColor,
-        '--wm-background-color': config.widgetBackgroundColor,
-        '--wm-text-color': config.widgetTextColor,
-        '--wm-font-family': config.widgetFontName,
-        '--wm-widget-trigger-bg-color': config.widgetTriggerBackgroundColor
-      }}
-    ></wm-payment-widget>
-  )
+  return <wm-payment-widget ref={widgetRef} />
 }
 
 const RenderElementConfig = ({
   type,
-  toolConfig,
-  openWidget,
-  setOpenWidget
+  apiUrl,
+  opWallet,
+  toolConfig
 }: {
   type: string
+  apiUrl: string
+  opWallet: string
   toolConfig: ElementConfigType
-  openWidget: boolean
-  setOpenWidget: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
   switch (type) {
     case 'button':
@@ -174,13 +160,7 @@ const RenderElementConfig = ({
     case 'banner':
       return <BannerConfig config={toolConfig} />
     case 'widget':
-      return (
-        <WidgetConfig
-          config={toolConfig}
-          openWidget={openWidget}
-          setOpenWidget={setOpenWidget}
-        />
-      )
+      return <Widget apiUrl={apiUrl} opWallet={opWallet} config={toolConfig} />
     default:
       return <NotFoundConfig />
   }
@@ -188,16 +168,16 @@ const RenderElementConfig = ({
 
 type ToolPreviewProps = {
   type?: string
+  apiUrl: string
+  opWallet: string
   toolConfig: ElementConfigType
-  openWidget?: boolean
-  setOpenWidget: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const ToolPreview = ({
   type,
-  toolConfig,
-  openWidget,
-  setOpenWidget
+  apiUrl,
+  opWallet,
+  toolConfig
 }: ToolPreviewProps) => {
   const bgColor = bgColors[type as keyof typeof bgColors] ?? bgColors.button
 
@@ -212,8 +192,8 @@ export const ToolPreview = ({
       <RenderElementConfig
         type={type ?? ''}
         toolConfig={toolConfig}
-        openWidget={openWidget ?? false}
-        setOpenWidget={setOpenWidget}
+        apiUrl={apiUrl}
+        opWallet={opWallet}
       />
     </div>
   )

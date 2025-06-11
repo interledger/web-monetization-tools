@@ -1,6 +1,6 @@
 import { html, css, LitElement } from 'lit'
 import { property, state } from 'lit/decorators.js'
-import type { WalletAddress } from './widget.js'
+import type { WidgetController, WalletAddress } from './widget.js'
 import type { PaymentQuoteInput } from 'publisher-tools-api'
 
 export interface PaymentDetails {
@@ -14,9 +14,9 @@ export interface PaymentDetails {
 }
 
 export class PaymentConfirmation extends LitElement {
+  @property({ type: Object }) configController!: WidgetController
   @property({ type: String }) inputWidth = ''
   @property({ type: Object }) walletAddress: WalletAddress | null = null
-  @property({ type: String }) receiverAddress = ''
   @property({ type: String }) note = ''
   @property({ type: Boolean }) requestQuote?: boolean = true
   @property({ type: Boolean }) requestPayment?: boolean = true
@@ -348,22 +348,12 @@ export class PaymentConfirmation extends LitElement {
   connectedCallback() {
     super.connectedCallback()
     this.updateComplete.then(() => {
-      const input = this.shadowRoot?.querySelector(
-        '.amount-input'
-      ) as HTMLInputElement
+      const input =
+        this.shadowRoot?.querySelector<HTMLInputElement>('.amount-input')
       if (input) {
         input.focus()
       }
     })
-  }
-
-  private getCurrencySymbol(): string {
-    const symbols: Record<string, string> = {
-      usd: '$',
-      eur: '€',
-      gbp: '£'
-    }
-    return symbols[this.walletAddress!.assetCode.toLowerCase()]
   }
 
   private debouncedProcessPayment(amount: string) {
@@ -387,7 +377,7 @@ export class PaymentConfirmation extends LitElement {
 
     const paymentData = {
       walletAddress: this.walletAddress!.id,
-      receiver: this.receiverAddress,
+      receiver: this.configController.config.receiverAddress,
       amount: Number(amount),
       note: this.note
     }
@@ -529,10 +519,13 @@ export class PaymentConfirmation extends LitElement {
   }): Promise<PaymentDetails> {
     return new Promise((resolve) => {
       setTimeout(() => {
+        const currencySymbol = this.configController.getCurrencySymbol(
+          this.walletAddress!.assetCode
+        )
         resolve({
           walletAddress: paymentData.walletAddress,
-          receiveAmount: `${this.getCurrencySymbol()}${paymentData.amount.toString()}`,
-          debitAmount: `${this.getCurrencySymbol()}${paymentData.amount.toString()}`,
+          receiveAmount: `${currencySymbol}${paymentData.amount.toString()}`,
+          debitAmount: `${currencySymbol}${paymentData.amount.toString()}`,
           receiverName: paymentData.receiver,
           quote: {},
           isQuote: false
@@ -628,12 +621,16 @@ export class PaymentConfirmation extends LitElement {
   }
 
   render() {
+    const currencySymbol = this.configController.getCurrencySymbol(
+      this.walletAddress!.assetCode
+    )
+
     return html`
       <div class="confirmation-container">
         <button class="back-button" @click=${this.goBack}>← Back</button>
 
         <div class="amount-input-container">
-          <span class="currency-symbol">${this.getCurrencySymbol()}</span>
+          <span class="currency-symbol">${currencySymbol}</span>
           <input
             class="amount-input"
             type="text"
@@ -653,19 +650,19 @@ export class PaymentConfirmation extends LitElement {
             class="preset-btn ${this.inputAmount === '1' ? 'selected' : ''}"
             @click=${() => this.handlePresetClick('1')}
           >
-            ${this.getCurrencySymbol()}1
+            ${currencySymbol}1
           </button>
           <button
             class="preset-btn ${this.inputAmount === '5' ? 'selected' : ''}"
             @click=${() => this.handlePresetClick('5')}
           >
-            ${this.getCurrencySymbol()}5
+            ${currencySymbol}5
           </button>
           <button
             class="preset-btn ${this.inputAmount === '10' ? 'selected' : ''}"
             @click=${() => this.handlePresetClick('10')}
           >
-            ${this.getCurrencySymbol()}10
+            ${currencySymbol}10
           </button>
         </div>
 

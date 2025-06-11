@@ -1,9 +1,15 @@
-import { html, css, LitElement } from 'lit'
+import {
+  html,
+  css,
+  LitElement,
+  ReactiveController,
+  ReactiveControllerHost
+} from 'lit'
 import { property, state } from 'lit/decorators.js'
 import './confirmation.js'
 import './interaction.js'
 
-export interface PaymentConfig {
+export interface WidgetConfig {
   walletAddress: string
   receiverAddress: string
   amount: string
@@ -18,7 +24,9 @@ export interface PaymentConfig {
     backgroundColor?: string
     textColor?: string
     fontFamily?: string
+    widgetButtonBackgroundColor?: string
   }
+  apiUrl?: string
 }
 
 export type Quote = {
@@ -45,11 +53,14 @@ export type WalletAddress = {
 }
 
 export class PaymentWidget extends LitElement {
-  @property({ type: Object }) config: PaymentConfig = {
-    walletAddress: '',
-    receiverAddress: '',
-    amount: '0',
-    currency: 'usd'
+  private configController = new WidgetController(this)
+
+  @property({ type: Object })
+  set config(value: Partial<WidgetConfig>) {
+    this.configController.updateConfig(value)
+  }
+  get config() {
+    return this.configController.config
   }
 
   @property({ type: Object }) walletAddress: WalletAddress | null = null
@@ -319,7 +330,6 @@ export class PaymentWidget extends LitElement {
               type="text"
               name="walletAddress"
               placeholder="https://ilp.example.com/alice"
-              .value=${this.config.walletAddress}
               required
             />
           </div>
@@ -340,8 +350,8 @@ export class PaymentWidget extends LitElement {
   private renderConfirmationView() {
     return html`
       <wm-payment-confirmation
+        .configController=${this.configController}
         .walletAddress=${this.walletAddress}
-        .receiverAddress=${this.config.receiverAddress}
         .note=${this.config.note || ''}
         .requestQuote=${this.requestQuote}
         .requestPayment=${this.requestPayment}
@@ -384,3 +394,89 @@ export class PaymentWidget extends LitElement {
 }
 
 customElements.define('wm-payment-widget', PaymentWidget)
+
+interface WidgetState {
+  receiver?: WalletAddress
+}
+
+// TODO: use WidgetController for state management and configuration
+export class WidgetController implements ReactiveController {
+  private host: ReactiveControllerHost & HTMLElement
+  private _config!: WidgetConfig
+  private _state: WidgetState = {}
+
+  constructor(host: ReactiveControllerHost & HTMLElement) {
+    this.host = host
+    host.addController(this)
+  }
+
+  /** called when the host is connected to the DOM */
+  hostConnected() {}
+
+  /** called when the host is disconnected from the DOM */
+  hostDisconnected() {}
+
+  get config(): WidgetConfig {
+    return this._config
+  }
+
+  get state(): WidgetState {
+    return this._state
+  }
+
+  updateConfig(updates: Partial<WidgetConfig>) {
+    this._config = { ...this._config, ...updates }
+
+    this.applyTheme(this.host)
+    this.host.requestUpdate()
+  }
+
+  updateState(updates: Partial<WidgetState>) {
+    this._state = { ...this._state, ...updates }
+    this.host.requestUpdate()
+  }
+
+  getCurrencySymbol(assetCode: string): string {
+    const isISO4217Code = (code: string): boolean => {
+      return code.length === 3
+    }
+
+    if (!isISO4217Code(assetCode)) {
+      return assetCode.toUpperCase()
+    }
+    return new Intl.NumberFormat('en-US', {
+      currency: assetCode,
+      style: 'currency',
+      currencyDisplay: 'symbol',
+      maximumFractionDigits: 0,
+      minimumFractionDigits: 0
+    })
+      .format(0)
+      .replace(/0/g, '')
+      .trim()
+  }
+
+  applyTheme(element: HTMLElement) {
+    const theme = this._config.theme
+    if (!theme) return
+
+    if (theme.primaryColor) {
+      element.style.setProperty('--wm-primary-color', theme.primaryColor)
+    }
+    if (theme.backgroundColor) {
+      element.style.setProperty('--wm-background-color', theme.backgroundColor)
+    }
+    if (theme.textColor) {
+      element.style.setProperty('--wm-text-color', theme.textColor)
+    }
+    if (theme.fontFamily) {
+      element.style.setProperty('--wm-font-family', theme.fontFamily)
+    }
+    if (theme.widgetButtonBackgroundColor) {
+      element.style.setProperty(
+        '--wm-widget-trigger-bg-color',
+        theme.widgetButtonBackgroundColor
+      )
+    }
+  }
+}

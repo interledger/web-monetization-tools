@@ -1,5 +1,6 @@
 import { html, css, LitElement } from 'lit'
 import { property, state } from 'lit/decorators.js'
+import type { CheckPaymentResult } from 'publisher-tools-api/src/utils/open-payments'
 
 export class PaymentInteraction extends LitElement {
   @property({ type: String }) interactUrl = ''
@@ -332,12 +333,5 @@ export class PaymentInteraction extends LitElement {
     }
   }
 }
-
-type CheckPaymentResult =
-  | { success: true }
-  | {
-      success: false
-      error: { code: string; message: string; details?: Error }
-    }
 
 customElements.define('wm-payment-interaction', PaymentInteraction)

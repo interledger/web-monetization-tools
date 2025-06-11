@@ -19,6 +19,7 @@ export default function PaymentComplete() {
       params[key] = value
     })
 
+    //TODO: handle the case where window.opener is null
     if (window.opener && !hasPostedMessage.current) {
       window.opener.postMessage({ type: 'GRANT_INTERACTION', ...params }, '*')
       hasPostedMessage.current = true

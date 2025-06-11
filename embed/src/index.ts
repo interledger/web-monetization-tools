@@ -266,10 +266,7 @@ const drawWidget = (walletAddressUrl: string, config: Config) => {
   const element = document.createElement('wm-payment-widget')
 
   element.config = {
-    walletAddress: '',
     receiverAddress: walletAddressUrl,
-    amount: '1.00',
-    currency: 'usd',
     action: config.widgetButtonText || 'Pay',
     theme: {
       primaryColor: config.widgetButtonBackgroundColor,
@@ -286,17 +283,6 @@ const drawWidget = (walletAddressUrl: string, config: Config) => {
   element.style.bottom = '20px'
   element.style.right = '20px'
   element.style.zIndex = '9999'
-
-  element.style.setProperty(
-    '--wm-primary-color',
-    config.widgetButtonBackgroundColor
-  )
-  element.style.setProperty(
-    '--wm-background-color',
-    config.widgetBackgroundColor
-  )
-  element.style.setProperty('--wm-text-color', config.widgetTextColor)
-  element.style.setProperty('--wm-font-family', config.widgetFontName)
 
   return element
 }
