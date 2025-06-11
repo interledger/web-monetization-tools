@@ -27,17 +27,7 @@ export default [
     rules: {
       'react/react-in-jsx-scope': 'off',
       'import/no-unresolved': 'off',
-      'import/extensions': [
-        'warn',
-        'always',
-        {
-          ignorePackages: true,
-          // Only apply to local files
-          js: 'always',
-          mjs: 'always',
-          jsx: 'always'
-        }
-      ],
+      'import/extensions': 'off',
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-unused-vars': [
         'warn',

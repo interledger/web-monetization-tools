@@ -504,8 +504,7 @@ export class PaymentConfirmation extends LitElement {
     })
 
     if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.error || 'Payment failed')
+      throw new Error('Failed to fetch payment quote')
     }
 
     return await response.json()
@@ -556,7 +555,10 @@ export class PaymentConfirmation extends LitElement {
       this.dispatchEvent(
         new CustomEvent('payment-confirmed', {
           detail: {
-            grant: { ...outgoingPaymentGrant },
+            grant: {
+              interact: outgoingPaymentGrant.interact,
+              continue: outgoingPaymentGrant.continue
+            },
             quote: this.paymentDetails?.quote
           },
           bubbles: true,
@@ -595,8 +597,7 @@ export class PaymentConfirmation extends LitElement {
     })
 
     if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.error || 'Payment failed')
+      throw new Error('Failed to request outgoing payment grant')
     }
 
     const outgoingGrant = await response.json()

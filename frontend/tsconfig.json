@@ -20,6 +20,10 @@
     "paths": {
       "~/*": ["./app/*"]
     },
-    "types": ["./worker-configuration.d.ts", "vite/client"]
+    "types": [
+      "./worker-configuration.d.ts",
+      "vite/client",
+      "./tools-components.d.ts"
+    ]
   }
 }
