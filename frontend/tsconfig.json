@@ -9,6 +9,7 @@
     "jsx": "react-jsx",
     "moduleResolution": "Bundler",
     "resolveJsonModule": true,
+    "noEmit": true,
     "strict": true,
     "allowJs": true,
     "skipLibCheck": true,
