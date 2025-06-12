@@ -13,6 +13,20 @@ export interface PaymentDetails {
   note?: string
 }
 
+type Grant = {
+  interact: {
+    redirect: string
+    finish: string
+  }
+  continue: {
+    access_token: {
+      value: string
+    }
+    uri: string
+    wait: number
+  }
+}
+
 export class PaymentConfirmation extends LitElement {
   @property({ type: Object }) configController!: WidgetController
   @property({ type: String }) inputWidth = ''
@@ -586,7 +600,7 @@ export class PaymentConfirmation extends LitElement {
     senderWalletAddress: string
     debitAmount: object
     receiveAmount: object
-  }) {
+  }): Promise<Grant> {
     const response = await fetch(
       `${this.configController.config.apiUrl}tools/payment/grant`,
       {
