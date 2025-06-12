@@ -42,15 +42,17 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
   session.unset('is-grant-response')
 
   const defaultConfig = getDefaultData()
-  const ilpayUrl = env.SCRIPT_ILPAY_URL
   const scriptInitUrl = env.SCRIPT_EMBED_URL
+  const apiUrl = env.API_URL
+  const opWallet = env.OP_WALLET_ADDRESS
 
   return json(
     {
       elementType,
       defaultConfig,
-      ilpayUrl,
       scriptInitUrl,
+      apiUrl,
+      opWallet,
       walletAddress,
       grantResponse,
       isGrantResponse,
@@ -69,8 +71,9 @@ export default function Create() {
   const {
     elementType,
     defaultConfig,
-    ilpayUrl,
     scriptInitUrl,
+    apiUrl,
+    opWallet,
     walletAddress,
     isGrantAccepted,
     grantResponse,
@@ -80,7 +83,6 @@ export default function Create() {
   const isSubmitting = navigation.state === 'submitting'
 
   const saveFetcher = useFetcher()
-  const [openWidget, setOpenWidget] = useState(false)
   const [toolConfig, setToolConfig] = useState<ElementConfigType>(defaultConfig)
   const [fullConfig, setFullConfig] = useState<
     Record<string, ElementConfigType>
@@ -310,10 +312,9 @@ export default function Create() {
             <fieldset disabled={isSubmitting || saveFetcher.state !== 'idle'}>
               <ToolPreview
                 type={elementType}
+                apiUrl={apiUrl}
+                opWallet={opWallet}
                 toolConfig={toolConfig}
-                openWidget={openWidget}
-                setOpenWidget={setOpenWidget}
-                ilpayUrl={ilpayUrl}
               />
               <ToolConfig
                 type={elementType}
@@ -323,7 +324,6 @@ export default function Create() {
                 isSubmiting={isSubmitting || saveFetcher.state !== 'idle'}
                 // @ts-expect-error TODO
                 errors={saveFetcher?.data?.errors}
-                setOpenWidget={setOpenWidget}
               />
             </fieldset>
             <input

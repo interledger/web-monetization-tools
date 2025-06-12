@@ -9,14 +9,22 @@
     "jsx": "react-jsx",
     "moduleResolution": "Bundler",
     "resolveJsonModule": true,
+    "noEmit": true,
     "strict": true,
     "allowJs": true,
     "skipLibCheck": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "useDefineForClassFields": false,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
       "~/*": ["./app/*"]
     },
-    "types": ["./worker-configuration.d.ts", "vite/client"]
+    "types": [
+      "./worker-configuration.d.ts",
+      "vite/client",
+      "./tools-components.d.ts"
+    ]
   }
 }

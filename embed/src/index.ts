@@ -1,7 +1,8 @@
+import '@tools/components/widget'
+
 /* eslint-disable no-case-declarations */
 const FRONTEND_URL = import.meta.env.VITE_SCRIPT_FRONTEND_URL
 const API_URL = import.meta.env.VITE_SCRIPT_API_URL
-const ILPAY_URL = import.meta.env.VITE_SCRIPT_ILPAY_URL
 
 let paramTypes: string[] | undefined,
   paramWallet: string | undefined,
@@ -44,10 +45,10 @@ const createShadowDOM = () => {
   return { shadowHost, shadowRoot }
 }
 
-const appendPaymentPointer = (walletAddress: string) => {
+const appendPaymentPointer = (walletAddressUrl: string) => {
   const monetizationElement = document.createElement('link')
   monetizationElement.rel = 'monetization'
-  monetizationElement.href = `https://${walletAddress}`
+  monetizationElement.href = walletAddressUrl
   document.head.appendChild(monetizationElement)
 }
 
@@ -109,33 +110,20 @@ const drawElement = (
   config: Config
 ) => {
   const { shadowHost, shadowRoot } = createShadowDOM()
+  const walletAddressUrl = !walletAddress.startsWith('https://')
+    ? `https://${walletAddress}`
+    : walletAddress
 
   // add payment pointer / wallet address to target website first
   // so we have something to check against when displaying the banner
-  appendPaymentPointer(walletAddress)
+  appendPaymentPointer(walletAddressUrl)
 
   for (const key in types) {
     const type = types[Number(key)]
     switch (type) {
       case 'widget': {
-        const font = getFontFamily(config.widgetFontName, 'widget')
-        shadowHost.style.setProperty(
-          '--wmt-widget-font',
-          font?.selectedFont ? font.selectedFont : 'inherit'
-        )
-        shadowHost.style.setProperty(
-          '--wmt-widget-font-size',
-          config.widgetFontSize
-        )
-        const css = getCSSFile('css/widget.css')
-        const element = drawWidget(walletAddress, config)
-        shadowRoot.appendChild(css)
-        shadowRoot.appendChild(element)
-        if (font?.fontFamily) {
-          // font family needs to be outside of the shadow DOM
-          document.body.appendChild(font.fontFamily)
-        }
-        document.body.appendChild(shadowHost)
+        const element = drawWidget(walletAddressUrl, config)
+        document.body.appendChild(element)
         break
       }
       case 'banner':
@@ -149,7 +137,7 @@ const drawElement = (
           '--wmt-banner-font-size',
           config.bannerFontSize
         )
-        const css = getCSSFile('css/banner.css')
+        const css = getCSSFile('tools/css/banner.css')
         const element = drawBanner(config)
         if (element) {
           shadowRoot.appendChild(css)
@@ -274,71 +262,29 @@ const getWebMonetizationLinkText = () => {
     : 'Get the extension'
 }
 
-const drawWidget = (walletAddress: string, config: Config) => {
-  const vpHeight = window.innerHeight
-  const vpWidth = window.innerWidth
-  const element = document.createElement('div')
-  element.className = '_wm_tools_widget'
+const drawWidget = (walletAddressUrl: string, config: Config) => {
+  const element = document.createElement('wm-payment-widget')
 
-  const content = document.createElement('div')
-  content.className = '_wm_tools_widget_content'
-  // custom styles for the element
-  content.style.color = config.widgetTextColor
-  content.style.backgroundColor = config.widgetBackgroundColor
-
-  const css = config.css || undefined
-  let iframeUrl = `${ILPAY_URL}?receiver=https://${encodeURI(
-    walletAddress || ''
-  )}&`
-  if (config.widgetButtonText) {
-    iframeUrl += `action=${encodeURI(config.widgetButtonText)}&`
-  }
-  if (css) {
-    iframeUrl += `css=${css}&`
+  element.config = {
+    apiUrl: API_URL,
+    receiverAddress: walletAddressUrl,
+    action: config.widgetButtonText || 'Pay',
+    theme: {
+      primaryColor: config.widgetButtonBackgroundColor,
+      backgroundColor: config.widgetBackgroundColor,
+      textColor: config.widgetTextColor,
+      fontFamily: config.widgetFontName,
+      widgetButtonBackgroundColor: config.widgetTriggerBackgroundColor
+    },
+    widgetTitleText: config.widgetTitleText,
+    widgetDescriptionText: config.widgetDescriptionText
   }
 
-  content.innerHTML = `
-        <div class="_wm_tools_widget_header">
-          <h5>${config.widgetTitleText}</h5>
-          <p>${config.widgetDescriptionText}</p>
-        </div>
-        <div class="_wm_tools_widget_iframe_wrapper"> 
-          <iframe
-            id="ilpay_iframe"
-            class="_wm_tools_widget_iframe"
-            src=${iframeUrl}
-          />
-        </div>`
-
-  const poweredBy = document.createElement('a')
-  poweredBy.className = '_wm_tools_widget_poweredby'
-  poweredBy.innerHTML = `<img src="${FRONTEND_URL}images/powered_by.svg" />`
-  content.appendChild(poweredBy)
-
-  element.appendChild(content)
-
-  const triggerIcon = config?.widgetTriggerIcon
-    ? config?.widgetTriggerIcon
-    : `${FRONTEND_URL}images/wm_logo_animated.svg`
-
-  const trigger = document.createElement('div')
-  trigger.className = '_wm_tools_widget_trigger'
-  trigger.style.backgroundColor = config.widgetTriggerBackgroundColor
-  trigger.innerHTML = `
-        <img
-          src="${triggerIcon}"
-          alt="widget trigger"
-        />`
-  trigger.addEventListener('click', () => {
-    if (vpHeight < 710) {
-      content.classList.toggle('_wm_short_screen')
-    }
-    if (vpWidth < 400) {
-      content.classList.toggle('_wm_small_screen')
-    }
-    content.classList.toggle('_wm_tools_widget_open')
-  })
-  element.appendChild(trigger)
+  // TODO: add support for widget positioning
+  element.style.position = 'fixed'
+  element.style.bottom = '20px'
+  element.style.right = '20px'
+  element.style.zIndex = '9999'
 
   return element
 }

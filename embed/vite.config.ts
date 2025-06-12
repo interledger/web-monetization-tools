@@ -25,7 +25,8 @@ export default defineConfig(({ mode }) => {
           compact: !isDevelopment,
           manualChunks: undefined
         },
-        external: []
+        external: [],
+        treeshake: false
       },
       cssCodeSplit: false,
       minify: !isDevelopment,

@@ -8,6 +8,9 @@
     "build": "vite build",
     "prepare": "pnpm build"
   },
+  "dependencies": {
+    "@tools/components": "workspace:*"
+  },
   "devDependencies": {
     "typescript": "^5.1.6",
     "vite": "^6.3.5"

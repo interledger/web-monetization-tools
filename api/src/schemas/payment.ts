@@ -52,8 +52,3 @@ export const WalletAddressParamSchema = z.object({
   wa: z.string().min(1, 'Wallet address is required'),
   version: z.string().optional().default('default')
 })
-
-export type PaymentQuoteInput = z.infer<typeof PaymentQuoteSchema>
-export type PaymentGrantInput = z.infer<typeof PaymentGrantSchema>
-export type PaymentFinalizeInput = z.infer<typeof PaymentFinalizeSchema>
-export type WalletAddressParams = z.infer<typeof WalletAddressParamSchema>

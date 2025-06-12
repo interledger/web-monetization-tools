@@ -1,5 +1,5 @@
 import { cx } from 'class-variance-authority'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import type {
   CornerType,
   ElementConfigType,
@@ -323,24 +323,13 @@ const BannerConfig = ({
 const WidgetConfig = ({
   toolConfig: config,
   setToolConfig,
-  errors,
-  setOpenWidget
+  errors
 }: Omit<PartialToolConfigProps, 'type'>) => {
   const [displayedControl, setDisplayedControl] = useState('background')
   const defaultFontValue = fontOptions.find(
     (option) => option.value == config?.widgetFontName
   )
-
   const bgColor = bgColors.widget
-
-  useEffect(() => {
-    if (
-      setOpenWidget &&
-      ['buttonbackground', 'buttontext'].indexOf(displayedControl) != -1
-    ) {
-      setOpenWidget(true)
-    }
-  }, [displayedControl])
 
   return (
     <div className="w-full font-sans text-sm">
@@ -513,9 +502,6 @@ const WidgetConfig = ({
                 ...config,
                 widgetButtonBorder: value as CornerType
               })
-              if (setOpenWidget) {
-                setOpenWidget(true)
-              }
             }}
           />
         </div>
@@ -531,9 +517,6 @@ const WidgetConfig = ({
                 ...config,
                 widgetButtonText: e.target.value ?? ''
               })
-              if (setOpenWidget) {
-                setOpenWidget(true)
-              }
             }}
           />
         </div>
@@ -546,7 +529,6 @@ const RenderElementConfig = ({
   type,
   toolConfig,
   setToolConfig,
-  setOpenWidget,
   errors
 }: PartialToolConfigProps) => {
   switch (type) {
@@ -571,7 +553,6 @@ const RenderElementConfig = ({
         <WidgetConfig
           toolConfig={toolConfig}
           setToolConfig={setToolConfig}
-          setOpenWidget={setOpenWidget}
           errors={errors}
         />
       )
@@ -586,7 +567,6 @@ export const ToolConfig = ({
   defaultConfig,
   setToolConfig,
   isSubmiting,
-  setOpenWidget,
   errors
 }: ToolConfigProps) => {
   return (
@@ -596,7 +576,6 @@ export const ToolConfig = ({
         toolConfig={toolConfig}
         setToolConfig={setToolConfig}
         errors={errors}
-        setOpenWidget={setOpenWidget}
       />
       <div className="flex w-full items-center">
         <WalletAddress

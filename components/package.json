@@ -1,0 +1,19 @@
+{
+  "name": "@tools/components",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "dependencies": {
+    "lit": "^3.1.0"
+  },
+  "devDependencies": {
+    "publisher-tools-api": "workspace:^",
+    "typescript": "^5.3.3",
+    "@interledger/open-payments": "^7.1.0"
+  }
+}

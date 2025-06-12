@@ -1,19 +1,15 @@
 import { cx } from 'class-variance-authority'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { bgColors } from '~/lib/presets.js'
 import {
   PositionType,
   SlideAnimationType,
   type ElementConfigType
 } from '~/lib/types.js'
-import {
-  encodeAndCompressParameters,
-  generateConfigCss,
-  getWebMonetizationLink
-} from '~/lib/utils.js'
-import { WidgetFooter, NotFoundConfig } from '../index.js'
+import { generateConfigCss, getWebMonetizationLink } from '~/lib/utils.js'
+import { NotFoundConfig } from '../index.js'
 import eyeSvg from '~/assets/images/eye.svg'
-import wmLogoAnimated from '~/assets/images/wm_logo_animated.svg?url'
+import type { PaymentWidget, WidgetConfig } from '@tools/components'
 
 const ButtonConfig = ({ config }: { config: ElementConfigType }) => {
   return (
@@ -84,94 +80,84 @@ const BannerConfig = ({ config }: { config: ElementConfigType }) => {
   )
 }
 
-const WidgetConfig = ({
+const Widget = ({
   config,
-  openWidget,
-  setOpenWidget,
-  ilpayUrl
+  apiUrl,
+  opWallet
 }: {
   config: ElementConfigType
-  openWidget: boolean
-  setOpenWidget: React.Dispatch<React.SetStateAction<boolean>>
-  ilpayUrl: string
+  apiUrl: string
+  opWallet: string
 }) => {
-  const [widgetOpen, setWidgetOpen] = useState(false)
-  const [iframeUrl, setIframeUrl] = useState('')
+  const [isLoaded, setIsLoaded] = useState(false)
+  const widgetRef = useRef<PaymentWidget>(null)
 
   useEffect(() => {
-    ;(async () => {
-      const configCss = generateConfigCss(config, true)
-      const css = await encodeAndCompressParameters(String(configCss))
-      const iframeSrc = `${ilpayUrl}?amount=1&action=${encodeURI(
-        config.widgetButtonText
-      )}&receiver=${encodeURI(config.walletAddress || '')}&css=${css}`
-      setIframeUrl(iframeSrc)
-    })()
-  }, [config])
+    const loadWidgetComponent = async () => {
+      try {
+        if (customElements.get('wm-payment-widget')) {
+          setIsLoaded(true)
+          return
+        }
 
-  useEffect(() => {
-    if (openWidget) {
-      setWidgetOpen(true)
+        // dynamic import - ensure component only runs on the client side and not on SSR
+        await import('@tools/components/widget')
+        setIsLoaded(true)
+      } catch (error) {
+        console.error('Failed to load component:', error)
+      }
     }
-  }, [openWidget, widgetOpen])
 
-  useEffect(() => {
-    if (!widgetOpen) {
-      setOpenWidget(false)
-    }
-  }, [widgetOpen])
+    loadWidgetComponent()
+  }, [])
 
-  const triggerIcon = config?.widgetTriggerIcon
-    ? config?.widgetTriggerIcon
-    : wmLogoAnimated
-
-  return (
-    <div className="flex flex-col items-end wm_widget">
-      <div
-        className={cx(
-          'content flex flex-col w-96 h-148 overflow-hidden border border-white-300 transition-all ease-in-out duration-1000 rounded-md p-1 focus:outline-none',
-          widgetOpen
-            ? 'max-w-96 max-h-148 opacity-1'
-            : 'max-w-0 max-h-0 opacity-0'
-        )}
-      >
-        <div className="flex flex-col h-auto w-full">
-          <h5>{config?.widgetTitleText}</h5>
-          <p className="max-h-32 overflow-hidden">
-            {config?.widgetDescriptionText}
-          </p>
-        </div>
-        <div className="flex h-full overflow-hidden">
-          <iframe
-            id="ilpay_iframe"
-            className="h-full w-full overflow-hidden"
-            src={iframeUrl}
-          />
-        </div>
-        <WidgetFooter />
-      </div>
-      <div
-        onClick={() => setWidgetOpen(!widgetOpen)}
-        className="trigger cursor-pointer w-14 h-14 flex items-center justify-center mt-4 border-transparent rounded-full"
-      >
-        <img className="w-8" src={triggerIcon} alt="widget trigger" />
-      </div>
-    </div>
+  const widgetConfig = useMemo(
+    () =>
+      ({
+        apiUrl,
+        receiverAddress: opWallet,
+        action: config.widgetButtonText || 'Pay',
+        note: '',
+        widgetTitleText: config.widgetTitleText,
+        widgetDescriptionText: config.widgetDescriptionText,
+        widgetTriggerIcon: config.widgetTriggerIcon,
+        theme: {
+          primaryColor: config.widgetButtonBackgroundColor,
+          backgroundColor: config.widgetBackgroundColor,
+          textColor: config.widgetTextColor,
+          fontFamily: config.widgetFontName,
+          widgetButtonBackgroundColor: config.widgetTriggerBackgroundColor
+        }
+      }) as WidgetConfig,
+    [config]
   )
+
+  useEffect(() => {
+    if (widgetRef.current && isLoaded) {
+      const widget = widgetRef.current
+      widget.config = widgetConfig
+      widget.requestPayment = false
+      widget.requestQuote = false
+    }
+  }, [widgetConfig, isLoaded])
+
+  if (!isLoaded) {
+    return <div>Loading...</div>
+  }
+
+  return <wm-payment-widget ref={widgetRef} />
 }
 
 const RenderElementConfig = ({
   type,
-  toolConfig,
-  openWidget,
-  setOpenWidget,
-  ilpayUrl
+  apiUrl,
+  opWallet,
+  toolConfig
 }: {
   type: string
+  apiUrl: string
+  opWallet: string
   toolConfig: ElementConfigType
-  openWidget: boolean
-  setOpenWidget: React.Dispatch<React.SetStateAction<boolean>>
-  ilpayUrl: string
 }) => {
   switch (type) {
     case 'button':
@@ -179,14 +165,7 @@ const RenderElementConfig = ({
     case 'banner':
       return <BannerConfig config={toolConfig} />
     case 'widget':
-      return (
-        <WidgetConfig
-          config={toolConfig}
-          ilpayUrl={ilpayUrl}
-          openWidget={openWidget}
-          setOpenWidget={setOpenWidget}
-        />
-      )
+      return <Widget apiUrl={apiUrl} opWallet={opWallet} config={toolConfig} />
     default:
       return <NotFoundConfig />
   }
@@ -194,18 +173,16 @@ const RenderElementConfig = ({
 
 type ToolPreviewProps = {
   type?: string
+  apiUrl: string
+  opWallet: string
   toolConfig: ElementConfigType
-  openWidget?: boolean
-  setOpenWidget: React.Dispatch<React.SetStateAction<boolean>>
-  ilpayUrl: string
 }
 
 export const ToolPreview = ({
   type,
-  toolConfig,
-  openWidget,
-  setOpenWidget,
-  ilpayUrl
+  apiUrl,
+  opWallet,
+  toolConfig
 }: ToolPreviewProps) => {
   const bgColor = bgColors[type as keyof typeof bgColors] ?? bgColors.button
 
@@ -220,9 +197,8 @@ export const ToolPreview = ({
       <RenderElementConfig
         type={type ?? ''}
         toolConfig={toolConfig}
-        openWidget={openWidget ?? false}
-        setOpenWidget={setOpenWidget}
-        ilpayUrl={ilpayUrl}
+        apiUrl={apiUrl}
+        opWallet={opWallet}
       />
     </div>
   )
