@@ -52,14 +52,19 @@ const appendPaymentPointer = (walletAddressUrl: string) => {
   document.head.appendChild(monetizationElement)
 }
 
-const getCSSFile = (url: string) => {
+const getCSSFile = async (shadowRoot: ShadowRoot): Promise<HTMLLinkElement> => {
   const link = document.createElement('link')
 
   link.rel = 'stylesheet'
   link.type = 'text/css'
-  link.href = `${FRONTEND_URL}${url}`
+  link.href = `${FRONTEND_URL}css/banner.css`
 
-  return link
+  return new Promise((resolve, reject) => {
+    link.onload = () => resolve(link)
+    link.onerror = () => reject(new Error('Failed to load CSS banner file'))
+
+    shadowRoot.appendChild(link)
+  })
 }
 
 const allowedFonts = ['Cookie', 'Roboto', 'Open Sans', 'Titillium Web', `Arial`]
@@ -104,7 +109,7 @@ const getFontFamily = (family: string, forElement: string = 'banner') => {
   return { fontFamily: styleObj, selectedFont }
 }
 
-const drawElement = (
+const drawElement = async (
   types: string[] | undefined,
   walletAddress: string,
   config: Config
@@ -137,22 +142,20 @@ const drawElement = (
           '--wmt-banner-font-size',
           config.bannerFontSize
         )
-        const css = getCSSFile('tools/css/banner.css')
-        const element = drawBanner(config)
+        document.body.appendChild(shadowHost)
+        const element = await drawBanner(config, shadowRoot)
         if (element) {
-          shadowRoot.appendChild(css)
           shadowRoot.appendChild(element)
         }
         if (font?.fontFamily) {
           // font family needs to be outside of the shadow DOM
           document.body.appendChild(font.fontFamily)
         }
-        document.body.appendChild(shadowHost)
     }
   }
 }
 
-const drawBanner = (config: Config) => {
+const drawBanner = async (config: Config, shadowRoot: ShadowRoot) => {
   // check if user closed the banner
   const closedByUser = sessionStorage.getItem('_wm_tools_closed_by_user')
 
@@ -235,6 +238,8 @@ const drawBanner = (config: Config) => {
   linkElement.appendChild(linkText)
   linkSpan.appendChild(linkElement)
   element.appendChild(linkSpan)
+
+  await getCSSFile(shadowRoot)
 
   return element
 }
