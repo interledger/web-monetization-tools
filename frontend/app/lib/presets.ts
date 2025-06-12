@@ -184,4 +184,4 @@ export const availableTools = [
     description:
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam dictum felis eget dui ullamcorper, sit amet hendrerit ante sollicitudin. Donec eget metus lectus.'
   }
-]
+].filter((tool) => tool.enabled)
