@@ -13,8 +13,8 @@
   "scripts": {
     "format": "prettier . --write --cache --cache-location='node_modules/.cache/prettiercache' --log-level=warn",
     "format:check": "prettier . --check --cache --cache-location='node_modules/.cache/prettiercache'",
-    "lint": "eslint . --fix --cache --cache-location 'node_modules/.cache/eslintcache' --max-warnings -1",
-    "lint:check": "eslint . --cache --cache-location 'node_modules/.cache/eslintcache' --max-warnings -1",
+    "lint": "eslint . --fix --cache --cache-location 'node_modules/.cache/eslintcache'",
+    "lint:check": "eslint . --cache --cache-location 'node_modules/.cache/eslintcache'",
     "typecheck": "pnpm -r typecheck"
   },
   "devDependencies": {

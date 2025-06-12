@@ -620,7 +620,7 @@ export class PaymentConfirmation extends LitElement {
       throw new Error('Failed to request outgoing payment grant')
     }
 
-    const outgoingGrant = await response.json()
+    const outgoingGrant = (await response.json()) as Grant
     return outgoingGrant
   }
 
