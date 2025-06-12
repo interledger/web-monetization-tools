@@ -8,7 +8,7 @@ import {
 import { property, state } from 'lit/decorators.js'
 import './confirmation.js'
 import './interaction.js'
-import { defaultTriggerIcon } from './assets/default-icon.js'
+import defaultTriggerIcon from './assets/wm_logo_animated.svg'
 
 export interface WidgetConfig {
   walletAddress: string
