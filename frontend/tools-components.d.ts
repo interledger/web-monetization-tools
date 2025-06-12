@@ -1,16 +1,16 @@
-import type { WidgetConfig } from '@tools/components'
+import type { WebComponentProps } from '@lit/react'
+import type { PaymentWidget } from '@tools/components'
 
 declare global {
+  interface HTMLElementTagNameMap {
+    'wm-payment-widget': PaymentWidget
+  }
+}
+
+declare module 'react' {
   namespace JSX {
     interface IntrinsicElements {
-      'wm-payment-widget': React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement> & {
-          config?: WidgetConfig
-          requestPayment?: boolean
-          requestQuote?: boolean
-        },
-        HTMLElement
-      >
+      'wm-payment-widget': WebComponentProps<PaymentWidget>
     }
   }
 }

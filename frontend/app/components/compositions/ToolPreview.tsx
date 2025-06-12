@@ -9,7 +9,7 @@ import {
 import { generateConfigCss, getWebMonetizationLink } from '~/lib/utils.js'
 import { NotFoundConfig } from '../index.js'
 import eyeSvg from '~/assets/images/eye.svg'
-import type { WidgetConfig } from '@tools/components'
+import type { PaymentWidget, WidgetConfig } from '@tools/components'
 
 const ButtonConfig = ({ config }: { config: ElementConfigType }) => {
   return (
@@ -90,7 +90,7 @@ const Widget = ({
   opWallet: string
 }) => {
   const [isLoaded, setIsLoaded] = useState(false)
-  const widgetRef = useRef<HTMLElement>(null)
+  const widgetRef = useRef<PaymentWidget>(null)
 
   useEffect(() => {
     const loadWidgetComponent = async () => {

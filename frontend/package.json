@@ -12,7 +12,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@tools/components": "workspace:*",
     "@headlessui/react": "^1.7.19",
     "@interledger/open-payments": "^7.0.0",
     "@noble/ed25519": "^2.2.3",
@@ -21,6 +20,7 @@
     "@remix-run/react": "^2.16.6",
     "@tailwindcss/postcss": "^4.1.6",
     "@tippyjs/react": "^4.2.6",
+    "@tools/components": "workspace:*",
     "@typescript-eslint/parser": "^8.33.0",
     "autoprefixer": "^10.4.20",
     "aws4fetch": "^1.0.20",
@@ -41,6 +41,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@lit/react": "^1.0.7",
     "@remix-run/dev": "^2.16.6",
     "@tailwindcss/forms": "^0.5.9",
     "@types/he": "^1.2.3",
