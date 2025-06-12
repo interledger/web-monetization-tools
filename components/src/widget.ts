@@ -254,7 +254,7 @@ export class PaymentWidget extends LitElement {
       return
     }
 
-    const response = await fetch(walletAddress)
+    const response = await fetch(this.toWalletAddressUrl(walletAddress))
     if (!response.ok) {
       alert('Invalid wallet address or unable to fetch wallet details')
       return
@@ -262,6 +262,11 @@ export class PaymentWidget extends LitElement {
 
     this.walletAddress = (await response.json()) as WalletAddress
     this.currentView = 'confirmation'
+  }
+
+  // TODO: Move this to the shared utils module!
+  private toWalletAddressUrl(s: string): string {
+    return s.startsWith('$') ? s.replace('$', 'https://') : s
   }
 
   private toggleWidget() {
