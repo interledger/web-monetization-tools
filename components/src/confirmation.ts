@@ -2,6 +2,7 @@ import { html, css, LitElement } from 'lit'
 import { property, state } from 'lit/decorators.js'
 import type { WidgetController, WalletAddress } from './widget.js'
 import type { PaymentQuoteInput } from 'publisher-tools-api'
+import type { PendingGrant } from '@interledger/open-payments'
 
 export interface PaymentDetails {
   walletAddress: string
@@ -11,20 +12,6 @@ export interface PaymentDetails {
   isQuote: boolean
   receiverName?: string
   note?: string
-}
-
-type Grant = {
-  interact: {
-    redirect: string
-    finish: string
-  }
-  continue: {
-    access_token: {
-      value: string
-    }
-    uri: string
-    wait: number
-  }
 }
 
 export class PaymentConfirmation extends LitElement {
@@ -600,7 +587,7 @@ export class PaymentConfirmation extends LitElement {
     senderWalletAddress: string
     debitAmount: object
     receiveAmount: object
-  }): Promise<Grant> {
+  }): Promise<PendingGrant> {
     const response = await fetch(
       `${this.configController.config.apiUrl}tools/payment/grant`,
       {
@@ -620,7 +607,7 @@ export class PaymentConfirmation extends LitElement {
       throw new Error('Failed to request outgoing payment grant')
     }
 
-    const outgoingGrant = (await response.json()) as Grant
+    const outgoingGrant = (await response.json()) as PendingGrant
     return outgoingGrant
   }
 

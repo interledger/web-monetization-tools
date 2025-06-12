@@ -14,5 +14,3 @@ declare module 'react' {
     }
   }
 }
-
-export {}

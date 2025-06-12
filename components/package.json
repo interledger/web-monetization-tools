@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "publisher-tools-api": "workspace:^",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "@interledger/open-payments": "^7.1.0"
   }
 }

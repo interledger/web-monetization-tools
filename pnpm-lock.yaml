@@ -88,6 +88,9 @@ importers:
         specifier: ^3.1.0
         version: 3.3.0
     devDependencies:
+      '@interledger/open-payments':
+        specifier: ^7.1.0
+        version: 7.1.0
       publisher-tools-api:
         specifier: workspace:^
         version: link:../api
@@ -792,6 +795,9 @@ packages:
 
   '@interledger/open-payments@7.0.0':
     resolution: {integrity: sha512-6xPR5d1lStKvOFoQHatchoh5mYSmrbHE2dZotoTq/jhmxU+/Zk56hCJx7VvNcAz4F8Zqkgne/hM8ppcCEDKgtg==}
+
+  '@interledger/open-payments@7.1.0':
+    resolution: {integrity: sha512-8kAuzYCHULLyAlWFyN+uE10cfDbep2v796fMJzv58Tfcu3Dt4Vyb2CVNwMjJ/BKo2YURLmE6yTcok5na2FTpjg==}
 
   '@interledger/openapi@2.0.3':
     resolution: {integrity: sha512-5wGncgpc/WVHd+RNE9oZHzdNdZK8UjaOqLmMnPm6kyNfXBtcZmDOumE00jEYa4BOXbaIm82qB4zD/dLc46AjRA==}
@@ -5247,6 +5253,18 @@ snapshots:
       uuid: 9.0.1
 
   '@interledger/open-payments@7.0.0':
+    dependencies:
+      '@interledger/http-signature-utils': 2.0.3
+      '@interledger/openapi': 2.0.3
+      base64url: 3.0.1
+      http-message-signatures: 0.1.2
+      ky: 1.7.2
+      pino: 8.21.0
+      uuid: 9.0.1
+    transitivePeerDependencies:
+      - supports-color
+
+  '@interledger/open-payments@7.1.0':
     dependencies:
       '@interledger/http-signature-utils': 2.0.3
       '@interledger/openapi': 2.0.3
