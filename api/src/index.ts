@@ -60,11 +60,14 @@ app.use('*', async (c, next) => {
         400
       )
     }
+
+    console.error('Unexpected error:', error)
     return c.json(
       {
         error: {
           message:
             error instanceof Error ? error.message : 'Internal server error',
+          details: error instanceof Error ? error.stack : undefined,
           code: 'INTERNAL_ERROR'
         }
       },
@@ -93,7 +96,7 @@ app.get(
               walletAddress: wa,
               version: version,
               originalError:
-                error instanceof Error ? error.message : 'Unknown error'
+                error instanceof Error ? error.message : String(error)
             }
           }
         })
@@ -120,6 +123,10 @@ app.post(
 
       return json(result)
     } catch (error) {
+      console.error('Payment quote creation error: ', {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      })
       throw new HTTPException(500, {
         message: JSON.stringify({
           error: {
@@ -127,7 +134,7 @@ app.post(
             code: 'QUOTE_ERROR',
             details: {
               originalError:
-                error instanceof Error ? error.message : 'Unknown error'
+                error instanceof Error ? error.message : String(error)
             }
           }
         })
@@ -153,6 +160,10 @@ app.post(
 
       return json(result)
     } catch (error) {
+      console.error('Payment grant creation error:', {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      })
       throw new HTTPException(500, {
         message: JSON.stringify({
           error: {
@@ -160,7 +171,7 @@ app.post(
             code: 'GRANT_ERROR',
             details: {
               originalError:
-                error instanceof Error ? error.message : 'Unknown error'
+                error instanceof Error ? error.message : String(error)
             }
           }
         })
@@ -186,6 +197,10 @@ app.post(
 
       return json(result)
     } catch (error) {
+      console.error('Payment finalization error:', {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      })
       throw new HTTPException(500, {
         message: JSON.stringify({
           error: {
@@ -193,7 +208,7 @@ app.post(
             code: 'FINALIZE_ERROR',
             details: {
               originalError:
-                error instanceof Error ? error.message : 'Unknown error'
+                error instanceof Error ? error.message : String(error)
             }
           }
         })
