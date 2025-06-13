@@ -150,17 +150,13 @@ export function serializeError(error: unknown) {
 export function createHTTPException(
   statusCode: ContentfulStatusCode,
   message: string,
-  errorCode: string,
   error: unknown
 ) {
   const serializedError = serializeError(error)
   console.error(message, serializedError)
   return new HTTPException(statusCode, {
     message: JSON.stringify({
-      error: {
-        code: errorCode,
-        ...serializedError
-      }
+      error: { ...serializedError }
     })
   })
 }

@@ -66,10 +66,7 @@ app.use('*', async (c, next) => {
     console.error('Unexpected error: ', serializedError)
     return c.json(
       {
-        error: {
-          ...serializedError,
-          code: 'INTERNAL_ERROR'
-        }
+        error: { message: 'INTERNAL_ERROR', ...serializedError }
       },
       500
     )
@@ -87,12 +84,7 @@ app.get(
       const config = await storageService.getJson<ConfigVersions>(wa)
       return json(config[version])
     } catch (error) {
-      throw createHTTPException(
-        500,
-        'Config fetch error: ',
-        'CONFIG_FETCH_ERROR',
-        error
-      )
+      throw createHTTPException(500, 'Config fetch error: ', error)
     }
   }
 )
@@ -115,12 +107,7 @@ app.post(
 
       return json(result)
     } catch (error) {
-      throw createHTTPException(
-        500,
-        'Payment quote creation error: ',
-        'QUOTE_ERROR',
-        error
-      )
+      throw createHTTPException(500, 'Payment quote creation error: ', error)
     }
   }
 )
@@ -142,12 +129,7 @@ app.post(
 
       return json(result)
     } catch (error) {
-      throw createHTTPException(
-        500,
-        'Payment grant creation error: ',
-        'GRANT_ERROR',
-        error
-      )
+      throw createHTTPException(500, 'Payment grant creation error: ', error)
     }
   }
 )
