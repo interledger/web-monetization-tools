@@ -12,6 +12,7 @@ import {
   WalletAddressParamSchema
 } from './schemas/payment.js'
 import type { ConfigVersions } from './types.js'
+import { createHTTPException, serializeError } from './utils/utils.js'
 
 export type Env = {
   AWS_ACCESS_KEY_ID: string
@@ -61,13 +62,12 @@ app.use('*', async (c, next) => {
       )
     }
 
-    console.error('Unexpected error:', error)
+    const serializedError = serializeError(error)
+    console.error('Unexpected error: ', serializedError)
     return c.json(
       {
         error: {
-          message:
-            error instanceof Error ? error.message : 'Internal server error',
-          details: error instanceof Error ? error.stack : undefined,
+          ...serializedError,
           code: 'INTERNAL_ERROR'
         }
       },
@@ -87,20 +87,12 @@ app.get(
       const config = await storageService.getJson<ConfigVersions>(wa)
       return json(config[version])
     } catch (error) {
-      throw new HTTPException(500, {
-        message: JSON.stringify({
-          error: {
-            message: 'Failed to fetch configuration',
-            code: 'CONFIG_FETCH_ERROR',
-            details: {
-              walletAddress: wa,
-              version: version,
-              originalError:
-                error instanceof Error ? error.message : String(error)
-            }
-          }
-        })
-      })
+      throw createHTTPException(
+        500,
+        'Config fetch error: ',
+        'CONFIG_FETCH_ERROR',
+        error
+      )
     }
   }
 )
@@ -123,22 +115,12 @@ app.post(
 
       return json(result)
     } catch (error) {
-      console.error('Payment quote creation error: ', {
-        error: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined
-      })
-      throw new HTTPException(500, {
-        message: JSON.stringify({
-          error: {
-            message: 'Payment quote creation failed',
-            code: 'QUOTE_ERROR',
-            details: {
-              originalError:
-                error instanceof Error ? error.message : String(error)
-            }
-          }
-        })
-      })
+      throw createHTTPException(
+        500,
+        'Payment quote creation error: ',
+        'QUOTE_ERROR',
+        error
+      )
     }
   }
 )
@@ -160,22 +142,12 @@ app.post(
 
       return json(result)
     } catch (error) {
-      console.error('Payment grant creation error:', {
-        error: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined
-      })
-      throw new HTTPException(500, {
-        message: JSON.stringify({
-          error: {
-            message: 'Payment grant creation failed',
-            code: 'GRANT_ERROR',
-            details: {
-              originalError:
-                error instanceof Error ? error.message : String(error)
-            }
-          }
-        })
-      })
+      throw createHTTPException(
+        500,
+        'Payment grant creation error: ',
+        'GRANT_ERROR',
+        error
+      )
     }
   }
 )
@@ -197,22 +169,12 @@ app.post(
 
       return json(result)
     } catch (error) {
-      console.error('Payment finalization error:', {
-        error: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined
-      })
-      throw new HTTPException(500, {
-        message: JSON.stringify({
-          error: {
-            message: 'Payment finalization failed',
-            code: 'FINALIZE_ERROR',
-            details: {
-              originalError:
-                error instanceof Error ? error.message : String(error)
-            }
-          }
-        })
-      })
+      throw createHTTPException(
+        500,
+        'Payment finalization error: ',
+        'FINALIZE_ERROR',
+        error
+      )
     }
   }
 )
