@@ -151,12 +151,7 @@ app.post(
 
       return json(result)
     } catch (error) {
-      throw createHTTPException(
-        500,
-        'Payment finalization error: ',
-        'FINALIZE_ERROR',
-        error
-      )
+      throw createHTTPException(500, 'Payment finalization error: ', error)
     }
   }
 )
