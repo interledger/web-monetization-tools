@@ -187,12 +187,6 @@ export class OpenPaymentsService {
       note: args.note
     })
 
-    // revoke grant to avoid leaving users with unused, dangling grants.
-    await this.client!.grant.cancel({
-      url: incomingPaymentGrant.continue.uri,
-      accessToken: incomingPaymentGrant.continue.access_token.value
-    })
-
     const quoteGrant = await this.createQuoteGrant({
       authServer: walletAddress.authServer
     })
@@ -414,7 +408,7 @@ export class OpenPaymentsService {
     finishPaymentUrl: string,
     accessToken: string,
     accessTokenIncomingPayment: string,
-    receiver: string
+    incomingPaymentId: string
   ): Promise<CheckPaymentResult> {
     await timeout(3000)
 
@@ -437,16 +431,8 @@ export class OpenPaymentsService {
     }
 
     await this.client!.incomingPayment.complete({
-      url: receiver,
+      url: incomingPaymentId,
       accessToken: accessTokenIncomingPayment
-    }).catch(() => {
-      return {
-        success: false,
-        error: {
-          code: 'INCOMING_PAYMENT_FAILED',
-          message: 'Could not complete incoming payment.'
-        }
-      }
     })
 
     return { success: true }
