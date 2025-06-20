@@ -2,6 +2,8 @@ import { signMessage } from 'http-message-signatures/lib/httpbis'
 import { createContentDigestHeader } from 'httpbis-digest-headers'
 import type { Request } from 'http-message-signatures'
 import * as ed from '@noble/ed25519'
+import type { ContentfulStatusCode } from 'hono/utils/http-status'
+import { HTTPException } from 'hono/http-exception'
 
 type Headers = SignatureHeaders & Partial<ContentHeaders>
 
@@ -139,4 +141,22 @@ function createSigner(key: Uint8Array, keyId: string) {
       return Buffer.from(await ed.signAsync(data, key))
     }
   }
+}
+
+export function serializeError(error: unknown) {
+  return JSON.parse(JSON.stringify(error, Object.getOwnPropertyNames(error)))
+}
+
+export function createHTTPException(
+  statusCode: ContentfulStatusCode,
+  message: string,
+  error: unknown
+) {
+  const serializedError = serializeError(error)
+  console.error(message, serializedError)
+  return new HTTPException(statusCode, {
+    message: JSON.stringify({
+      error: { ...serializedError }
+    })
+  })
 }
