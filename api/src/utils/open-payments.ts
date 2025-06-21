@@ -3,6 +3,7 @@ import {
   type WalletAddress,
   type AuthenticatedClient,
   type Quote,
+  type Grant,
   isFinalizedGrant,
   isPendingGrant,
   createAuthenticatedClient
@@ -10,8 +11,8 @@ import {
 import {
   createHeaders,
   toWalletAddressUrl,
-  formatAmount,
-  timeout
+  timeout,
+  createHTTPException
 } from './utils.js'
 import { createId } from '@paralleldrive/cuid2'
 import type { Env } from '../index.js'
@@ -22,7 +23,7 @@ export interface Amount {
   assetScale: number
 }
 
-export type QuoteResponse = Quote & { incomingPaymentGrantToken: string }
+export type CreatePayment = { quote: Quote; incomingPaymentGrant: Grant }
 
 type CreateIncomingPaymentParams = {
   accessToken: string
@@ -123,7 +124,7 @@ export class OpenPaymentsService {
     const receiverWallet = await this.getWalletAddress(
       args.receiverWalletAddress
     )
-    const quote = await this.fetchQuote(
+    const { quote, incomingPaymentGrant } = await this.fetchQuote(
       {
         walletAddress: args.senderWalletAddress,
         amount: args.amount,
@@ -136,25 +137,9 @@ export class OpenPaymentsService {
       throw new Error('Invalid receiver wallet address')
     }
 
-    const receiveAmount = formatAmount({
-      value: quote.receiveAmount.value,
-      assetCode: quote.receiveAmount.assetCode,
-      assetScale: quote.receiveAmount.assetScale
-    })
-
-    const debitAmount = formatAmount({
-      value: quote.debitAmount.value,
-      assetCode: quote.debitAmount.assetCode,
-      assetScale: quote.debitAmount.assetScale
-    })
-
     return {
-      walletAddress: args.senderWalletAddress,
-      receiveAmount: receiveAmount.amountWithCurrency,
-      debitAmount: debitAmount.amountWithCurrency,
-      receiverName: receiverWallet.publicName,
-      quote,
-      isQuote: true
+      incomingPaymentGrant,
+      quote
     }
   }
 
@@ -165,7 +150,7 @@ export class OpenPaymentsService {
       note?: string
     },
     receiverWallet: WalletAddress
-  ): Promise<QuoteResponse> {
+  ): Promise<CreatePayment> {
     const walletAddress = await this.getWalletAddress(args.walletAddress)
 
     const amountObj = {
@@ -213,26 +198,22 @@ export class OpenPaymentsService {
       )
     })
 
-    const response = {
-      incomingPaymentGrantToken: incomingPaymentGrant.access_token.value,
-      ...quote
+    return {
+      quote,
+      incomingPaymentGrant
     }
-
-    return response
   }
 
   async initializePayment(args: {
-    senderWalletAddress: string
+    walletAddress: WalletAddress
     debitAmount: Amount
     receiveAmount: Amount
   }): Promise<PendingGrant> {
-    const walletAddress = await this.getWalletAddress(args.senderWalletAddress)
-
     const clientNonce = crypto.randomUUID()
     const paymentId = createId()
 
     const outgoingPaymentGrant = await this.createOutgoingPaymentGrant({
-      walletAddress: walletAddress,
+      walletAddress: args.walletAddress,
       debitAmount: args.debitAmount,
       receiveAmount: args.receiveAmount,
       nonce: clientNonce,
@@ -244,16 +225,16 @@ export class OpenPaymentsService {
   }
 
   async finishPaymentProcess(
-    senderWalletAddress: string,
-    grant: PendingGrant,
-    quote: QuoteResponse,
+    walletAddress: WalletAddress,
+    pendingGrant: PendingGrant,
+    quote: Quote,
+    incomingPaymentGrant: Grant,
     interactRef: string
   ): Promise<CheckPaymentResult> {
-    const walletAddress = await this.getWalletAddress(senderWalletAddress)
     const continuation = await this.client!.grant.continue(
       {
-        url: grant.continue.uri,
-        accessToken: grant.continue.access_token.value
+        url: pendingGrant.continue.uri,
+        accessToken: pendingGrant.continue.access_token.value
       },
       {
         interact_ref: interactRef
@@ -285,7 +266,7 @@ export class OpenPaymentsService {
     return await this.checkOutgoingPayment(
       outgoingPayment.id,
       continuation.access_token.value,
-      quote.incomingPaymentGrantToken,
+      incomingPaymentGrant,
       quote.receiver
     )
   }
@@ -312,6 +293,13 @@ export class OpenPaymentsService {
     }
 
     return nonInteractiveGrant
+  }
+
+  private async revokeIncomingPaymentGrant(incomingPaymentGrant: Grant) {
+    await this.client!.grant.cancel({
+      url: incomingPaymentGrant.continue.uri,
+      accessToken: incomingPaymentGrant.continue.access_token.value
+    })
   }
 
   private async createIncomingPayment({
@@ -406,8 +394,8 @@ export class OpenPaymentsService {
 
   private async checkOutgoingPayment(
     finishPaymentUrl: string,
-    accessToken: string,
-    accessTokenIncomingPayment: string,
+    continuationAccessToken: string,
+    incomingPaymentGrant: Grant,
     incomingPaymentId: string
   ): Promise<CheckPaymentResult> {
     await timeout(3000)
@@ -416,7 +404,7 @@ export class OpenPaymentsService {
     const checkOutgoingPaymentResponse = await this.client!.outgoingPayment.get(
       {
         url: finishPaymentUrl,
-        accessToken: accessToken
+        accessToken: continuationAccessToken
       }
     )
 
@@ -430,10 +418,20 @@ export class OpenPaymentsService {
       }
     }
 
-    await this.client!.incomingPayment.complete({
-      url: incomingPaymentId,
-      accessToken: accessTokenIncomingPayment
-    })
+    try {
+      await this.client!.incomingPayment.complete({
+        url: incomingPaymentId,
+        accessToken: incomingPaymentGrant.access_token.value
+      })
+    } catch (error) {
+      throw createHTTPException(
+        500,
+        'Could not complete incoming payment. ',
+        error
+      )
+    }
+    // revoke grant to avoid leaving users with unused, dangling grants.
+    await this.revokeIncomingPaymentGrant(incomingPaymentGrant)
 
     return { success: true }
   }
