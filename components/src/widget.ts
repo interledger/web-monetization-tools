@@ -258,7 +258,7 @@ export class PaymentWidget extends LitElement {
       return
     }
 
-    const json = await response.json()
+    const json = (await response.json()) as WalletAddress
     if (!this.isWalletAddress(json)) {
       alert('Invalid wallet address format')
       return
