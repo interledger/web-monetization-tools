@@ -40,32 +40,6 @@ export function toWalletAddressUrl(s: string): string {
   return s.startsWith('$') ? s.replace('$', 'https://') : s
 }
 
-export function formatAmount({
-  value,
-  assetCode,
-  assetScale
-}: {
-  value: string
-  assetCode: string
-  assetScale: number
-}) {
-  const amount = Number(value) / Math.pow(10, assetScale)
-  const currencySymbols: Record<string, string> = {
-    USD: '$',
-    EUR: '€',
-    GBP: '£'
-  }
-
-  const symbol =
-    currencySymbols[assetCode.toUpperCase()] || assetCode.toUpperCase()
-
-  return {
-    amount: amount.toFixed(2),
-    currency: assetCode,
-    amountWithCurrency: `${symbol}${amount.toFixed(2)}`
-  }
-}
-
 export async function createHeaders({
   request,
   privateKey,
