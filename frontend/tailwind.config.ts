@@ -4,11 +4,9 @@ export default {
     './app/**/*.{js,jsx,ts,tsx}',
     './components/**/*.{js,jsx,ts,tsx}',
     './frontend/components/src/**/*.{js,jsx,ts,tsx}'
-    // Add other paths as needed for your Remix app
   ],
   theme: {
     extend: {
-      // Base color palette from semantics
       colors: {
         // Green palette
         'green-50': '#DBE9E7',
@@ -125,7 +123,6 @@ export default {
         'wm-purple': '#7F76B2'
       },
 
-      // Spacing system
       spacing: {
         '3xs': '2px',
         '2xs': '4px',
@@ -144,7 +141,6 @@ export default {
         '128': '36rem'
       },
 
-      // Font sizes
       fontSize: {
         'xs': '12px',
         'sm': '14px',
@@ -159,7 +155,6 @@ export default {
         '7xl': '72px'
       },
 
-      // Line heights
       lineHeight: {
         'xs': '16px',
         'sm': '20px',
@@ -174,7 +169,6 @@ export default {
         '7xl': '80px'
       },
 
-      // Font weights
       fontWeight: {
         light: '300',
         normal: '400',
@@ -183,12 +177,10 @@ export default {
         bold: '700'
       },
 
-      // Font families
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui']
       },
 
-      // Border radius
       borderRadius: {
         none: '0px',
         xs: '4px',
@@ -197,9 +189,8 @@ export default {
         full: '99999px'
       },
 
-      // Typography styles
+      // typography styles
       textStyles: {
-        // Headings
         'h1': [
           '48px',
           {
@@ -337,7 +328,6 @@ export default {
         'md': '28rem'
       },
 
-      // Padding (if you want specific padding utilities)
       padding: {
         '3xs': '2px',
         '2xs': '4px',

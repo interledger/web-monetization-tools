@@ -22,13 +22,6 @@ type TypographyProps = {
   children: React.ReactNode
 }
 
-/**
- * Typography component that applies Figma text style tokens consistently
- *
- * @param variant The text style variant from Figma tokens
- * @param as The HTML element to render (defaults to appropriate element based on variant)
- * @param className Additional classes to apply
- */
 export function Typography({
   variant,
   as,
@@ -36,7 +29,6 @@ export function Typography({
   children,
   ...props
 }: TypographyProps & React.HTMLAttributes<HTMLElement>) {
-  // Determine the appropriate element based on variant if not specified
   const Component = as || getDefaultElementForVariant(variant)
 
   return (
@@ -46,7 +38,6 @@ export function Typography({
   )
 }
 
-// Helper function to determine the default element for each variant
 function getDefaultElementForVariant(
   variant: TextStyleType
 ): React.ElementType {
@@ -78,7 +69,6 @@ function getDefaultElementForVariant(
   }
 }
 
-// Convenience components for common text styles
 export const Heading1 = (props: Omit<TypographyProps, 'variant'>) => (
   <Typography variant="h1" {...props} />
 )
