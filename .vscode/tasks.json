@@ -78,12 +78,7 @@
         "reveal": "always",
         "showReuseMessage": true
       },
-      "dependsOn": [
-        "Build embed script",
-        "Run CDN",
-        "Run API",
-        "Run Editor UI"
-      ],
+      "dependsOn": ["Build embed script", "Run CDN", "Run API", "Run Editor UI"]
     }
   ]
 }
