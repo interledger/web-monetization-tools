@@ -3,8 +3,7 @@ import {
   CornerType,
   PositionType,
   SlideAnimationType,
-  type ElementConfigType,
-  type WalletAddress
+  type ElementConfigType
 } from './types.js'
 
 const getSelectedFont = (name: string) => {
