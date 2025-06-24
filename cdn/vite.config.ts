@@ -19,7 +19,7 @@ export default defineConfig({
     watch: {
       ignored: restartOnNodeModuleChange.map(
         (e) =>
-          `!${path.join(__dirname, 'node_modules', e.replaceAll('/', path.sep))}`
+          `!${path.join(path.sep === '/' ? __dirname : '', 'node_modules', e.replaceAll('/', path.sep))}`
       )
     }
   },
