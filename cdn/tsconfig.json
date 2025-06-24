@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "lib": ["ES2024.String"],
     "types": ["./worker-configuration.d.ts", "vite/client"]
   }
 }
