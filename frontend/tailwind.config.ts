@@ -1,4 +1,71 @@
 /** @type {import('tailwindcss').Config} */
+
+const palettes = {
+  // Green palette
+  'green-50': '#DBE9E7',
+  'green-200': '#ABE4DF',
+  'green-400': '#56B7B5',
+  'green-600': '#27797A',
+  'green-800': '#204D4F',
+
+  // Purple palette
+  'purple-50': '#F3F4FA',
+  'purple-100': '#A7A6D3',
+  'purple-300': '#8075B3',
+  'purple-600': '#5B5380',
+  'purple-800': '#2D2A3C',
+
+  // Mint palette
+  'mint-50': '#F2FBF9',
+  'mint-100': '#D4F3EB',
+  'mint-300': '#98E1D0',
+  'mint-600': '#4AB7A5',
+  'mint-800': '#247D71',
+
+  // Blue palette
+  'blue-50': '#F6F8FA',
+  'blue-100': '#D0DDED',
+  'blue-300': '#A3BEDC',
+  'blue-600': '#5A77B6',
+  'blue-800': '#455588',
+
+  // Orange palette
+  'orange-50': '#FFF6ED',
+  'orange-100': '#FFD3A8',
+  'orange-300': '#FF9852',
+  'orange-600': '#EF4C07',
+  'orange-800': '#9D2D0F',
+
+  // Pink palette
+  'pink-50': '#FEF1F5',
+  'pink-100': '#FEE5EE',
+  'pink-300': '#FFC8DC',
+  'pink-600': '#FF6698',
+  'pink-800': '#EB174A',
+
+  // Red palette
+  'red-50': '#FFF1F2',
+  'red-100': '#FEE5EE',
+  'red-300': '#FF7A7F',
+  'red-600': '#E51D25',
+  'red-800': '#A01419',
+
+  // Neutrals
+  'black': '#000000',
+  'white': '#FFFFFF',
+  'silver-50': '#F7F7F7',
+  'silver-100': '#EFEFEF',
+  'silver-200': '#DFDFDF',
+  'silver-300': '#C9C9C9',
+  'silver-400': '#ADADAD',
+  'silver-500': '#999999',
+  'silver-600': '#888888',
+  'silver-700': '#7B7B7B',
+  'silver-800': '#676767',
+  'silver-900': '#545454',
+  'silver-950': '#363636'
+}
+
 export default {
   content: [
     './app/**/*.{js,jsx,ts,tsx}',
@@ -8,106 +75,44 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Green palette
-        'green-50': '#DBE9E7',
-        'green-200': '#ABE4DF',
-        'green-400': '#56B7B5',
-        'green-600': '#27797A',
-        'green-800': '#204D4F',
-
-        // Purple palette
-        'purple-50': '#F3F4FA',
-        'purple-100': '#A7A6D3',
-        'purple-300': '#8075B3',
-        'purple-600': '#5B5380',
-        'purple-800': '#2D2A3C',
-
-        // Mint palette
-        'mint-50': '#F2FBF9',
-        'mint-100': '#D4F3EB',
-        'mint-300': '#98E1D0',
-        'mint-600': '#4AB7A5',
-        'mint-800': '#247D71',
-
-        // Blue palette
-        'blue-50': '#F6F8FA',
-        'blue-100': '#D0DDED',
-        'blue-300': '#A3BEDC',
-        'blue-600': '#5A77B6',
-        'blue-800': '#455588',
-
-        // Orange palette
-        'orange-50': '#FFF6ED',
-        'orange-100': '#FFD3A8',
-        'orange-300': '#FF9852',
-        'orange-600': '#EF4C07',
-        'orange-800': '#9D2D0F',
-
-        // Pink palette
-        'pink-50': '#FEF1F5',
-        'pink-100': '#FEE5EE',
-        'pink-300': '#FFC8DC',
-        'pink-600': '#FF6698',
-        'pink-800': '#EB174A',
-
-        // Red palette
-        'red-50': '#FFF1F2',
-        'red-100': '#FEE5EE',
-        'red-300': '#FF7A7F',
-        'red-600': '#E51D25',
-        'red-800': '#A01419',
-
-        // Neutrals
-        'black': '#000000',
-        'white': '#FFFFFF',
-        'silver-50': '#F7F7F7',
-        'silver-100': '#EFEFEF',
-        'silver-200': '#DFDFDF',
-        'silver-300': '#C9C9C9',
-        'silver-400': '#ADADAD',
-        'silver-500': '#999999',
-        'silver-600': '#888888',
-        'silver-700': '#7B7B7B',
-        'silver-800': '#676767',
-        'silver-900': '#545454',
-        'silver-950': '#363636',
+        ...palettes,
 
         // Semantic color mappings for components
-        'interface-bg-main': '#F6F8FA', // blue-50
-        'interface-bg-container': '#FFFFFF', // white
-        'interface-edge-container': '#DFDFDF', // silver-200
-        'interface-heading-container': '#8075B3', // purple-300
-        'interface-bg-stickymenu': '#EFEFEF', // silver-100
-        'interface-tooltip': '#2D2A3C', // purple-800
+        'interface-bg-main': palettes['blue-50'], // #F6F8FA
+        'interface-bg-container': palettes['white'], // #FFFFFF
+        'interface-edge-container': palettes['silver-200'], // #DFDFDF
+        'interface-heading-container': palettes['purple-300'], // #8075B3
+        'interface-bg-stickymenu': palettes['silver-100'], // #EFEFEF
+        'interface-tooltip': palettes['purple-800'], // #2D2A3C
 
-        'primary-bg': '#56B7B5', // green-400
-        'primary-bg-hover': '#27797A', // green-600
-        'primary-focus': '#5B5380', // purple-600
+        'primary-bg': palettes['green-400'], // #56B7B5
+        'primary-bg-hover': palettes['green-600'], // #27797A
+        'primary-focus': palettes['purple-600'], // #5B5380
 
-        'secondary-edge': '#8075B3', // purple-300
-        'secondary-edge-hover': '#5B5380', // purple-600
-        'secondary-hover-surface': '#F3F4FA', // purple-50
+        'secondary-edge': palettes['purple-300'], // #8075B3
+        'secondary-edge-hover': palettes['purple-600'], // #5B5380
+        'secondary-hover-surface': palettes['purple-50'], // #F3F4FA
 
-        'text-primary': '#363636', // silver-950
-        'text-secondary': '#888888', // silver-600
-        'text-placeholder': '#7B7B7B', // silver-700
-        'text-disabled': '#C9C9C9', // silver-300
-        'text-error': '#E51D25', // red-600
-        'text-success': '#27797A', // green-600
+        'text-primary': palettes['silver-950'], // #363636
+        'text-secondary': palettes['silver-600'], // #888888
+        'text-placeholder': palettes['silver-700'], // #7B7B7B
+        'text-disabled': palettes['silver-300'], // #C9C9C9
+        'text-error': palettes['red-600'], // #E51D25
+        'text-success': palettes['green-600'], // #27797A
 
-        'field-border': '#C9C9C9', // silver-300
-        'field-border-hover': '#ADADAD', // silver-400
-        'field-border-focus': '#5B5380', // purple-600
-        'field-border-disabled': '#DFDFDF', // silver-200
-        'field-bg-disabled': '#EFEFEF', // silver-100
-        'field-border-error': '#E51D25', // red-600
+        'field-border': palettes['silver-300'], // #C9C9C9
+        'field-border-hover': palettes['silver-400'], // #ADADAD
+        'field-border-focus': palettes['purple-600'], // #5B5380
+        'field-border-disabled': palettes['silver-200'], // #DFDFDF
+        'field-bg-disabled': palettes['silver-100'], // #EFEFEF
+        'field-border-error': palettes['red-600'], // #E51D25
 
-        'landing-footer-bg': '#D4F3EB', // mint-100
-        'landing-button-bg': '#000000', // black
-        'landing-button-bg-hover': '#363636', // silver-950
-        'landing-button-border': '#676767', // silver-800
-        'landing-button-border-hover': '#000000', // black
-        'landing-pill-border': '#A3BEDC', // blue-300
+        'landing-footer-bg': palettes['mint-100'], // #D4F3EB
+        'landing-button-bg': palettes['black'], // #000000
+        'landing-button-bg-hover': palettes['silver-950'], // #363636
+        'landing-button-border': palettes['silver-800'], // #676767
+        'landing-button-border-hover': palettes['black'], // #000000
+        'landing-pill-border': palettes['blue-300'], // #A3BEDC
 
         // Custom old WM colors
         'wm-green': '#5BC8BB',
