@@ -10,13 +10,15 @@ export default defineConfig({
   plugins: [
     cloudflare(),
     viteRestart({
-      restart: restartOnNodeModuleChange.map((e) => `node_modules/${e}`)
+      restart: restartOnNodeModuleChange.map((e) =>
+        path.join('node_modules', e.replaceAll('/', path.sep))
+      )
     })
   ],
   server: {
     watch: {
       ignored: restartOnNodeModuleChange.map(
-        (e) => `!${path.join(__dirname, `node_modules/${e}`)}`
+        (e) => `!${path.join('node_modules', e.replaceAll('/', path.sep))}`
       )
     }
   },
