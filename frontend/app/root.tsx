@@ -16,7 +16,10 @@ import {
 import type { ReactNode } from 'react'
 import { useEffect, useState } from 'react'
 import stylesheet from '~/tailwind.css?url'
-import { Button, Footer, Header, Snackbar } from './components/index.js'
+//! REVERT BEFORE MERGE
+import { Button, Snackbar } from './components/index.js'
+import { Header, Footer } from './components/redesign/components/index.js'
+//! REVERT BEFORE MERGE
 import { XCircle } from './components/icons.js'
 import bgTileSvg from '~/assets/images/bg-tile.svg?url'
 import faviconPng from '~/assets/images/favicon.png?url'
