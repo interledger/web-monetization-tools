@@ -12,7 +12,8 @@ import {
   createHeaders,
   toWalletAddressUrl,
   timeout,
-  createHTTPException
+  createHTTPException,
+  urlWithParams
 } from './utils.js'
 import { createId } from '@paralleldrive/cuid2'
 import type { Env } from '../index.js'
@@ -334,7 +335,7 @@ export class OpenPaymentsService {
           accessToken: accessToken
         },
         {
-          expiresAt: new Date(Date.now() + 6000 * 60).toISOString(),
+          expiresAt: new Date(Date.now() + 6 * 60 * 1000).toISOString(),
           walletAddress: walletAddress.id,
           metadata: {
             description: note
@@ -366,7 +367,7 @@ export class OpenPaymentsService {
   }
 
   private async createOutgoingPaymentGrant(
-    params: CreateOutgoingPaymentParams & { redirectUrl?: string }
+    params: CreateOutgoingPaymentParams & { redirectUrl: string }
   ): Promise<PendingGrant> {
     const {
       walletAddress,
@@ -379,6 +380,7 @@ export class OpenPaymentsService {
     } = params
 
     try {
+      const finishInteractUrl = urlWithParams(redirectUrl, { paymentId }).href
       const grant = await this.client!.grant.request(
         {
           url: walletAddress.authServer
@@ -400,7 +402,7 @@ export class OpenPaymentsService {
             start: ['redirect'],
             finish: {
               method: 'redirect',
-              uri: `${redirectUrl}?paymentId=${paymentId}`,
+              uri: finishInteractUrl,
               nonce: nonce || ''
             }
           }
