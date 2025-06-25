@@ -46,6 +46,7 @@ export const NavDropdown = ({ title }: NavDropdownProps) => {
             ? 'text-purple-600'
             : 'px-md font-sans font-normal text-sm leading-5 text-purple-300 group-hover:text-secondary-edge-hover'
         )}
+        aria-label="Toggle Dropdown"
       >
         {title}
         <span
