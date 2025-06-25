@@ -115,7 +115,7 @@ export class OpenPaymentsService {
     })
   }
 
-  async createPaymentQuote(args: {
+  async createPayment(args: {
     senderWalletAddress: string
     receiverWalletAddress: string
     amount: number
@@ -180,22 +180,11 @@ export class OpenPaymentsService {
       throw new Error('Expected non-interactive grant')
     }
 
-    // create quote with debit amount, you don't care how much money receiver gets
-    const quote = await this.client!.quote.create(
-      {
-        url: walletAddress.resourceServer,
-        accessToken: quoteGrant.access_token.value
-      },
-      {
-        method: 'ilp',
-        walletAddress: walletAddress.id,
-        receiver: incomingPayment.id,
-        debitAmount: amountObj
-      }
-    ).catch(() => {
-      throw new Error(
-        `Could not create quote for receiver ${receiverWallet.publicName}.`
-      )
+    const quote = await this.createPaymentQuote({
+      walletAddress: walletAddress,
+      accessToken: quoteGrant.access_token.value,
+      amount: amountObj,
+      receiver: incomingPayment.id
     })
 
     return {
@@ -229,7 +218,8 @@ export class OpenPaymentsService {
     pendingGrant: PendingGrant,
     quote: Quote,
     incomingPaymentGrant: Grant,
-    interactRef: string
+    interactRef: string,
+    note: string
   ): Promise<CheckPaymentResult> {
     const continuation = await this.client!.grant.continue(
       {
@@ -256,7 +246,7 @@ export class OpenPaymentsService {
         walletAddress: walletAddress.id,
         quoteId: quote.id,
         metadata: {
-          description: 'Tools Payment'
+          description: note
         }
       }
     ).catch(() => {
@@ -295,6 +285,35 @@ export class OpenPaymentsService {
     return nonInteractiveGrant
   }
 
+  private async createPaymentQuote(args: {
+    walletAddress: WalletAddress
+    accessToken: string
+    amount: Amount
+    receiver: string
+  }) {
+    try {
+      // create quote with debit amount, you don't care how much money receiver gets
+      return await this.client!.quote.create(
+        {
+          url: args.walletAddress.resourceServer,
+          accessToken: args.accessToken
+        },
+        {
+          method: 'ilp',
+          walletAddress: args.walletAddress.id,
+          receiver: args.receiver,
+          debitAmount: args.amount
+        }
+      )
+    } catch (error) {
+      throw createHTTPException(
+        500,
+        `Could not create payment quote for receiver ${args.walletAddress.id}.`,
+        error
+      )
+    }
+  }
+
   private async revokeIncomingPaymentGrant(incomingPaymentGrant: Grant) {
     await this.client!.grant.cancel({
       url: incomingPaymentGrant.continue.uri,
@@ -307,22 +326,28 @@ export class OpenPaymentsService {
     walletAddress,
     note
   }: CreateIncomingPaymentParams) {
-    // create incoming payment without amount
-    return await this.client!.incomingPayment.create(
-      {
-        url: walletAddress.resourceServer,
-        accessToken: accessToken
-      },
-      {
-        expiresAt: new Date(Date.now() + 6000 * 60).toISOString(),
-        walletAddress: walletAddress.id,
-        metadata: {
-          description: note
+    try {
+      // create incoming payment without amount
+      return await this.client!.incomingPayment.create(
+        {
+          url: walletAddress.resourceServer,
+          accessToken: accessToken
+        },
+        {
+          expiresAt: new Date(Date.now() + 6000 * 60).toISOString(),
+          walletAddress: walletAddress.id,
+          metadata: {
+            description: note
+          }
         }
-      }
-    ).catch(() => {
-      throw new Error('Unable to create incoming payment.')
-    })
+      )
+    } catch (error) {
+      throw createHTTPException(
+        500,
+        'Unable to create incoming payment.',
+        error
+      )
+    }
   }
 
   private async createQuoteGrant({ authServer }: QuoteGrantParams) {
@@ -353,43 +378,47 @@ export class OpenPaymentsService {
       receiveAmount
     } = params
 
-    const grant = await this.client!.grant.request(
-      {
-        url: walletAddress.authServer
-      },
-      {
-        access_token: {
-          access: [
-            {
-              identifier: walletAddress.id,
-              type: 'outgoing-payment',
-              actions: ['create', 'read'],
-              limits: {
-                debitAmount: debitAmount
-              }
-            }
-          ]
+    try {
+      const grant = await this.client!.grant.request(
+        {
+          url: walletAddress.authServer
         },
-        interact: {
-          start: ['redirect'],
-          finish: {
-            method: 'redirect',
-            uri: `${redirectUrl}?paymentId=${paymentId}`,
-            nonce: nonce || ''
+        {
+          access_token: {
+            access: [
+              {
+                identifier: walletAddress.id,
+                type: 'outgoing-payment',
+                actions: ['create', 'read'],
+                limits: {
+                  debitAmount: debitAmount
+                }
+              }
+            ]
+          },
+          interact: {
+            start: ['redirect'],
+            finish: {
+              method: 'redirect',
+              uri: `${redirectUrl}?paymentId=${paymentId}`,
+              nonce: nonce || ''
+            }
           }
         }
+      )
+
+      if (!isPendingGrant(grant)) {
+        throw new Error('Expected interactive outgoing payment grant.')
       }
-    ).catch((error) => {
-      throw new Error('Could not retrieve outgoing payment grant.', {
-        cause: error
-      })
-    })
 
-    if (!isPendingGrant(grant)) {
-      throw new Error('Expected interactive outgoing payment grant.')
+      return grant
+    } catch (error) {
+      throw createHTTPException(
+        500,
+        'Could not retrieve outgoing payment grant.',
+        error
+      )
     }
-
-    return grant
   }
 
   private async checkOutgoingPayment(
@@ -431,7 +460,15 @@ export class OpenPaymentsService {
       )
     }
     // revoke grant to avoid leaving users with unused, dangling grants.
-    await this.revokeIncomingPaymentGrant(incomingPaymentGrant)
+    await this.revokeIncomingPaymentGrant(incomingPaymentGrant).catch(
+      (error) => {
+        throw createHTTPException(
+          500,
+          'Could not revoke incoming payment grant. ',
+          error
+        )
+      }
+    )
 
     return { success: true }
   }

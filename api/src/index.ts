@@ -98,7 +98,7 @@ app.post(
         req.valid('json')
 
       const openPayments = await OpenPaymentsService.getInstance(env)
-      const result = await openPayments.createPaymentQuote({
+      const result = await openPayments.createPayment({
         senderWalletAddress,
         receiverWalletAddress,
         amount,
@@ -143,7 +143,8 @@ app.post(
         pendingGrant,
         quote,
         incomingPaymentGrant,
-        interactRef
+        interactRef,
+        note
       } = req.valid('json')
 
       const openPaymentsService = await OpenPaymentsService.getInstance(env)
@@ -152,7 +153,8 @@ app.post(
         pendingGrant,
         quote,
         incomingPaymentGrant,
-        interactRef
+        interactRef,
+        note
       )
 
       return json(result)

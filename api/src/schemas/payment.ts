@@ -16,7 +16,7 @@ export const AmountSchema = z.object({
 const WalletAddressSchema = z
   .object({
     id: z.string(),
-    publicName: z.string(),
+    publicName: z.string().optional(),
     assetCode: z.string(),
     assetScale: z.number().int().min(0),
     authServer: z.string(),
@@ -76,7 +76,8 @@ export const PaymentFinalizeSchema = z.object({
       wait: z.number().int().optional()
     })
   }),
-  interactRef: z.string().min(1, 'Interact reference is required')
+  interactRef: z.string().min(1, 'Interact reference is required'),
+  note: z.string().optional().default('Tools payment')
 })
 
 export const WalletAddressParamSchema = z.object({

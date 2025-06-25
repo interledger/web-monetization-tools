@@ -217,7 +217,8 @@ export class PaymentInteraction extends LitElement {
         walletAddress,
         outgoingPaymentGrant,
         quote,
-        incomingPaymentGrant
+        incomingPaymentGrant,
+        note
       } = this.configController.state
       const response = await fetch(
         `${this.configController.config.apiUrl}tools/payment/finalize`,
@@ -231,7 +232,8 @@ export class PaymentInteraction extends LitElement {
             pendingGrant: outgoingPaymentGrant,
             quote,
             incomingPaymentGrant,
-            interactRef
+            interactRef,
+            note
           })
         }
       )

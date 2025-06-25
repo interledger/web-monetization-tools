@@ -12,7 +12,6 @@ import type {
 export interface PaymentResponse {
   quote: Quote
   incomingPaymentGrant: Grant
-  note?: string
 }
 
 export class PaymentConfirmation extends LitElement {
@@ -345,6 +344,22 @@ export class PaymentConfirmation extends LitElement {
       background-color: #f9fafb;
       color: #6b7280;
     }
+
+    .payment-note-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 16px;
+      box-sizing: border-box;
+      transition: border-color 0.2s ease;
+    }
+
+    .payment-note-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
   `
 
   connectedCallback() {
@@ -383,8 +398,7 @@ export class PaymentConfirmation extends LitElement {
     const paymentData = {
       walletAddress: id,
       receiver: this.configController.config.receiverAddress,
-      amount: Number(amount),
-      note: this.note
+      amount: Number(amount)
     }
 
     if (this.requestQuote) {
@@ -409,12 +423,16 @@ export class PaymentConfirmation extends LitElement {
   private handleAmountInput(e: Event) {
     const input = e.target as HTMLInputElement
 
-    // this.inputAmount = value
     const formatted = this.formatAmount(input.value)
     this.inputAmount = formatted
     this.inputWidth = this.calculateInputWidth(formatted)
     this.debouncedProcessPayment(this.inputAmount)
     this.requestUpdate()
+  }
+
+  private handleNoteInput(e: Event) {
+    const input = e.target as HTMLInputElement
+    this.note = input.value
   }
 
   /** Formats the input amount to 2 decimal places and adds commas */
@@ -481,7 +499,6 @@ export class PaymentConfirmation extends LitElement {
     walletAddress: string
     receiver: string
     amount: number
-    note: string
   }): Promise<void> {
     const response = await fetch(
       `${this.configController.config.apiUrl}tools/payment/quote`,
@@ -494,7 +511,7 @@ export class PaymentConfirmation extends LitElement {
           senderWalletAddress: paymentData.walletAddress,
           receiverWalletAddress: paymentData.receiver,
           amount: paymentData.amount,
-          note: paymentData.note
+          note: this.note
         } satisfies PaymentQuoteInput)
       }
     )
@@ -525,7 +542,6 @@ export class PaymentConfirmation extends LitElement {
     walletAddress: string
     receiver: string
     amount: number
-    note: string
   }): Promise<void> {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -557,7 +573,10 @@ export class PaymentConfirmation extends LitElement {
         receiveAmount: quote.receiveAmount
       })
 
-      this.configController.updateState({ outgoingPaymentGrant })
+      this.configController.updateState({
+        outgoingPaymentGrant,
+        note: this.note
+      })
 
       this.dispatchEvent(
         new CustomEvent('payment-confirmed', {
@@ -716,10 +735,6 @@ export class PaymentConfirmation extends LitElement {
           <span class="quote-badge">Payment Details</span>
         </div>
 
-        ${this.note
-          ? html` <div class="note-display">"${this.note}"</div> `
-          : ''}
-
         <div class="detail-summary">
           <div class="summary-row">
             <span class="summary-label">You send:</span>
@@ -734,11 +749,13 @@ export class PaymentConfirmation extends LitElement {
       <div class="detail-note">
         <label class="form-label">Payment note:</label>
         <input
-          class="form-input"
+          class="payment-note-input"
           type="text"
           name="note"
           placeholder="Note"
+          maxlength="20"
           .value=${this.note}
+          @input=${this.handleNoteInput}
         />
       </div>
 
