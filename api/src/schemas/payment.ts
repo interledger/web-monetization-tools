@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as z from 'zod/v4'
 
 export const PaymentQuoteSchema = z.object({
   senderWalletAddress: z.string().url('Invalid sender wallet address'),
@@ -14,7 +14,7 @@ export const AmountSchema = z.object({
 })
 
 const WalletAddressSchema = z
-  .object({
+  .looseObject({
     id: z.string(),
     publicName: z.string().optional(),
     assetCode: z.string(),
