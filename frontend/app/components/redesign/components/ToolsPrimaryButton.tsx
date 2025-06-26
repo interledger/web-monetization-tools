@@ -1,6 +1,5 @@
 import React from 'react'
-import { cva, cx } from 'class-variance-authority'
-import { SVGScriptCode } from '../../../assets/svg'
+import { SVGScriptCode, SVGCopyScript } from '../../../assets/svg'
 
 export interface ToolsPrimaryButtonProps {
   children: React.ReactNode
@@ -10,20 +9,6 @@ export interface ToolsPrimaryButtonProps {
   onClick?: React.MouseEventHandler<HTMLButtonElement>
 }
 
-const buttonVariants = cva([
-  ` flex 
-    flex-row 
-    items-center 
-    gap-2 
-    bg-primary-bg hover:bg-primary-bg-hover 
-    text-white 
-    px-md py-sm 
-    rounded-xs
-    font-medium
-    focus:outline-none focus:ring-2 focus:ring-primary-focus
-    transition-colors duration-200`
-])
-
 export function ToolsPrimaryButton({
   children,
   iconPosition = 'right',
@@ -32,12 +17,26 @@ export function ToolsPrimaryButton({
   onClick
 }: ToolsPrimaryButtonProps) {
   return (
-    <button className={cx(buttonVariants(), className)} onClick={onClick}>
+    <button
+      className={` flex flex-row items-center
+        bg-primary-bg hover:bg-primary-bg-hover 
+        text-white 
+        px-md py-sm 
+        rounded-sm
+        font-medium
+        gap-2
+        focus:outline-none focus:ring-2 focus:ring-primary-focus
+        transition-colors duration-200
+        ${className}
+      `}
+      onClick={onClick}
+    >
       {icon === 'script' && iconPosition === 'left' && <SVGScriptCode />}
       <span className="block font-normal leading-[24px] text-[16px] whitespace-pre">
         {children}
       </span>
       {icon === 'script' && iconPosition === 'right' && <SVGScriptCode />}
+      {icon === 'copy' && iconPosition === 'right' && <SVGCopyScript />}
     </button>
   )
 }

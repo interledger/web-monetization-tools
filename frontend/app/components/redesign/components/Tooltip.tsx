@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { SVGTooltip } from '../../../assets/svg'
 
 export interface TooltipProps {
-  text: string
+  children: React.ReactNode
   className?: string
 }
 
-export function Tooltip({ text, className }: TooltipProps) {
+export function Tooltip({ children, className }: TooltipProps) {
   const [open, setOpen] = useState(false)
   return (
     <div
@@ -17,7 +17,7 @@ export function Tooltip({ text, className }: TooltipProps) {
       <SVGTooltip />
       {open && (
         <div className="absolute z-50 left-8 top-1/2 -translate-y-1/2 w-[485px] flex items-center justify-center gap-2.5 p-4 bg-interface-tooltip rounded-lg shadow-lg">
-          <p className="flex-1 mt-[-1.00px]  text-white">{text}</p>
+          <p className="flex-1 mt-[-1.00px]  text-white">{children}</p>
         </div>
       )}
     </div>

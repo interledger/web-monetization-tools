@@ -18,16 +18,16 @@ export function ToolsSecondaryButton({
   return (
     <button
       type="button"
-      className={`
+      className={` flex flex-row items-center justify-center
         border border-secondary-edge hover:border-secondary-edge-hover
         text-secondary-edge hover:text-secondary-edge-hover
-        bg-white hover:bg-secondary-hover-surface
+       hover:bg-secondary-hover-surface
         px-md py-sm 
-        rounded-xs
+        rounded-sm
         font-medium
+        gap-2
         focus:outline-none focus:ring-2 focus:ring-primary-focus
         transition-all duration-200
-        flex flex-row items-center justify-center gap-2
         ${className}
         `}
       onClick={onClick}

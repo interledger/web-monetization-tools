@@ -1,0 +1,104 @@
+import React, { useState, useEffect } from 'react'
+import { BannerContentBuilder } from './BannerContentBuilder'
+import { BuilderCollapseExpand } from './BuilderCollapseExpand'
+import TabSelector from './TabSelector'
+
+interface BuilderFormProps {
+  className?: string
+  onBuildStepComplete?: (isComplete: boolean) => void
+}
+
+export const BuilderForm: React.FC<BuilderFormProps> = ({
+  className = '',
+  onBuildStepComplete
+}) => {
+  const [expandedSection, setExpandedSection] = useState<
+    'content' | 'appearance' | null
+  >(null)
+  const [contentComplete, setContentComplete] = useState(false)
+  const [appearanceComplete, setAppearanceComplete] = useState(false)
+
+  useEffect(() => {
+    const bothComplete = contentComplete && appearanceComplete
+    if (onBuildStepComplete) {
+      onBuildStepComplete(bothComplete)
+    }
+  }, [contentComplete, appearanceComplete, onBuildStepComplete])
+
+  const handleContentToggle = () => {
+    setExpandedSection(expandedSection === 'content' ? null : 'content')
+
+    // mark content as complete after first toggle
+    setContentComplete(true)
+  }
+
+  const handleAppearanceToggle = () => {
+    setExpandedSection(expandedSection === 'appearance' ? null : 'appearance')
+
+    // mark appearance as complete after first toggle
+    setAppearanceComplete(true)
+  }
+
+  const handleContentDone = () => {
+    setContentComplete(true)
+    setExpandedSection(null)
+
+    if (!appearanceComplete) {
+      setExpandedSection('appearance')
+    }
+  }
+
+  const handleAppearanceDone = () => {
+    setAppearanceComplete(true)
+    setExpandedSection(null)
+
+    if (!contentComplete) {
+      setExpandedSection('content')
+    }
+  }
+  return (
+    <div className="flex flex-col w-[628px]">
+      {/* Tab Selector - using TabSelector component */}
+      <TabSelector
+        options={[
+          { id: 'tab1', label: 'Default preset 1' },
+          { id: 'tab2', label: 'Default preset 2' },
+          { id: 'tab3', label: 'Default preset 3' }
+        ]}
+        defaultSelectedId="tab1"
+        onSelectTab={(tabId) => console.log('Selected tab:', tabId)}
+      />
+      <div
+        className={`
+        bg-interface-bg-container
+        rounded-b-sm
+        p-md
+        flex flex-col gap-md
+        w-full
+        ${className}
+      `}
+      >
+        {/* Content Section - using BannerContentBuilder */}
+        <div className="w-full">
+          <BannerContentBuilder
+            isComplete={contentComplete}
+            isExpanded={expandedSection === 'content'}
+            onToggle={handleContentToggle}
+            onDone={handleContentDone}
+          />
+        </div>
+        {/* Appearance Section - using BuilderCollapseExpand */}
+        <div className="w-full">
+          <BuilderCollapseExpand
+            isComplete={appearanceComplete}
+            isExpanded={expandedSection === 'appearance'}
+            onToggle={handleAppearanceToggle}
+            onDone={handleAppearanceDone}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default BuilderForm

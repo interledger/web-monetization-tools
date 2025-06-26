@@ -104,7 +104,7 @@ export const ColorSelector = forwardRef<HTMLDivElement, ColorSelectorProps>(
                   )}
                 />
               </span>
-            </button>{' '}
+            </button>
             {isOpen && (
               <div className="absolute z-10 mt-1 left-0 w-auto bg-white border border-silver-200 rounded-sm shadow-sm p-3">
                 <div className="flex items-center gap-3 whitespace-nowrap">

@@ -27,7 +27,7 @@ export function InputField({
           hover:border-field-border-hover
           focus:border-field-border-focus focus:outline-none focus:ring-1 focus:ring-primary-focus
           disabled:border-field-border-disabled disabled:bg-field-bg-disabled
-          rounded-xs
+          rounded-sm
           text-text-primary placeholder:text-text-placeholder
           ${className}
         `}

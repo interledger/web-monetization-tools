@@ -29,6 +29,7 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
   const [editingId, setEditingId] = useState<string | null>(null)
   const [tabLabels, setTabLabels] = useState<Record<string, string>>({})
   const [inputValue, setInputValue] = useState<string>('')
+  const [hoveredId, setHoveredId] = useState<string | null>(null)
 
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -119,7 +120,7 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
     setEditingId(null)
   }
   return (
-    <div className={`flex ${className}`}>
+    <div className={`flex w-full ${className}`}>
       {options.map((tab) => {
         const isSelected = selectedId === tab.id
         const isEditing = editingId === tab.id
@@ -129,8 +130,10 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
           <div
             key={tab.id}
             onClick={() => handleTabClick(tab.id)}
+            onMouseEnter={() => setHoveredId(tab.id)}
+            onMouseLeave={() => setHoveredId(null)}
             className={`
-              rounded-t-sm min-w-[150px] cursor-pointer
+              rounded-t-sm flex-1 cursor-pointer
               ${
                 isSelected
                   ? 'bg-white text-purple-300'
@@ -148,7 +151,13 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
                   if (isSelected) beginEditing(tab.id)
                 }}
               >
-                <SVGEdit className={cx(isEditing ? 'visible' : 'invisible')} />
+                <SVGEdit
+                  className={cx(
+                    isEditing || (isSelected && hoveredId === tab.id)
+                      ? 'visible'
+                      : 'invisible'
+                  )}
+                />
               </div>
 
               {isEditing ? (
