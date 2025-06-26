@@ -1,8 +1,7 @@
 import React from 'react'
-import { SVGClose } from '~/assets/svg'
+import { SVGClose, SVGWebMonetization } from '~/assets/svg'
 
 import { ToolsSecondaryButton } from './ToolsSecondaryButton'
-import Thumbnail from './Thumbnail'
 
 const BrowserDots = () => (
   <svg width="39" height="8" viewBox="0 0 39 8" fill="none">
@@ -75,16 +74,12 @@ export const BuilderBackground: React.FC<BuilderBackgroundProps> = ({
               rounded-sm
               border border-field-border
               p-sm
-              flex items-center gap-sm
+              flex items-center gap-lg
               relative
               shadow-sm
             "
           >
-            <img
-              src={'/app/assets/images/wm_logo.svg'}
-              alt="Thumbnail"
-              className="max-w-full max-h-full px-2"
-            />
+            <SVGWebMonetization />
 
             {/* Content */}
             <div className="flex-1 flex flex-col gap-1">
