@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { cx } from 'class-variance-authority'
-import { SVGDownArrow } from '../../../assets/svg'
+import { SVGDownArrow } from '~/assets/svg'
+import devTools from '~/assets/images/dev-tools.png?url'
+import pubTools from '~/assets/images/pub-tools.png?url'
+import suppTools from '~/assets/images/supp-tools.png?url'
 
 // Navigation Dropdown Props
 type NavDropdownProps = {
@@ -36,7 +39,7 @@ export const NavDropdown = ({ title }: NavDropdownProps) => {
   return (
     <li
       ref={dropdownRef}
-      className="group h-11 gap-2.5 rounded-lg inline-flex flex-col justify-center items-start hover:bg-secondary-hover-surface"
+      className="group h-11 gap-2.5 rounded-lg inline-flex flex-col justify-center items-start hover:bg-secondary-hover-surface relative"
     >
       <button
         type="button"
@@ -65,6 +68,58 @@ export const NavDropdown = ({ title }: NavDropdownProps) => {
           />
         </span>
       </button>
+      {/* Dropdown Content - Controlled by 'isOpen' state */}
+      {isOpen && (
+        <div className="flex flex-col justify-start items-start w-[299px] h-[472px] absolute top-[calc(100%+16px)] left-0 gap-xs p-sm bg-interface-bg-container rounded-lg shadow-[0px_24px_24px_0px_rgba(0,0,0,0.08)] outline outline-1 outline-offset-[-1px] outline-interface-edge-container">
+          <ul className="w-full flex-grow list-none flex flex-col gap-xs">
+            <li>
+              <a
+                href="#"
+                className="w-full p-3 rounded-lg flex justify-start items-center gap-xs hover:bg-gray-100 min-w-0"
+              >
+                <img
+                  className="w-[120px] h-[120px]"
+                  src={pubTools}
+                  alt="Publisher tools icon"
+                />
+                <div className="text-text-primary text-base font-bold font-sans leading-normal flex-grow min-w-0 truncate">
+                  Publisher tools
+                </div>
+              </a>
+            </li>
+            <li>
+              <a
+                href="#"
+                className="w-full p-3 rounded-lg flex justify-start items-center gap-xs hover:bg-gray-100 min-w-0"
+              >
+                <img
+                  className="w-[120px] h-[120px]"
+                  src={suppTools}
+                  alt="Supporter tools icon"
+                />
+                <div className="text-text-primary text-base font-bold font-sans leading-normal flex-grow min-w-0 truncate">
+                  Supporter tools
+                </div>
+              </a>
+            </li>
+            <li>
+              <a
+                href="#"
+                className="w-full p-3 rounded-lg flex justify-start items-center gap-xs hover:bg-gray-100 min-w-0"
+              >
+                <img
+                  className="w-[120px] h-[120px]"
+                  src={devTools}
+                  alt="Developer tools icon"
+                />
+                <div className="text-text-primary text-base font-bold font-sans leading-normal flex-grow min-w-0 truncate">
+                  Developer tools
+                </div>
+              </a>
+            </li>
+          </ul>
+        </div>
+      )}
     </li>
   )
 }
