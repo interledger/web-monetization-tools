@@ -17,7 +17,7 @@ export const NavBar = () => {
             className="lg:w-11 lg:h-11"
           />
         </RemixNavLink>
-        <ul className="flex gap-md pr-md">
+        <ul className="flex gap-md">
           <NavDropdown title="Tools"></NavDropdown>
           <NavLink to="/docs">Documentation</NavLink>
           <NavLink to="/specification">Specification</NavLink>
