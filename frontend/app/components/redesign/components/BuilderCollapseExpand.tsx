@@ -21,6 +21,7 @@ import { ToolsSecondaryButton } from './ToolsSecondaryButton'
 import { Heading5 } from '../Typography'
 import { Divider } from './Divider'
 import { Thumbnail } from './Thumbnail'
+import wmLogo from '~/assets/images/wm_logo.svg?url'
 
 interface BuilderCollapseExpandProps {
   isComplete?: boolean
@@ -44,7 +45,7 @@ export const BuilderCollapseExpand: React.FC<BuilderCollapseExpandProps> = ({
   const [isThumbnailVisible, setIsThumbnailVisible] = useState(true)
   const [selectedThumbnail, setSelectedThumbnail] = useState(0)
 
-  const thumbnails = ['/app/assets/images/wm_logo.svg']
+  const thumbnails = [wmLogo]
 
   const toggleExpand = () => {
     if (onToggle) {

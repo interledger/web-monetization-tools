@@ -1,5 +1,6 @@
 import React from 'react'
-import { SVGClose, SVGWebMonetization } from '~/assets/svg'
+import { SVGClose } from '~/assets/svg'
+import wmLogo from '~/assets/images/wm_logo.svg?url'
 
 import { ToolsSecondaryButton } from './ToolsSecondaryButton'
 
@@ -79,7 +80,11 @@ export const BuilderBackground: React.FC<BuilderBackgroundProps> = ({
               shadow-sm
             "
           >
-            <SVGWebMonetization />
+            <img
+              src={wmLogo}
+              alt="Web Monetization Logo"
+              className="w-[24px] h-[24px]"
+            />
 
             {/* Content */}
             <div className="flex-1 flex flex-col gap-1">

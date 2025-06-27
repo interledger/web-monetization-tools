@@ -1,6 +1,7 @@
 import { cx } from 'class-variance-authority'
 import React, { useState, useRef, useEffect } from 'react'
 import { SVGEdit } from '~/assets/svg'
+import { TabTooltip } from './TabTooltip'
 
 export interface TabOption {
   id: string
@@ -41,14 +42,12 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
     setTabLabels(initialLabels)
   }, [options])
 
-  // focus input when entering edit mode
   useEffect(() => {
     if (editingId && inputRef.current) {
       inputRef.current.focus()
     }
   }, [editingId])
 
-  // handle clicks outside the input to save changes
   useEffect(() => {
     if (!editingId) return
 
@@ -68,7 +67,6 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
     }
   }, [editingId, inputValue])
 
-  /** Handle tab selection and toggle edit mode when clicking on already selected tab */
   const handleTabClick = (tabId: string) => {
     if (selectedId === tabId && !editingId) {
       beginEditing(tabId)
@@ -96,7 +94,6 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
     setInputValue(e.target.value)
   }
 
-  // keyboard input while editing
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       saveEdit()
@@ -143,7 +140,7 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
             aria-selected={isSelected}
             role="tab"
           >
-            <div className="flex flex-row items-center w-[179px] h-[50px] gap-1 px-1">
+            <div className="flex flex-row items-center w-full h-[50px] gap-1 px-1">
               <div
                 className="cursor-pointer"
                 onClick={(e: React.MouseEvent) => {
@@ -168,18 +165,18 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
                   onChange={handleInputChange}
                   onKeyDown={handleKeyDown}
                   className="bg-transparent border-none outline-none text-purple-600 text-base leading-md font-normal w-full box-border"
-                  maxLength={20}
+                  maxLength={50}
                   autoFocus
                 />
               ) : (
-                <p
+                <TabTooltip
+                  text={displayLabel}
                   className={`
-                    text-base leading-md font-normal
-                    ${isSelected ? 'text-purple-300' : 'text-silver-600'}
-                  `}
+                      ${isSelected ? 'text-purple-300' : 'text-silver-600'}
+                    `}
                 >
                   {displayLabel}
-                </p>
+                </TabTooltip>
               )}
             </div>
           </div>

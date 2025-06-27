@@ -1,5 +1,4 @@
 import React from 'react'
-import { SVGWebMonetization } from '~/assets/svg'
 
 export interface ThumbnailProps {
   isSelected: boolean
@@ -19,8 +18,7 @@ export const Thumbnail: React.FC<ThumbnailProps> = ({
       }`}
       onClick={onClick}
     >
-      {/* <img src={imageUrl} alt="Thumbnail" className="max-w-full max-h-full" /> */}
-      <SVGWebMonetization />
+      <img src={imageUrl} alt="Thumbnail" className="max-w-full max-h-full" />
     </div>
   )
 }
