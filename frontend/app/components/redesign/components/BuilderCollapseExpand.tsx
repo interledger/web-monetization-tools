@@ -22,6 +22,9 @@ import { Heading5 } from '../Typography'
 import { Divider } from './Divider'
 import { Thumbnail } from './Thumbnail'
 import wmLogo from '~/assets/images/wm_logo.svg?url'
+import { toolState, toolActions } from '~/stores/toolStore'
+import { useSnapshot } from 'valtio'
+import { SlideAnimationType } from '~/lib/types'
 
 interface BuilderCollapseExpandProps {
   isComplete?: boolean
@@ -36,15 +39,17 @@ export const BuilderCollapseExpand: React.FC<BuilderCollapseExpandProps> = ({
   onToggle,
   onDone
 }) => {
-  const [fontSize, setFontSize] = useState(16)
-  const minFontSize = 14
+  const snap = useSnapshot(toolState)
+  const minFontSize = 16
   const maxFontSize = 24
-  const [_cornerRadius, setCornerRadius] = useState('light')
-  const [position, setPosition] = useState<'top' | 'bottom'>('bottom')
   const [isAnimated, setIsAnimated] = useState(true)
   const [isThumbnailVisible, setIsThumbnailVisible] = useState(true)
   const [selectedThumbnail, setSelectedThumbnail] = useState(0)
 
+  const FontsType = ['Arial', 'Inherit', 'Open Sans', 'Cookie', 'Titillium Web']
+  const defaultFontIndex = FontsType.findIndex(
+    (option) => option == snap.toolConfig?.bannerFontName
+  )
   const thumbnails = [wmLogo]
 
   const toggleExpand = () => {
@@ -128,13 +133,15 @@ export const BuilderCollapseExpand: React.FC<BuilderCollapseExpandProps> = ({
         <SectionHeader icon={<SVGText />} label="Text" />
         <ToolsDropdown
           label="Font Family"
-          defaultValue="2"
-          options={[
-            { label: 'Option 1', value: '1' },
-            { label: 'Option 2', value: '2' },
-            { label: 'Option 3', value: '3' },
-            { label: 'Option 4', value: '4' }
-          ]}
+          defaultValue={defaultFontIndex.toString()}
+          onChange={(value) => {
+            const fontName = FontsType[parseInt(value)]
+            toolActions.setToolConfig({ bannerFontName: fontName })
+          }}
+          options={FontsType.map((font, index) => ({
+            label: font,
+            value: index.toString()
+          }))}
         />
         <div className="flex flex-col gap-1">
           <label className="text-xs leading-xs text-silver-700">Size</label>
@@ -142,8 +149,11 @@ export const BuilderCollapseExpand: React.FC<BuilderCollapseExpandProps> = ({
             <button
               className="flex items-center justify-center w-6 h-7 cursor-pointer hover:font-bold"
               onClick={() => {
-                const newSize = Math.max(minFontSize, fontSize - 1)
-                setFontSize(newSize)
+                const newSize = Math.max(
+                  minFontSize,
+                  (snap.toolConfig?.bannerFontSize ?? minFontSize) - 1
+                )
+                toolActions.setToolConfig({ bannerFontSize: newSize })
               }}
               aria-label="Decrease font size"
             >
@@ -151,20 +161,23 @@ export const BuilderCollapseExpand: React.FC<BuilderCollapseExpandProps> = ({
             </button>
 
             <Slider
-              value={fontSize}
+              value={snap.toolConfig?.bannerFontSize ?? minFontSize}
               min={minFontSize}
               max={maxFontSize}
               onChange={(value) => {
                 console.log('Font size changed to:', value)
-                setFontSize(value)
+                toolActions.setToolConfig({ bannerFontSize: value })
               }}
             />
 
             <button
               className="flex items-center justify-center w-6 h-7 cursor-pointer hover:font-bold"
               onClick={() => {
-                const newSize = Math.min(maxFontSize, fontSize + 1)
-                setFontSize(newSize)
+                const newSize = Math.min(
+                  maxFontSize,
+                  (snap.toolConfig?.bannerFontSize ?? minFontSize) + 1
+                )
+                toolActions.setToolConfig({ bannerFontSize: newSize })
               }}
               aria-label="Increase font size"
             >
@@ -179,9 +192,21 @@ export const BuilderCollapseExpand: React.FC<BuilderCollapseExpandProps> = ({
         <SectionHeader icon={<SVGColorPicker />} label="Colors" />
 
         <div className="flex justify-between">
-          <ColorSelector label="Background" value="#ffffff" />
-          <ColorSelector label="Text" value="#363636" />
-          <ColorSelector label="Border" value="#dfdfdf" />
+          <ColorSelector
+            label="Background"
+            value={snap.toolConfig?.bannerBackgroundColor || '#ffffff'}
+            onChange={(color) => {
+              toolActions.setToolConfig({ bannerBackgroundColor: color })
+            }}
+          />
+          <ColorSelector
+            label="Text"
+            value={snap.toolConfig?.bannerTextColor || '#363636'}
+            onChange={(color) => {
+              toolActions.setToolConfig({ bannerTextColor: color })
+            }}
+          />
+          <div className="w-[147px]"></div>
         </div>
       </div>
       <Divider />
@@ -192,8 +217,10 @@ export const BuilderCollapseExpand: React.FC<BuilderCollapseExpandProps> = ({
           label="Container Corner Radius"
         />
         <CornerRadiusSelector
-          defaultValue="light"
-          onChange={(value) => setCornerRadius(value)}
+          defaultValue={snap.toolConfig?.bannerBorder}
+          onChange={(value) =>
+            toolActions.setToolConfig({ bannerBorder: value })
+          }
         />
       </div>
       <Divider />
@@ -201,8 +228,10 @@ export const BuilderCollapseExpand: React.FC<BuilderCollapseExpandProps> = ({
       <div className="flex flex-col gap-2">
         <SectionHeader icon={<SVGPosition />} label="Position (Appears from)" />
         <PositionSelector
-          defaultValue={position}
-          onChange={(value) => setPosition(value)}
+          defaultValue={snap.toolConfig?.bannerPosition}
+          onChange={(value) =>
+            toolActions.setToolConfig({ bannerPosition: value })
+          }
         />
       </div>
       <Divider /> {/* Animation section */}
@@ -218,12 +247,14 @@ export const BuilderCollapseExpand: React.FC<BuilderCollapseExpandProps> = ({
           </div>
           <div className="flex-1">
             <ToolsDropdown
-              label="Duration"
-              defaultValue="1"
-              options={[
-                { label: '300ms', value: '1' },
-                { label: '600ms', value: '2' }
-              ]}
+              label="Type"
+              defaultValue={snap.toolConfig?.bannerSlideAnimation}
+              options={[{ label: 'Slide up', value: SlideAnimationType.Down }]}
+              onChange={(value) =>
+                toolActions.setToolConfig({
+                  bannerSlideAnimation: value as SlideAnimationType
+                })
+              }
             />
           </div>
         </div>

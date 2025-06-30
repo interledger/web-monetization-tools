@@ -16,6 +16,9 @@ import { PillTagButton } from '../components/redesign/components/PillTagButton'
 import { BuilderForm } from '../components/redesign/components/BuilderForm'
 import { BuilderBackground } from '../components/redesign/components/BuilderBackground'
 import { ScriptReadyModal } from '../components/redesign/components/ScriptReadyModal'
+import { SaveSuccessModal } from '../components/redesign/components/SaveSuccessModal'
+import { WalletOwnershipModal } from '../components/redesign/components/WalletOwnershipModal'
+import { CornerType } from '~/lib/types'
 
 export function Card({
   children,
@@ -206,7 +209,7 @@ export function RedesignDemo() {
             icon={<SVGRoundedCorner />}
             label="Container Corner Radius"
           />
-          <CornerRadiusSelector defaultValue="light" />
+          <CornerRadiusSelector defaultValue={CornerType.Light} />
         </div>
       </div>
       <div className="mt-8 mb-8">
@@ -258,6 +261,29 @@ export function RedesignDemo() {
           <ScriptReadyModal
             onClose={() => console.log('Modal closed')}
             onCopy={() => console.log('Script copied to clipboard')}
+          />
+        </div>
+      </div>
+      <div className="mt-8 mb-8">
+        <h2 className="text-xl font-bold mb-4">Save Success Modal Component</h2>
+        <div className="flex flex-col items-center max-w-md mx-auto">
+          <SaveSuccessModal
+            isOpen={true}
+            onClose={() => console.log('Success modal closed')}
+            onDone={() => console.log('Done clicked')}
+          />
+        </div>
+      </div>
+      <div className="mt-8 mb-8">
+        <h2 className="text-xl font-bold mb-4">
+          Wallet Ownership Modal Component
+        </h2>
+        <div className="flex flex-col items-center max-w-md mx-auto">
+          <WalletOwnershipModal
+            isOpen={true}
+            onClose={() => console.log('Wallet ownership modal closed')}
+            onConfirm={() => console.log('Wallet ownership confirmed')}
+            walletAddress="https://wallet.example/alice"
           />
         </div>
       </div>

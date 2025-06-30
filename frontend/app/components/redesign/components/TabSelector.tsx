@@ -2,6 +2,7 @@ import { cx } from 'class-variance-authority'
 import React, { useState, useRef, useEffect } from 'react'
 import { SVGEdit } from '~/assets/svg'
 import { TabTooltip } from './TabTooltip'
+import { toolActions } from '~/stores/toolStore'
 
 export interface TabOption {
   id: string
@@ -10,7 +11,7 @@ export interface TabOption {
 
 interface TabSelectorProps {
   options: TabOption[]
-  defaultSelectedId?: string
+  selectedId?: string
   onSelectTab?: (tabId: string) => void
   className?: string
   onTabLabelChange?: (tabId: string, newLabel: string) => void
@@ -18,15 +19,11 @@ interface TabSelectorProps {
 
 export const TabSelector: React.FC<TabSelectorProps> = ({
   options,
-  defaultSelectedId,
+  selectedId,
   onSelectTab,
   className = '',
   onTabLabelChange
 }) => {
-  const [selectedId, setSelectedId] = useState<string>(
-    defaultSelectedId || (options.length > 0 ? options[0].id : '')
-  )
-
   const [editingId, setEditingId] = useState<string | null>(null)
   const [tabLabels, setTabLabels] = useState<Record<string, string>>({})
   const [inputValue, setInputValue] = useState<string>('')
@@ -75,7 +72,7 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
         saveEdit()
       }
 
-      setSelectedId(tabId)
+      toolActions.selectVersion(tabId)
       if (onSelectTab) {
         onSelectTab(tabId)
       }

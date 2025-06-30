@@ -1,29 +1,50 @@
 import React, { useState } from 'react'
+import { useSnapshot } from 'valtio'
 import { Tooltip } from './Tooltip'
 import { InputField } from './InputField'
 import { ToolsSecondaryButton } from './ToolsSecondaryButton'
 import { SVGRefresh } from '../../../assets/svg'
+import { toolState, toolActions } from '~/stores/toolStore'
+import { APP_BASEPATH } from '~/lib/constants'
+import type { ElementErrors } from '~/lib/types'
 
-interface ToolsWalletAddressProps {
-  onConnectionChange?: (connected: boolean) => void
-}
+export const ToolsWalletAddress = () => {
+  const snap = useSnapshot(toolState)
+  const [error, setError] = useState<ElementErrors>()
 
-export const ToolsWalletAddress = ({
-  onConnectionChange
-}: ToolsWalletAddressProps) => {
-  const [isConnected, setIsConnected] = useState(false)
-  const [walletAddress, setWalletAddress] = useState('')
+  const handleContinue = async () => {
+    const response = await fetch(
+      `${APP_BASEPATH}/api/config/banner?walletAddress=${snap.walletAddress}`
+    )
 
-  const handleContinue = () => {
-    setWalletAddress('$ilp.interledger-test.dev/e2bddaeb')
-    setIsConnected(true)
-    onConnectionChange?.(true)
+    if (!response.ok) {
+      const data = await response.json()
+      // @ts-expect-error TODO
+      setError(data.errors)
+      return
+    }
+
+    const data = await response.json()
+
+    // @ts-expect-error TODO
+    if (data.default) {
+      // @ts-expect-error TODO
+      toolActions.setConfigs(data, 'default')
+      setError(undefined)
+    }
+
+    toolActions.setWalletConnected(true)
   }
 
   const handleRefresh = () => {
-    setIsConnected(false)
-    setWalletAddress('')
-    onConnectionChange?.(false)
+    toolActions.setWalletConnected(false)
+    toolActions.setWalletAddress('')
+  }
+
+  const handleWalletAddressChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    toolActions.setWalletAddress(e.target.value)
   }
   return (
     <div className="flex items-start gap-8 p-4 relative bg-white rounded-lg min-h-[165px]">
@@ -49,13 +70,17 @@ export const ToolsWalletAddress = ({
             <div className="w-[470px]">
               <InputField
                 placeholder={
-                  isConnected ? undefined : 'Fill in your wallet address'
+                  snap.isWalletConnected
+                    ? undefined
+                    : 'Fill in your wallet address'
                 }
-                value={isConnected ? walletAddress : undefined}
-                disabled={isConnected}
+                value={snap.walletAddress || ''}
+                onChange={handleWalletAddressChange}
+                disabled={snap.isWalletConnected}
+                error={error?.fieldErrors.walletAddress}
               />
             </div>
-            {isConnected && (
+            {snap.isWalletConnected && (
               <button onClick={handleRefresh}>
                 <SVGRefresh className="w-5 h-5" />
               </button>
@@ -66,7 +91,7 @@ export const ToolsWalletAddress = ({
 
       <div className="flex flex-col max-w-[490px] items-start gap-5 relative flex-1 grow z-0">
         <div className="relative self-stretch w-full">
-          {!isConnected ? (
+          {!snap.isWalletConnected ? (
             <p className="w-full text-style-small-standard">
               If it is the first time you connect your wallet address to the Web
               Monetization you will start with the default configuration.
@@ -81,7 +106,7 @@ export const ToolsWalletAddress = ({
             </p>
           )}
         </div>
-        {!isConnected && (
+        {!snap.isWalletConnected && (
           <ToolsSecondaryButton
             className="mix-w-[240px]"
             onClick={handleContinue}

@@ -35,6 +35,8 @@ export const Slider: React.FC<SliderProps> = ({
     // slider element reference for consistent measurements
     const sliderRect = e.currentTarget.getBoundingClientRect()
 
+    handleSliderInteraction(e.clientX, sliderRect)
+
     const handleMove = (moveEvent: MouseEvent) => {
       handleSliderInteraction(moveEvent.clientX, sliderRect)
     }

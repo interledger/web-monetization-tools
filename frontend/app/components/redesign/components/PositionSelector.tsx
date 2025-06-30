@@ -1,11 +1,10 @@
 import React from 'react'
 import { OptionSelector, type Option } from './OptionSelector'
-
-export type PositionValue = 'top' | 'bottom'
+import { PositionType } from '~/lib/types'
 
 export interface PositionSelectorProps {
-  defaultValue?: PositionValue
-  onChange?: (value: PositionValue) => void
+  defaultValue?: PositionType
+  onChange?: (value: PositionType) => void
 }
 
 const PositionBottom = () => (
@@ -22,23 +21,23 @@ const PositionTop = () => (
   </div>
 )
 
-const positionOptions: Option<PositionValue>[] = [
+const positionOptions: Option<PositionType>[] = [
   {
     id: 'position-bottom',
     label: 'Bottom',
-    value: 'bottom',
+    value: PositionType.Bottom,
     icon: <PositionBottom />
   },
   {
     id: 'position-top',
     label: 'Top',
-    value: 'top',
+    value: PositionType.Top,
     icon: <PositionTop />
   }
 ]
 
 export function PositionSelector({
-  defaultValue = 'bottom',
+  defaultValue = PositionType.Bottom,
   onChange
 }: PositionSelectorProps) {
   return (
@@ -46,7 +45,7 @@ export function PositionSelector({
       options={positionOptions}
       defaultValue={defaultValue}
       onChange={onChange}
-      className="justify-start gap-[115px]"
+      className="justify-start gap-[105px]"
     />
   )
 }

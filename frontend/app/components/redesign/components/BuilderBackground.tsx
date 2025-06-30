@@ -1,8 +1,25 @@
-import React from 'react'
-import { SVGClose } from '~/assets/svg'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useSnapshot } from 'valtio'
 import wmLogo from '~/assets/images/wm_logo.svg?url'
+import { toolState } from '~/stores/toolStore'
 
 import { ToolsSecondaryButton } from './ToolsSecondaryButton'
+
+// Import the banner web component
+import type { BannerConfig, PaymentBanner } from '@tools/components'
+
+// Declare the custom element for TypeScript
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace JSX {
+    interface IntrinsicElements {
+      'wm-payment-banner': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & { ref?: React.Ref<PaymentBanner> },
+        HTMLElement
+      >
+    }
+  }
+}
 
 const BrowserDots = () => (
   <svg width="39" height="8" viewBox="0 0 39 8" fill="none">
@@ -67,48 +84,68 @@ export const BuilderBackground: React.FC<BuilderBackgroundProps> = ({
 
         {/* Browser Content */}
         <div className="flex-1 p-md flex items-end justify-center bg-gray-50">
-          {/* Placeholder for Button Tool Component - Skipped as requested */}
-          <div
-            className="
-              w-full max-w-md
-              bg-interface-bg-container
-              rounded-sm
-              border border-field-border
-              p-sm
-              flex items-center gap-lg
-              relative
-              shadow-sm
-            "
-          >
-            <img
-              src={wmLogo}
-              alt="Web Monetization Logo"
-              className="w-[24px] h-[24px]"
-            />
-
-            {/* Content */}
-            <div className="flex-1 flex flex-col gap-1">
-              <h3 className="text-base leading-md font-bold text-text-primary">
-                How to support?
-              </h3>
-              <p className="text-xs leading-xs text-text-primary">
-                You can support this page and my work by a one time donation or
-                proportional to the time you spend on this website through web
-                monetization.
-              </p>
-              <p className="text-xs leading-xs text-secondary-edge underline cursor-pointer">
-                Download web monetization extension
-              </p>
-            </div>
-
-            {/* Close Button */}
-            <button className="absolute top-sm right-sm text-text-secondary hover:text-text-primary transition-colors w-6 h-6 flex items-center justify-center">
-              <SVGClose />
-            </button>
+          <div className="w-full max-w-full">
+            <Banner />
           </div>
         </div>
       </div>
     </div>
+  )
+}
+
+const Banner = () => {
+  const snap = useSnapshot(toolState)
+  const [isLoaded, setIsLoaded] = useState(false)
+  const bannerContainerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const loadBannerComponent = async () => {
+      console.log('!!! Loading banner component...')
+      await import('@tools/components/banner')
+      setIsLoaded(true)
+    }
+
+    loadBannerComponent()
+  }, [snap.toolConfig])
+
+  const bannerConfig = useMemo(
+    () =>
+      ({
+        bannerTitleText: snap.toolConfig?.bannerTitleText,
+        bannerDescriptionText: snap.toolConfig?.bannerDescriptionText,
+        logo: wmLogo,
+        theme: {
+          backgroundColor: snap.toolConfig?.bannerBackgroundColor,
+          textColor: snap.toolConfig?.bannerTextColor,
+          fontSize: snap.toolConfig?.bannerFontSize,
+          fontFamily: snap.toolConfig?.bannerFontName
+        }
+      }) as BannerConfig,
+    [snap.toolConfig]
+  )
+
+  useEffect(() => {
+    if (bannerContainerRef.current && isLoaded) {
+      bannerContainerRef.current.innerHTML = ''
+
+      const bannerElement = document.createElement(
+        'wm-payment-banner'
+      ) as PaymentBanner
+      bannerElement.config = bannerConfig
+
+      bannerContainerRef.current.appendChild(bannerElement)
+    }
+  }, [bannerConfig, isLoaded])
+
+  if (!isLoaded) {
+    return <div>Loading...</div>
+  }
+
+  return (
+    <div
+      ref={bannerContainerRef}
+      className="w-full max-w-full overflow-hidden"
+    />
   )
 }
 

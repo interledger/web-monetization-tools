@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
+import { useSnapshot } from 'valtio'
 import { BannerContentBuilder } from './BannerContentBuilder'
 import { BuilderCollapseExpand } from './BuilderCollapseExpand'
 import TabSelector from './TabSelector'
+import { toolState, toolActions } from '~/stores/toolStore'
 
 interface BuilderFormProps {
   className?: string
@@ -12,6 +14,7 @@ export const BuilderForm: React.FC<BuilderFormProps> = ({
   className = '',
   onBuildStepComplete
 }) => {
+  const snap = useSnapshot(toolState)
   const [expandedSection, setExpandedSection] = useState<
     'content' | 'appearance' | null
   >(null)
@@ -24,6 +27,14 @@ export const BuilderForm: React.FC<BuilderFormProps> = ({
       onBuildStepComplete(bothComplete)
     }
   }, [contentComplete, appearanceComplete, onBuildStepComplete])
+
+  const handleTabSelect = (versionName: string) => {
+    toolActions.selectVersion(versionName)
+  }
+
+  const handleTabLabelChange = (versionName: string, newLabel: string) => {
+    toolActions.updateVersionLabel(versionName, newLabel)
+  }
 
   const handleContentToggle = () => {
     setExpandedSection(expandedSection === 'content' ? null : 'content')
@@ -58,15 +69,15 @@ export const BuilderForm: React.FC<BuilderFormProps> = ({
   }
   return (
     <div className="flex flex-col w-[628px]">
-      {/* Tab Selector - using TabSelector component */}
+      {/* Tab Selector */}
       <TabSelector
-        options={[
-          { id: 'tab1', label: 'Default preset 1' },
-          { id: 'tab2', label: 'Default preset 2' },
-          { id: 'tab3', label: 'Default preset 3' }
-        ]}
-        defaultSelectedId="tab1"
-        onSelectTab={(tabId) => console.log('Selected tab:', tabId)}
+        options={snap.versionOptions.map((option) => ({
+          id: option.value,
+          label: option.label
+        }))}
+        selectedId={snap.selectedVersion}
+        onSelectTab={handleTabSelect}
+        onTabLabelChange={handleTabLabelChange}
       />
       <div
         className={`

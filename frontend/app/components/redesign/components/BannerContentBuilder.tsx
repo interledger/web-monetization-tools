@@ -7,6 +7,8 @@ import { SVGArrowCollapse, SVGGreenVector, SVGRefresh } from '~/assets/svg'
 import Divider from './Divider'
 import Checkbox from './Checkbox'
 import { ToolsSecondaryButton } from './ToolsSecondaryButton'
+import { useSnapshot } from 'valtio'
+import { toolState, toolActions } from '~/stores/toolStore'
 
 interface BannerContentBuilderProps {
   isComplete?: boolean
@@ -22,12 +24,7 @@ export const BannerContentBuilder: React.FC<BannerContentBuilderProps> = ({
   onToggle,
   onDone
 }) => {
-  const [selectedSuggestedTitle, setSelectedSuggestedTitle] =
-    useState('How to support?')
-  const [customTitle, setCustomTitle] = useState('How to support?')
-  const [bannerMessage, setBannerMessage] = useState(
-    'You can support this page and my work by a one time donation or proportional to the time you spend on this website through web monetization.'
-  )
+  const snap = useSnapshot(toolState)
   const [isBannerActive, setIsBannerActive] = useState(true)
 
   const suggestedTitles = [
@@ -39,12 +36,10 @@ export const BannerContentBuilder: React.FC<BannerContentBuilderProps> = ({
   ]
 
   const handleSuggestedTitleClick = (title: string) => {
-    setSelectedSuggestedTitle(title)
-    setCustomTitle(title.replace(/"/g, ''))
+    toolActions.setToolConfig({ bannerTitleText: title.replace(/"/g, '') })
   }
   const handleRefresh = () => {
-    setSelectedSuggestedTitle('How to support?')
-    setCustomTitle('How to support?')
+    toolActions.setToolConfig({ bannerTitleText: 'How to support?' })
   }
 
   const toggleExpand = () => {
@@ -135,7 +130,9 @@ export const BannerContentBuilder: React.FC<BannerContentBuilderProps> = ({
               <PillTagButton
                 key={title}
                 variant={
-                  selectedSuggestedTitle === title ? 'active' : 'default'
+                  snap.toolConfig?.bannerTitleText === title
+                    ? 'active'
+                    : 'default'
                 }
                 onClick={() => handleSuggestedTitleClick(title)}
               >
@@ -151,15 +148,17 @@ export const BannerContentBuilder: React.FC<BannerContentBuilderProps> = ({
             Custom title
           </h4>
           <InputField
-            value={customTitle}
-            onChange={(e) => setCustomTitle(e.target.value)}
+            value={snap.toolConfig?.bannerTitleText}
+            onChange={(e) =>
+              toolActions.setToolConfig({ bannerTitleText: e.target.value })
+            }
             maxLength={60}
             helpText="Strong message to help people engage with Web Monetization"
             className="h-12 text-base leading-md"
           />
           <div className="flex justify-end">
             <span className="text-xs leading-xs text-text-secondary">
-              {customTitle.length}/60
+              {snap.toolConfig?.bannerTitleText.length}/60
             </span>
           </div>
         </div>
@@ -184,8 +183,12 @@ export const BannerContentBuilder: React.FC<BannerContentBuilderProps> = ({
             {/* Textarea */}
             <div className="flex-grow">
               <TextareaField
-                value={bannerMessage}
-                onChange={(e) => setBannerMessage(e.target.value)}
+                value={snap.toolConfig?.bannerDescriptionText}
+                onChange={(e) =>
+                  toolActions.setToolConfig({
+                    bannerDescriptionText: e.target.value
+                  })
+                }
                 maxLength={300}
                 showCounter={true}
                 helpText="Strong message to help people engage with Web Monetization"

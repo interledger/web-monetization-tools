@@ -24,6 +24,7 @@ interface ColorSelectorProps {
   value?: string
   className?: string
   disabled?: boolean
+  onChange?: (color: string) => void
 }
 
 export const ColorSelector = forwardRef<HTMLDivElement, ColorSelectorProps>(
@@ -32,7 +33,8 @@ export const ColorSelector = forwardRef<HTMLDivElement, ColorSelectorProps>(
       label = 'Background color',
       value = '#FFFFFF',
       className = '',
-      disabled = false
+      disabled = false,
+      onChange
     },
     ref
   ) => {
@@ -48,6 +50,9 @@ export const ColorSelector = forwardRef<HTMLDivElement, ColorSelectorProps>(
     const handleColorSelect = (color: string) => {
       setSelectedColor(color)
       setIsOpen(false)
+      if (onChange) {
+        onChange(color)
+      }
     }
 
     const toggleDropdown = () => {
@@ -160,13 +165,23 @@ export const ColorSelector = forwardRef<HTMLDivElement, ColorSelectorProps>(
                     <style>{`.react-colorful__last-control { border-radius: 0; }`}</style>
                     <HexColorPicker
                       color={String(value)}
-                      onChange={(color) => setSelectedColor(color)}
+                      onChange={(color) => {
+                        setSelectedColor(color)
+                        if (onChange) {
+                          onChange(color)
+                        }
+                      }}
                     />
                     <div className="flex items-center justify-center p-2 bg-white border-t border-gray-300">
                       <span className="text-gray-600 mr-2">#</span>
                       <HexColorInput
                         color={String(selectedColor)}
-                        onChange={(color) => setSelectedColor(color)}
+                        onChange={(color) => {
+                          setSelectedColor(color)
+                          if (onChange) {
+                            onChange(color)
+                          }
+                        }}
                         className="w-24 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:border-blue-500"
                         placeholder="000000"
                       />

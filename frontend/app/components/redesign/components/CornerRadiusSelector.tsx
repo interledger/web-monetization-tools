@@ -1,21 +1,20 @@
 import React from 'react'
 import { OptionSelector, type Option } from './OptionSelector'
-
-export type CornerRadiusValue = 'none' | 'light' | 'pill'
+import { CornerType } from '~/lib/types'
 
 export interface CornerRadiusSelectorProps {
-  defaultValue?: CornerRadiusValue
-  onChange?: (value: CornerRadiusValue) => void
+  defaultValue?: CornerType
+  onChange?: (value: CornerType) => void
 }
 
-const cornerRadiusOptions: Option<CornerRadiusValue>[] = [
-  { id: 'no-rounding', label: 'No rounding', value: 'none' },
-  { id: 'light-rounding', label: 'Light rounding', value: 'light' },
-  { id: 'pill-rounding', label: 'Pill rounding', value: 'pill' }
+const cornerRadiusOptions: Option<CornerType>[] = [
+  { id: 'no-rounding', label: 'No rounding', value: CornerType.None },
+  { id: 'light-rounding', label: 'Light rounding', value: CornerType.Light },
+  { id: 'pill-rounding', label: 'Pill rounding', value: CornerType.Pill }
 ]
 
 export function CornerRadiusSelector({
-  defaultValue = 'light',
+  defaultValue = CornerType.Light,
   onChange
 }: CornerRadiusSelectorProps) {
   return (
