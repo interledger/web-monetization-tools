@@ -23,8 +23,8 @@ export const toolState = proxy({
     { label: 'Default preset 2', value: 'tab2' },
     { label: 'Default preset 3', value: 'tab3' }
   ] as SelectOption[],
-
   modal: undefined as ModalType | undefined,
+  resubmitActionType: 'save-success' as 'save-success' | 'script',
 
   isSubmitting: false,
   fetcherState: 'idle' as 'idle' | 'loading' | 'submitting',
@@ -61,11 +61,10 @@ export const toolActions = {
 
     const versionLabels = firstThreeKeys.map((key) => {
       return {
-        label: key.charAt(0).toUpperCase() + key.slice(1).replaceAll('-', ' '),
+        label: key,
         value: key
       }
     })
-    console.log('!!! versionLabels (first 3):', versionLabels)
     toolState.versionOptions = versionLabels
     toolState.fullConfig = fullConfigObject
 
@@ -122,13 +121,28 @@ export const toolActions = {
     const wa = toolState.toolConfig.walletAddress
       .replace('$', '')
       .replace('https://', '')
-    return `<script id="wmt-init-script" type="module" src="${toolState.scriptInitUrl}init.js?wa=${wa}&tag=[version]&types=[elements]"></script>`
+    return `<script id="wmt-init-script" type="module" src="${toolState.scriptInitUrl}init.js?wa=${wa}&tag=${toolState.selectedVersion}&types=banner"></script>`
   },
-
-  updateVersionLabel: (versionValue: string, newLabel: string) => {
-    toolState.versionOptions = toolState.versionOptions.map((option) =>
-      option.value === versionValue ? { ...option, label: newLabel } : option
+  updateVersionLabel: (oldVersionKey: string, newVersionName: string) => {
+    const targetOption = toolState.versionOptions.find(
+      (option) => option.value === oldVersionKey
     )
+    if (targetOption) {
+      targetOption.label = newVersionName
+      targetOption.value = newVersionName
+    }
+
+    const existingConfig = toolState.fullConfig[oldVersionKey]
+    if (!existingConfig) {
+      return
+    }
+
+    delete toolState.fullConfig[oldVersionKey]
+    toolState.fullConfig[newVersionName] = existingConfig
+
+    if (toolState.selectedVersion === oldVersionKey) {
+      toolState.selectedVersion = newVersionName
+    }
   },
   setWalletAddress: (walletAddress: string) => {
     toolState.walletAddress = walletAddress
@@ -145,11 +159,15 @@ export const toolActions = {
     //   }
     // }
   },
-  saveConfig: async (elementType: string) => {
+  saveConfig: async (
+    elementType: string,
+    callToActionType: 'save-success' | 'script'
+  ) => {
     if (!toolState.toolConfig || !toolState.walletAddress) {
       throw new Error('Tool config or wallet address is missing')
     }
 
+    toolState.resubmitActionType = callToActionType
     toolState.isSubmitting = true
     try {
       const configToSave = {
@@ -189,6 +207,7 @@ export const toolActions = {
 
       formData.append('walletAddress', toolState.walletAddress)
       formData.append('version', toolState.selectedVersion)
+
       const updatedFullConfig = {
         ...toolState.fullConfig,
         [toolState.selectedVersion]: configToSave
@@ -220,7 +239,7 @@ export const toolActions = {
 
       toolState.fullConfig = data as Record<string, ElementConfigType>
       toolState.toolConfig = configToSave
-      toolState.modal = { type: 'save-success' }
+      toolState.modal = { type: callToActionType }
 
       return { success: true, data }
     } catch (error) {
@@ -242,10 +261,9 @@ export const toolActions = {
     toolState.grantResponse = grantResponse
     toolState.isGrantAccepted = isGrantAccepted
   },
-
   handleGrantResponse: () => {
     if (toolState.isGrantAccepted) {
-      toolActions.saveConfig('banner')
+      toolActions.saveConfig('banner', toolState.resubmitActionType)
     } else {
       toolState.modal = {
         type: 'save-error'
@@ -255,12 +273,13 @@ export const toolActions = {
 }
 
 /** Load from localStorage on init */
-export function loadState() {
+export function loadState(env: Env) {
   const saved = localStorage.getItem(STORAGE_KEY)
   if (saved) {
     const parsed = JSON.parse(saved)
     Object.assign(toolState, parsed)
   }
+  toolState.scriptInitUrl = env.SCRIPT_EMBED_URL
 }
 
 export function persistState() {

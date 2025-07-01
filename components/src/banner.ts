@@ -9,13 +9,8 @@ import { property, state } from 'lit/decorators.js'
 import defaultLogo from './assets/wm_logo_animated.svg?url'
 
 export interface BannerConfig {
-  walletAddress?: string
   bannerTitleText?: string
   bannerDescriptionText?: string
-  bannerFontName?: string
-  bannerFontSize?: number
-  bannerTextColor?: string
-  bannerBackgroundColor?: string
   bannerBorderRadius?: string
   bannerPosition?: 'Top' | 'Bottom'
   bannerSlideAnimation?: boolean
@@ -230,13 +225,22 @@ export class PaymentBanner extends LitElement {
   }
 
   private handleLinkClick() {
-    this.dispatchEvent(
-      new CustomEvent('banner-link-clicked', {
-        detail: { action: 'download-extension' },
-        bubbles: true,
-        composed: true
-      })
-    )
+    const getWebMonetizationLinkHref = () => {
+      const userAgent = navigator.userAgent
+      if (userAgent.includes('Firefox')) {
+        return 'https://addons.mozilla.org/en-US/firefox/addon/web-monetization-extension/'
+      } else if (
+        userAgent.includes('Chrome') &&
+        !userAgent.includes('Edg') &&
+        !userAgent.includes('OPR')
+      ) {
+        return 'https://chromewebstore.google.com/detail/web-monetization/oiabcfomehhigdepbbclppomkhlknpii'
+      } else if (userAgent.includes('Edg')) {
+        return 'https://microsoftedge.microsoft.com/addons/detail/web-monetization/imjgemgmeoioefpmfefmffbboogighjl'
+      }
+      return 'https://webmonetization.org/'
+    }
+    window.open(getWebMonetizationLinkHref(), '_blank')
   }
 
   public previewAnimation() {
@@ -260,6 +264,7 @@ export class PaymentBanner extends LitElement {
       this.requestUpdate()
     }, 2000)
   }
+
   render() {
     if (!this.isVisible || this.isDismissed) {
       return html``
@@ -322,7 +327,6 @@ export class BannerController implements ReactiveController {
     this.host = host
     host.addController(this)
   }
-
   /** called when the host is connected to the DOM */
   hostConnected() {}
 
@@ -361,13 +365,72 @@ export class BannerController implements ReactiveController {
 
     this.host.requestUpdate()
   }
-
   updateState(updates: Partial<BannerState>) {
     this._state = { ...this._state, ...updates }
     this.host.requestUpdate()
   }
+
+  /**
+   * Applies the specified font family to the host element, removing any existing font link,
+   * loading the font if necessary, and setting the CSS custom property.
+   *
+   * @param fontName The name of the font family to apply.
+   */
+  private applyFontFamily(fontName: string) {
+    const allowedFonts = [
+      'Cookie',
+      'Roboto',
+      'Open Sans',
+      'Titillium Web',
+      'Arial'
+    ]
+
+    const existingFont = document.getElementById(
+      'wmt-font-family-banner'
+    ) as HTMLLinkElement
+    if (existingFont) {
+      existingFont.remove()
+    }
+
+    if (fontName === 'Inherit' || !allowedFonts.includes(fontName)) {
+      this.host.style.setProperty('--wm-font-family', 'inherit')
+      return
+    }
+
+    const fontLink = document.createElement('link') as HTMLLinkElement
+    fontLink.id = 'wmt-font-family-banner'
+    fontLink.rel = 'stylesheet'
+    fontLink.type = 'text/css'
+
+    switch (fontName) {
+      case 'Open Sans':
+        fontLink.href =
+          'https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap'
+        break
+      case 'Cookie':
+        fontLink.href =
+          'https://fonts.googleapis.com/css2?family=Cookie&display=swap'
+        break
+      case 'Roboto':
+        fontLink.href =
+          'https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap'
+        break
+      case 'Titillium Web':
+        fontLink.href =
+          'https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap'
+        break
+      case 'Arial':
+        break
+    }
+
+    if (fontLink.href && fontName !== 'Arial') {
+      document.head.appendChild(fontLink)
+    }
+
+    this.host.style.setProperty('--wm-font-family', fontName)
+  }
   applyTheme(element: HTMLElement) {
-    const theme = this._config.theme
+    const theme = this.config.theme
     if (!theme) return
 
     if (theme.primaryColor) {
@@ -380,7 +443,7 @@ export class BannerController implements ReactiveController {
       element.style.setProperty('--wm-text-color', theme.textColor)
     }
     if (theme.fontFamily) {
-      element.style.setProperty('--wm-font-family', theme.fontFamily)
+      this.applyFontFamily(theme.fontFamily)
     }
     if (theme.fontSize) {
       element.style.setProperty('--wm-font-size', `${theme.fontSize}px`)

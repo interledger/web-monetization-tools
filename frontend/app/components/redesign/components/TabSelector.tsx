@@ -88,7 +88,10 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value)
+    const newValue = e.target.value
+    if (/^[a-zA-Z0-9-_ ]*$/.test(newValue)) {
+      setInputValue(newValue)
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

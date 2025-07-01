@@ -1,7 +1,8 @@
 import React from 'react'
 import { SVGScriptCode, SVGCopyScript } from '../../../assets/svg'
 
-export interface ToolsPrimaryButtonProps {
+interface ToolsPrimaryButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode
   iconPosition?: 'left' | 'right' | 'none'
   icon?: 'script' | 'copy'
@@ -14,7 +15,8 @@ export function ToolsPrimaryButton({
   iconPosition = 'right',
   icon,
   className,
-  onClick
+  onClick,
+  ...props
 }: ToolsPrimaryButtonProps) {
   return (
     <button
@@ -30,6 +32,7 @@ export function ToolsPrimaryButton({
         ${className}
       `}
       onClick={onClick}
+      {...props}
     >
       {icon === 'script' && iconPosition === 'left' && <SVGScriptCode />}
       <span className="block font-normal leading-[24px] text-[16px] whitespace-pre">
