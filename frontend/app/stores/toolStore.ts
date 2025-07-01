@@ -3,6 +3,7 @@ import type { ElementConfigType } from '~/lib/types.js'
 import type { ModalType } from '~/lib/presets.js'
 import type { SelectOption } from '~/components/index.js'
 import { APP_BASEPATH } from '~/lib/constants'
+import type { StepStatus } from '~/components/redesign/components/StepsIndicator'
 
 const STORAGE_KEY = 'valtio-store'
 
@@ -32,15 +33,12 @@ export const toolState = proxy({
   elementType: null as string | null,
   scriptInitUrl: '',
   apiUrl: '',
-  opWallet: '',
   walletAddress: '',
   grantResponse: '',
   isGrantAccepted: false,
-  lastAction: null as unknown,
-
   isWalletConnected: false,
-  isBuildStepComplete: false,
-  activeStep: 1
+  walletConnectStep: 'unfilled' as StepStatus,
+  buildStep: 'unfilled' as StepStatus
 })
 
 export const toolActions = {
@@ -98,19 +96,18 @@ export const toolActions = {
   setWalletConnected: (connected: boolean) => {
     toolState.isWalletConnected = connected
     if (connected) {
-      toolState.activeStep = Math.max(toolState.activeStep, 2)
+      toolState.walletConnectStep = 'filled'
+    } else {
+      toolState.walletConnectStep = 'unfilled'
     }
   },
 
-  setBuildStepComplete: (complete: boolean) => {
-    toolState.isBuildStepComplete = complete
-    if (complete) {
-      toolState.activeStep = Math.max(toolState.activeStep, 3)
-    }
+  setConnectWalletStep: (step: StepStatus) => {
+    toolState.walletConnectStep = step
   },
 
-  setActiveStep: (step: number) => {
-    toolState.activeStep = step
+  setBuildCompleteStep: (step: StepStatus) => {
+    toolState.buildStep = step
   },
 
   getScriptToDisplay: (): string | undefined => {

@@ -39,8 +39,7 @@ export const ToolsWalletAddress = () => {
       }
 
       toolActions.setWalletConnected(true)
-    } catch (err) {
-      console.error('Failed to fetch config:', err)
+    } catch {
       setError({
         fieldErrors: { walletAddress: ['Failed to fetch configuration'] },
         message: []
@@ -59,6 +58,10 @@ export const ToolsWalletAddress = () => {
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     toolActions.setWalletAddress(e.target.value)
+
+    if (snap.walletConnectStep !== 'unfilled') {
+      toolActions.setConnectWalletStep('unfilled')
+    }
   }
   return (
     <div className="flex items-start gap-8 p-4 relative bg-white rounded-lg min-h-[165px]">
@@ -104,8 +107,12 @@ export const ToolsWalletAddress = () => {
       </div>
 
       <div className="flex flex-col max-w-[490px] items-start gap-5 relative flex-1 grow z-0">
-        <div className="relative self-stretch w-full">
-          {!snap.isWalletConnected ? (
+        <div id="wallet-address-info" className="relative self-stretch w-full">
+          {snap.walletConnectStep === 'error' ? (
+            <p className="w-full text-style-small-standard !text-red-600">
+              You have not connected your wallet address yet.
+            </p>
+          ) : !snap.isWalletConnected ? (
             <p className="w-full text-style-small-standard">
               If you&apos;re connecting your wallet address to Web Monetization
               for the first time, you&apos;ll start with the default
