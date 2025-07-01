@@ -16,7 +16,7 @@ export const NavLink = ({ to, children }: NavLinkProps) => {
       <RemixNavLink
         to={to}
         className={
-          'font-sans font-normal text-sm leading-5 text-purple-300 group-hover:text-secondary-edge-hover px-md py-sm'
+          'px-md py-sm font-sans font-normal text-sm leading-sm text-buttons-default group-hover:text-buttons-hover'
         }
       >
         {children}

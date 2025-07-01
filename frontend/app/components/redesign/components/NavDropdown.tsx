@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { ToolsMenuItem } from './ToolsMenuItem'
 import { cx } from 'class-variance-authority'
 import { SVGDownArrow } from '~/assets/svg'
@@ -59,9 +59,9 @@ export const NavDropdown = ({ title }: NavDropdownProps) => {
         type="button"
         onClick={toggleDropdown}
         className={cx(
-          'flex items-center gap-xs px-md py-sm font-sans font-normal text-sm leading-5',
-          isOpen ? 'text-purple-600' : 'text-purple-300',
-          !isHoveringMenuItems && 'group-hover:text-secondary-edge-hover'
+          'flex items-center gap-xs px-md py-sm font-sans font-normal text-sm leading-sm',
+          isOpen ? 'text-buttons-hover' : 'text-buttons-default',
+          !isHoveringMenuItems && 'group-hover:text-buttons-hover'
         )}
         aria-label="Toggle Dropdown"
       >
@@ -74,16 +74,16 @@ export const NavDropdown = ({ title }: NavDropdownProps) => {
         >
           <SVGDownArrow
             className={cx(
-              isOpen ? 'fill-purple-600' : 'fill-purple-300',
-              !isHoveringMenuItems && 'group-hover:fill-purple-600'
+              isOpen ? 'fill-buttons-hover' : 'fill-buttons-default',
+              !isHoveringMenuItems && 'group-hover:fill-buttons-hover'
             )}
           />
         </span>
       </button>
-      {/* Dropdown Content - Controlled by 'isOpen' state */}
+      {/* Dropdown Content */}
       {isOpen && (
         <div
-          className="flex flex-col justify-start items-start w-[299px] h-[472px] absolute top-[calc(100%+16px)] left-0 gap-xs p-sm bg-interface-bg-container rounded-lg shadow-[0px_24px_24px_0px_rgba(0,0,0,0.08)] outline outline-1 outline-offset-[-1px] outline-interface-edge-container z-50"
+          className="flex flex-col justify-start items-start w-[299px] h-[472px] absolute top-[calc(100%+24px)] left-0 gap-xs p-sm bg-interface-bg-container rounded-lg shadow-[0px_24px_24px_0px_rgba(0,0,0,0.08)] outline outline-1 outline-offset-[-1px] outline-interface-edge-container z-50"
           onMouseEnter={handleDropdownContentMouseEnter}
           onMouseLeave={handleDropdownContentMouseLeave}
         >

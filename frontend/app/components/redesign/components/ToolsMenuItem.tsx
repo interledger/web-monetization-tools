@@ -11,7 +11,7 @@ export const ToolsMenuItem = ({ to, imgSrc, text }: ToolsMenuItemProps) => {
     <li>
       <RemixNavLink
         to={to}
-        className="w-full p-3 rounded-lg flex justify-start items-center gap-xs hover:bg-gray-100 min-w-0"
+        className="w-full p-sm rounded-lg flex justify-start items-center gap-xs hover:bg-secondary-hover-surface"
       >
         <img
           className="w-[120px] h-[120px]"
@@ -19,7 +19,7 @@ export const ToolsMenuItem = ({ to, imgSrc, text }: ToolsMenuItemProps) => {
           aria-hidden="true"
           alt=""
         />
-        <div className="text-text-primary text-base font-bold font-sans leading-normal flex-grow min-w-0 truncate">
+        <div className="flex-grow text-text-primary text-base font-bold font-sans leading-normal">
           {text}
         </div>
       </RemixNavLink>
