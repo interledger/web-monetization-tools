@@ -3,7 +3,7 @@ import { useSnapshot } from 'valtio'
 import { Tooltip } from './Tooltip'
 import { InputField } from './InputField'
 import { ToolsSecondaryButton } from './ToolsSecondaryButton'
-import { SVGRefresh } from '../../../assets/svg'
+import { SVGRefresh, SVGSpinner } from '~/assets/svg'
 import { toolState, toolActions } from '~/stores/toolStore'
 import { APP_BASEPATH } from '~/lib/constants'
 import type { ElementErrors } from '~/lib/types'
@@ -11,29 +11,43 @@ import type { ElementErrors } from '~/lib/types'
 export const ToolsWalletAddress = () => {
   const snap = useSnapshot(toolState)
   const [error, setError] = useState<ElementErrors>()
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleContinue = async () => {
-    const response = await fetch(
-      `${APP_BASEPATH}/api/config/banner?walletAddress=${snap.walletAddress}`
-    )
+    setIsLoading(true)
+    setError(undefined)
 
-    if (!response.ok) {
+    try {
+      const response = await fetch(
+        `${APP_BASEPATH}/api/config/banner?walletAddress=${snap.walletAddress}`
+      )
+
+      if (!response.ok) {
+        const data = await response.json()
+        // @ts-expect-error TODO
+        setError(data.errors)
+        return
+      }
+
       const data = await response.json()
+
       // @ts-expect-error TODO
-      setError(data.errors)
-      return
+      if (data.default) {
+        // @ts-expect-error TODO
+        toolActions.setConfigs(data, 'default')
+        setError(undefined)
+      }
+
+      toolActions.setWalletConnected(true)
+    } catch (err) {
+      console.error('Failed to fetch config:', err)
+      setError({
+        fieldErrors: { walletAddress: ['Failed to fetch configuration'] },
+        message: []
+      })
+    } finally {
+      setIsLoading(false)
     }
-
-    const data = await response.json()
-
-    // @ts-expect-error TODO
-    if (data.default) {
-      // @ts-expect-error TODO
-      toolActions.setConfigs(data, 'default')
-      setError(undefined)
-    }
-
-    toolActions.setWalletConnected(true)
   }
 
   const handleRefresh = () => {
@@ -93,25 +107,30 @@ export const ToolsWalletAddress = () => {
         <div className="relative self-stretch w-full">
           {!snap.isWalletConnected ? (
             <p className="w-full text-style-small-standard">
-              If it is the first time you connect your wallet address to the Web
-              Monetization you will start with the default configuration.
+              If you&apos;re connecting your wallet address to Web Monetization
+              for the first time, you&apos;ll start with the default
+              configuration.
               <br />
-              Then you will be able to save your custom configuration.
+              You can then customize and save your config as needed.
             </p>
           ) : (
             <p className="w-full text-style-small-standard !text-text-success">
-              There are no custom changes for the drawer banner associated with
-              this wallet address, but you can start customizing whenever you
-              want.
+              We&apos;ve loaded your configuration.
+              <br />
+              Feel free to keep customizing your banner to fit your style.
             </p>
           )}
         </div>
         {!snap.isWalletConnected && (
           <ToolsSecondaryButton
-            className="mix-w-[240px]"
+            className="w-[143px]"
+            disabled={isLoading}
             onClick={handleContinue}
           >
-            Continue
+            <div className="flex items-center justify-center gap-2">
+              {isLoading && <SVGSpinner />}
+              <span>{isLoading ? 'Connecting...' : 'Continue'}</span>
+            </div>
           </ToolsSecondaryButton>
         )}
       </div>

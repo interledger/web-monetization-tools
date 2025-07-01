@@ -6,9 +6,7 @@ import {
   type ReactiveControllerHost
 } from 'lit'
 import { property, state } from 'lit/decorators.js'
-// Use a data URL for the default logo as fallback
-const defaultLogo =
-  'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiIGZpbGw9IiM3Rjc2QjIiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4='
+import defaultLogo from './assets/wm_logo_animated.svg?url'
 
 export interface BannerConfig {
   walletAddress?: string
@@ -18,8 +16,8 @@ export interface BannerConfig {
   bannerFontSize?: number
   bannerTextColor?: string
   bannerBackgroundColor?: string
-  bannerBorder?: string
-  bannerPosition?: 'top' | 'bottom'
+  bannerBorderRadius?: string
+  bannerPosition?: 'Top' | 'Bottom'
   bannerSlideAnimation?: boolean
   theme?: {
     primaryColor?: string
@@ -41,10 +39,16 @@ export class PaymentBanner extends LitElement {
   get config() {
     return this.configController.config
   }
-
   @property({ type: Boolean }) isVisible = true
 
   @state() private isDismissed = false
+  @state() private isAnimating = false
+  @state() private animationClass = ''
+  connectedCallback() {
+    super.connectedCallback()
+    this.previewAnimation()
+  }
+
   static styles = css`
     :host {
       display: block;
@@ -53,18 +57,18 @@ export class PaymentBanner extends LitElement {
       --background-color: var(--wm-background-color, #ffffff);
       --text-color: var(--wm-text-color, #000000);
       --font-size: var(--wm-font-size, 16px);
+      --border-radius: var(--wm-border-radius, 4px);
       width: 100%;
       max-width: 100%;
       box-sizing: border-box;
     }
-
     .banner {
       display: flex;
       align-items: center;
       gap: 16px;
       background: var(--background-color);
-      border: 1px solid #e5e7eb;
-      border-radius: 4px;
+      border: 1px solid transparent;
+      border-radius: var(--border-radius);
       padding: 12px;
       position: relative;
       box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
@@ -72,10 +76,75 @@ export class PaymentBanner extends LitElement {
       max-width: 100%;
       box-sizing: border-box;
       overflow: hidden;
+      transition: all 0.3s ease;
     }
-
     .banner.hidden {
       display: none;
+    }
+
+    /* Animation classes */
+    .banner.slide-down-preview {
+      max-height: 0px;
+      transform: translateY(-40px);
+      animation: slideDownPreview 2s ease-in-out forwards;
+    }
+    .banner.slide-up-preview {
+      max-height: 0px;
+      transform: translateY(40px);
+      animation: slideUpPreview 2s ease-in-out forwards;
+    }
+
+    .banner.fade-in-preview {
+      animation: fadeInPreview 2s ease-in-out forwards;
+    }
+    @keyframes slideUpPreview {
+      0% {
+        max-height: 0px;
+        transform: translateY(40px);
+        opacity: 0;
+      }
+      50% {
+        max-height: 300px;
+        transform: translateY(0px);
+        opacity: 1;
+      }
+      100% {
+        max-height: 300px;
+        transform: translateY(0px);
+        opacity: 1;
+      }
+    }
+    @keyframes slideDownPreview {
+      0% {
+        max-height: 0px;
+        transform: translateY(-40px);
+        opacity: 0;
+      }
+      50% {
+        max-height: 300px;
+        transform: translateY(0px);
+        opacity: 1;
+      }
+      100% {
+        max-height: 300px;
+        transform: translateY(0px);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeInPreview {
+      0% {
+        opacity: 0.3;
+        transform: scale(0.95);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.02);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
     }
 
     .banner-logo {
@@ -110,7 +179,7 @@ export class PaymentBanner extends LitElement {
     .banner-link {
       margin: 0;
       font-size: calc(var(--font-size) * 0.75);
-      color: var(--primary-color);
+      color: var(--text-color);
       text-decoration: underline;
       cursor: pointer;
       line-height: 1.3;
@@ -147,7 +216,6 @@ export class PaymentBanner extends LitElement {
       height: 16px;
     }
   `
-
   private handleClose() {
     this.isDismissed = true
     this.requestUpdate()
@@ -171,6 +239,27 @@ export class PaymentBanner extends LitElement {
     )
   }
 
+  public previewAnimation() {
+    if (this.isAnimating) return
+
+    this.isAnimating = true
+    const position = this.config.bannerPosition || 'Bottom'
+
+    if (this.config.bannerSlideAnimation) {
+      this.animationClass =
+        position === 'Top' ? 'slide-down-preview' : 'slide-up-preview'
+    } else {
+      this.animationClass = 'fade-in-preview'
+    }
+
+    this.requestUpdate()
+
+    setTimeout(() => {
+      this.isAnimating = false
+      this.animationClass = ''
+      this.requestUpdate()
+    }, 2000)
+  }
   render() {
     if (!this.isVisible || this.isDismissed) {
       return html``
@@ -183,7 +272,7 @@ export class PaymentBanner extends LitElement {
       'You can support this page and my work by a one time donation or proportional to the time you spend on this website through web monetization.'
 
     return html`
-      <div class="banner">
+      <div class="banner ${this.animationClass}">
         <img src="${logo}" alt="Web Monetization Logo" class="banner-logo" />
 
         <div class="banner-content">
@@ -214,7 +303,7 @@ export class PaymentBanner extends LitElement {
   }
 }
 
-customElements.define('wm-payment-banner', PaymentBanner)
+customElements.define('wm-banner', PaymentBanner)
 
 interface BannerState {
   isVisible: boolean
@@ -247,11 +336,29 @@ export class BannerController implements ReactiveController {
   get state(): BannerState {
     return this._state
   }
-
   updateConfig(updates: Partial<BannerConfig>) {
     this._config = { ...this._config, ...updates }
 
     this.applyTheme(this.host)
+
+    if (updates.bannerBorderRadius) {
+      let borderRadiusValue = updates.bannerBorderRadius
+
+      switch (updates.bannerBorderRadius) {
+        case 'Light':
+          borderRadiusValue = '0.375rem'
+          break
+        case 'Pill':
+          borderRadiusValue = '1rem'
+          break
+        case 'None':
+          borderRadiusValue = '0'
+          break
+      }
+
+      this.host.style.setProperty('--wm-border-radius', borderRadiusValue)
+    }
+
     this.host.requestUpdate()
   }
 
@@ -259,7 +366,6 @@ export class BannerController implements ReactiveController {
     this._state = { ...this._state, ...updates }
     this.host.requestUpdate()
   }
-
   applyTheme(element: HTMLElement) {
     const theme = this._config.theme
     if (!theme) return

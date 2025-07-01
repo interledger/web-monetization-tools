@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, {
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 import { useSnapshot } from 'valtio'
 import wmLogo from '~/assets/images/wm_logo.svg?url'
 import { toolState } from '~/stores/toolStore'
@@ -13,7 +19,7 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
-      'wm-payment-banner': React.DetailedHTMLProps<
+      'wm-banner': React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement> & { ref?: React.Ref<PaymentBanner> },
         HTMLElement
       >
@@ -36,6 +42,15 @@ interface BuilderBackgroundProps {
 export const BuilderBackground: React.FC<BuilderBackgroundProps> = ({
   className = ''
 }) => {
+  const snap = useSnapshot(toolState)
+  const bannerRef = useRef<BannerHandle>(null)
+
+  const handlePreviewClick = () => {
+    if (bannerRef.current) {
+      bannerRef.current.triggerPreview()
+    }
+  }
+
   const createDotPattern = () => {
     const svgString = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="6" cy="6" r="2" fill="white" fill-opacity="0.5" /></svg>`
 
@@ -44,11 +59,12 @@ export const BuilderBackground: React.FC<BuilderBackgroundProps> = ({
 
   return (
     <div
+      id="builder-background"
       className={`
         bg-[#efefef]
         rounded-[20px]
         p-4
-        flex flex-col gap-2.5 items-center justify-center
+        flex flex-col gap-2.5 items-center justify-end
         min-h-[600px]
         relative
         ${className}
@@ -59,14 +75,18 @@ export const BuilderBackground: React.FC<BuilderBackgroundProps> = ({
         backgroundSize: '16px 16px'
       }}
     >
-      <ToolsSecondaryButton icon="play" className="w-[130px]">
+      <ToolsSecondaryButton
+        icon="play"
+        className="w-[130px] order-first mb-auto"
+        onClick={handlePreviewClick}
+      >
         Preview
       </ToolsSecondaryButton>
 
       {/* Browser Mockup */}
       <div
-        className="
-          w-full h-[406px]
+        id="browser-mockup"
+        className="w-full h-[406px]
           bg-white
           rounded-2xl
           border border-field-border
@@ -83,9 +103,16 @@ export const BuilderBackground: React.FC<BuilderBackgroundProps> = ({
         </div>
 
         {/* Browser Content */}
-        <div className="flex-1 p-md flex items-end justify-center bg-gray-50">
+        <div
+          id="browser-content"
+          className={`flex-1 p-md flex justify-center bg-gray-50 ${
+            snap.toolConfig?.bannerPosition === 'Top'
+              ? 'items-start'
+              : 'items-end'
+          }`}
+        >
           <div className="w-full max-w-full">
-            <Banner />
+            <Banner ref={bannerRef} />
           </div>
         </div>
       </div>
@@ -93,26 +120,47 @@ export const BuilderBackground: React.FC<BuilderBackgroundProps> = ({
   )
 }
 
-const Banner = () => {
+interface BannerHandle {
+  triggerPreview: () => void
+}
+
+const Banner = React.forwardRef<BannerHandle>((props, ref) => {
   const snap = useSnapshot(toolState)
   const [isLoaded, setIsLoaded] = useState(false)
   const bannerContainerRef = useRef<HTMLDivElement>(null)
+  const bannerElementRef = useRef<PaymentBanner | null>(null)
+
+  useImperativeHandle(ref, () => ({
+    triggerPreview: () => {
+      if (bannerElementRef.current) {
+        bannerElementRef.current.previewAnimation()
+      }
+    }
+  }))
 
   useEffect(() => {
     const loadBannerComponent = async () => {
-      console.log('!!! Loading banner component...')
+      if (customElements.get('wm-banner')) {
+        setIsLoaded(true)
+        return
+      }
+
+      // dynamic import - ensure component only runs on the client side and not on SSR
       await import('@tools/components/banner')
       setIsLoaded(true)
     }
 
     loadBannerComponent()
-  }, [snap.toolConfig])
+  }, [])
 
   const bannerConfig = useMemo(
     () =>
       ({
         bannerTitleText: snap.toolConfig?.bannerTitleText,
         bannerDescriptionText: snap.toolConfig?.bannerDescriptionText,
+        bannerPosition: snap.toolConfig?.bannerPosition,
+        bannerBorderRadius: snap.toolConfig?.bannerBorder,
+        bannerSlideAnimation: snap.toolConfig?.bannerSlideAnimation,
         logo: wmLogo,
         theme: {
           backgroundColor: snap.toolConfig?.bannerBackgroundColor,
@@ -126,12 +174,14 @@ const Banner = () => {
 
   useEffect(() => {
     if (bannerContainerRef.current && isLoaded) {
-      bannerContainerRef.current.innerHTML = ''
+      if (bannerElementRef.current) {
+        bannerElementRef.current.config = bannerConfig
+        return
+      }
 
-      const bannerElement = document.createElement(
-        'wm-payment-banner'
-      ) as PaymentBanner
+      const bannerElement = document.createElement('wm-banner') as PaymentBanner
       bannerElement.config = bannerConfig
+      bannerElementRef.current = bannerElement
 
       bannerContainerRef.current.appendChild(bannerElement)
     }
@@ -141,12 +191,17 @@ const Banner = () => {
     return <div>Loading...</div>
   }
 
+  const isTopPosition = bannerConfig.bannerPosition === 'Top'
+
   return (
     <div
       ref={bannerContainerRef}
-      className="w-full max-w-full overflow-hidden"
+      className={`w-full max-w-full overflow-hidden ${
+        isTopPosition ? 'order-first' : 'order-last'
+      }`}
     />
   )
-}
+})
 
+Banner.displayName = 'Banner'
 export default BuilderBackground

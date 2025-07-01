@@ -318,3 +318,23 @@ export const SVGArrowLeft = ({ className = '' }: { className?: string }) => (
     />
   </svg>
 )
+
+export const SVGSpinner = ({ className = '' }: { className?: string }) => (
+  <svg
+    className={`animate-spin w-4 h-4 ${className}`}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle
+      cx="12"
+      cy="12"
+      r="10"
+      stroke="currentColor"
+      strokeWidth="2"
+      fill="none"
+      strokeLinecap="round"
+      strokeDasharray="15.708"
+    />
+  </svg>
+)

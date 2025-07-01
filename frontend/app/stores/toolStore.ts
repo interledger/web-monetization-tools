@@ -2,8 +2,16 @@ import { proxy, subscribe } from 'valtio'
 import type { ElementConfigType } from '~/lib/types.js'
 import type { ModalType } from '~/lib/presets.js'
 import type { SelectOption } from '~/components/index.js'
+import { APP_BASEPATH } from '~/lib/constants'
 
 const STORAGE_KEY = 'valtio-store'
+
+interface SaveConfigResponse {
+  grantRequired?: string
+  intent?: string
+  error?: string
+  [key: string]: unknown
+}
 
 export const toolState = proxy({
   toolConfig: null as ElementConfigType | null,
@@ -26,8 +34,7 @@ export const toolState = proxy({
   apiUrl: '',
   opWallet: '',
   walletAddress: '',
-  grantResponse: null as unknown,
-  isGrantResponse: false,
+  grantResponse: '',
   isGrantAccepted: false,
   lastAction: null as unknown,
 
@@ -123,23 +130,127 @@ export const toolActions = {
       option.value === versionValue ? { ...option, label: newLabel } : option
     )
   },
-
   setWalletAddress: (walletAddress: string) => {
     toolState.walletAddress = walletAddress
 
-    // Update the wallet address in the current toolConfig
     // if (toolState.toolConfig) {
     //   toolState.toolConfig = {
     //     ...toolState.toolConfig,
     //     walletAddress: walletAddress
     //   }
 
-    //   // Update the fullConfig with the current version's updated config
     //   toolState.fullConfig = {
     //     ...toolState.fullConfig,
     //     [toolState.selectedVersion]: toolState.toolConfig
     //   }
     // }
+  },
+  saveConfig: async (elementType: string) => {
+    if (!toolState.toolConfig || !toolState.walletAddress) {
+      throw new Error('Tool config or wallet address is missing')
+    }
+
+    toolState.isSubmitting = true
+    try {
+      const configToSave = {
+        ...toolState.toolConfig,
+        walletAddress: toolState.walletAddress
+      }
+
+      const formData = new FormData()
+      if (configToSave.bannerFontName)
+        formData.append('bannerFontName', configToSave.bannerFontName)
+      if (configToSave.bannerFontSize)
+        formData.append(
+          'bannerFontSize',
+          configToSave.bannerFontSize.toString()
+        )
+      if (configToSave.bannerDescriptionText)
+        formData.append(
+          'bannerDescriptionText',
+          configToSave.bannerDescriptionText
+        )
+      if (configToSave.bannerTextColor)
+        formData.append('bannerTextColor', configToSave.bannerTextColor)
+      if (configToSave.bannerBackgroundColor)
+        formData.append(
+          'bannerBackgroundColor',
+          configToSave.bannerBackgroundColor
+        )
+      if (configToSave.bannerSlideAnimation)
+        formData.append(
+          'bannerSlideAnimation',
+          configToSave.bannerSlideAnimation
+        )
+      if (configToSave.bannerPosition)
+        formData.append('bannerPosition', configToSave.bannerPosition)
+      if (configToSave.bannerBorder)
+        formData.append('bannerBorder', configToSave.bannerBorder)
+
+      formData.append('walletAddress', toolState.walletAddress)
+      formData.append('version', toolState.selectedVersion)
+      const updatedFullConfig = {
+        ...toolState.fullConfig,
+        [toolState.selectedVersion]: configToSave
+      }
+
+      formData.append('fullconfig', JSON.stringify(updatedFullConfig))
+      formData.append('intent', 'update')
+
+      const baseUrl = location.origin + APP_BASEPATH
+      const response = await fetch(`${baseUrl}/api/config/${elementType}`, {
+        method: 'PUT',
+        body: formData
+      })
+
+      const data = (await response.json()) as SaveConfigResponse
+
+      if (data?.grantRequired) {
+        toolState.modal = {
+          type: 'wallet-ownership',
+          grantRedirectURI: data.grantRequired,
+          grantRedirectIntent: data.intent
+        }
+        return {
+          requiresGrant: true,
+          grantRedirectURI: data.grantRequired,
+          grantRedirectIntent: data.intent
+        }
+      }
+
+      toolState.fullConfig = data as Record<string, ElementConfigType>
+      toolState.toolConfig = configToSave
+      toolState.modal = { type: 'save-success' }
+
+      return { success: true, data }
+    } catch (error) {
+      console.error('Save error:', error)
+      throw error
+    } finally {
+      toolState.isSubmitting = false
+    }
+  },
+
+  confirmWalletOwnership: (grantRedirectURI?: string) => {
+    if (!grantRedirectURI) {
+      throw new Error('Grant redirect URI not found')
+    }
+    window.location.href = grantRedirectURI
+  },
+
+  setGrantResponse: (grantResponse: string, isGrantAccepted: boolean) => {
+    toolState.grantResponse = grantResponse
+    toolState.isGrantAccepted = isGrantAccepted
+  },
+
+  handleGrantResponse: () => {
+    if (toolState.isGrantAccepted) {
+      toolActions.saveConfig('banner')
+    } else {
+      toolState.modal = {
+        type: 'save-error'
+      }
+    }
   }
 }
 

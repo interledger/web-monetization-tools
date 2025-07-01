@@ -1,7 +1,8 @@
 import React from 'react'
-import { SVGPlay } from '../../../assets/svg'
+import { SVGPlay } from '~/assets/svg'
 
-export interface ToolsSecondaryButtonProps {
+interface ToolsSecondaryButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode
   icon?: 'play'
   iconAlt?: string
@@ -13,7 +14,8 @@ export function ToolsSecondaryButton({
   children,
   icon,
   className,
-  onClick
+  onClick,
+  ...props
 }: ToolsSecondaryButtonProps) {
   return (
     <button
@@ -31,6 +33,7 @@ export function ToolsSecondaryButton({
         ${className}
         `}
       onClick={onClick}
+      {...props}
     >
       {icon === 'play' && <SVGPlay />}
       <span className="font-normal leading-md text-base whitespace-pre">

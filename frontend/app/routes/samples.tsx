@@ -16,7 +16,7 @@ import { PillTagButton } from '../components/redesign/components/PillTagButton'
 import { BuilderForm } from '../components/redesign/components/BuilderForm'
 import { BuilderBackground } from '../components/redesign/components/BuilderBackground'
 import { ScriptReadyModal } from '../components/redesign/components/ScriptReadyModal'
-import { SaveSuccessModal } from '../components/redesign/components/SaveSuccessModal'
+import { SaveResultModal } from '../components/redesign/components/SaveResultModal'
 import { WalletOwnershipModal } from '../components/redesign/components/WalletOwnershipModal'
 import { CornerType } from '~/lib/types'
 
@@ -267,7 +267,7 @@ export function RedesignDemo() {
       <div className="mt-8 mb-8">
         <h2 className="text-xl font-bold mb-4">Save Success Modal Component</h2>
         <div className="flex flex-col items-center max-w-md mx-auto">
-          <SaveSuccessModal
+          <SaveResultModal
             isOpen={true}
             onClose={() => console.log('Success modal closed')}
             onDone={() => console.log('Done clicked')}

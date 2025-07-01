@@ -1,20 +1,22 @@
 import React from 'react'
 import { ToolsSecondaryButton } from './ToolsSecondaryButton'
-import { SVGMarkSuccess, SVGClose } from '~/assets/svg'
+import { SVGMarkSuccess, SVGClose, SVGErrorVector } from '~/assets/svg'
 
-interface SaveSuccessModalProps {
+interface SaveResultModalProps {
   isOpen?: boolean
   onClose?: () => void
   onDone?: () => void
   message?: string
+  isSuccess?: boolean
   className?: string
 }
 
-export const SaveSuccessModal: React.FC<SaveSuccessModalProps> = ({
+export const SaveResultModal: React.FC<SaveResultModalProps> = ({
   isOpen = true,
   onClose,
   onDone,
   message = 'Your edits have been saved',
+  isSuccess = true,
   className = ''
 }) => {
   if (!isOpen) {
@@ -43,17 +45,14 @@ export const SaveSuccessModal: React.FC<SaveSuccessModalProps> = ({
           <SVGClose />
         </button>
       )}
-
       <div className="flex items-center justify-center">
-        <SVGMarkSuccess />
+        {isSuccess ? <SVGMarkSuccess /> : <SVGErrorVector />}
       </div>
-
       <div className="text-center">
         <p className="text-base leading-md font-normal text-text-primary">
           {message}
         </p>
       </div>
-
       <div className="w-full">
         <ToolsSecondaryButton
           className="w-full flex items-center justify-center"
@@ -65,5 +64,4 @@ export const SaveSuccessModal: React.FC<SaveSuccessModalProps> = ({
     </div>
   )
 }
-
-export default SaveSuccessModal
+export default SaveResultModal
