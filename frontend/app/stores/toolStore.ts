@@ -4,8 +4,8 @@ import type { ModalType } from '~/lib/presets.js'
 import type { SelectOption } from '~/components/index.js'
 import { APP_BASEPATH } from '~/lib/constants'
 import type { StepStatus } from '~/components/redesign/components/StepsIndicator'
-
 const STORAGE_KEY = 'valtio-store'
+import { getDefaultData } from '~/lib/utils'
 
 interface SaveConfigResponse {
   grantRequired?: string
@@ -14,9 +14,18 @@ interface SaveConfigResponse {
   [key: string]: unknown
 }
 
+function initializeFullConfigWithDefaults(): Record<string, ElementConfigType> {
+  const defaultData = getDefaultData()
+  return {
+    tab1: { ...defaultData },
+    tab2: { ...defaultData },
+    tab3: { ...defaultData }
+  }
+}
+
 export const toolState = proxy({
-  toolConfig: null as ElementConfigType | null,
-  fullConfig: {} as Record<string, ElementConfigType>,
+  toolConfig: getDefaultData() as ElementConfigType,
+  fullConfig: initializeFullConfigWithDefaults(),
 
   selectedVersion: 'tab1',
   versionOptions: [
@@ -46,39 +55,63 @@ export const toolActions = {
     toolState.toolConfig = {
       ...toolState.toolConfig,
       ...config
-    } as ElementConfigType
+    }
+
+    if (toolState.selectedVersion) {
+      toolState.fullConfig[toolState.selectedVersion] = {
+        ...toolState.toolConfig
+      }
+    }
   },
 
   setFullConfig: (fullConfig: Record<string, ElementConfigType>) => {
     toolState.fullConfig = fullConfig
   },
-
   setConfigs: (fullConfigObject: Record<string, ElementConfigType>) => {
-    const allKeys = Object.keys(fullConfigObject)
-    const firstThreeKeys = allKeys.slice(0, 3)
+    const providedKeys = Object.keys(fullConfigObject)
+    const defaultData = getDefaultData()
+    const defaultVersionKeys = ['tab1', 'tab2', 'tab3']
 
-    const versionLabels = firstThreeKeys.map((key) => {
-      return {
-        label: key,
-        value: key
+    const newVersionOptions: SelectOption[] = []
+    const newFullConfig: Record<string, ElementConfigType> = {}
+
+    defaultVersionKeys.forEach((defaultKey, index) => {
+      const hasProvidedKey = providedKeys[index] !== undefined
+      const versionKey = hasProvidedKey ? providedKeys[index] : defaultKey
+      const versionLabel = hasProvidedKey
+        ? providedKeys[index]
+        : `Default preset ${index + 1}`
+
+      newVersionOptions.push({
+        label: versionLabel,
+        value: versionKey
+      })
+
+      newFullConfig[versionKey] = {
+        ...defaultData,
+        ...(fullConfigObject[versionKey] || {})
       }
     })
-    toolState.versionOptions = versionLabels
-    toolState.fullConfig = fullConfigObject
 
-    const firstVersion = toolState.versionOptions[0].value
-    toolState.selectedVersion = firstVersion
-    toolState.toolConfig = fullConfigObject[firstVersion]
+    toolState.versionOptions = newVersionOptions
+    toolState.fullConfig = newFullConfig
+    toolState.selectedVersion = newVersionOptions[0].value
+    toolState.toolConfig = newFullConfig[toolState.selectedVersion]
   },
-
   selectVersion: (selectedVersion: string) => {
-    const config = toolState.fullConfig[selectedVersion]
-    if (config) {
-      toolState.toolConfig = config
-      toolState.selectedVersion = selectedVersion
-    } else {
-      throw new Error('Version not found')
+    if (toolState.selectedVersion && toolState.toolConfig) {
+      toolState.fullConfig[toolState.selectedVersion] = {
+        ...toolState.toolConfig
+      }
     }
+
+    const newConfig = toolState.fullConfig[selectedVersion]
+    if (!newConfig) {
+      throw new Error(`Version '${selectedVersion}' not found`)
+    }
+
+    toolState.toolConfig = newConfig
+    toolState.selectedVersion = selectedVersion
   },
 
   setModal: (modal: ModalType | undefined) => {
@@ -109,9 +142,8 @@ export const toolActions = {
   setBuildCompleteStep: (step: StepStatus) => {
     toolState.buildStep = step
   },
-
   getScriptToDisplay: (): string | undefined => {
-    if (!toolState.toolConfig?.walletAddress) {
+    if (!toolState.toolConfig.walletAddress) {
       return undefined
     }
 
@@ -160,8 +192,8 @@ export const toolActions = {
     elementType: string,
     callToActionType: 'save-success' | 'script'
   ) => {
-    if (!toolState.toolConfig || !toolState.walletAddress) {
-      throw new Error('Tool config or wallet address is missing')
+    if (!toolState.walletAddress) {
+      throw new Error('Wallet address is missing')
     }
 
     toolState.resubmitActionType = callToActionType
