@@ -21,7 +21,7 @@ import { ToolsSecondaryButton } from './ToolsSecondaryButton'
 import { Heading5 } from '../Typography'
 import { Divider } from './Divider'
 import { Thumbnail } from './Thumbnail'
-import wmLogo from '~/assets/images/wm_logo.svg?url'
+import wmLogo from '~/assets/images/wm_logo_animated.svg?url'
 import { toolState, toolActions } from '~/stores/toolStore'
 import { useSnapshot } from 'valtio'
 import { SlideAnimationType } from '~/lib/types'
@@ -42,9 +42,10 @@ export const BuilderCollapseExpand: React.FC<BuilderCollapseExpandProps> = ({
   const snap = useSnapshot(toolState)
   const minFontSize = 16
   const maxFontSize = 24
-  const [isAnimated, setIsAnimated] = useState(true)
   const [isThumbnailVisible, setIsThumbnailVisible] = useState(true)
   const [selectedThumbnail, setSelectedThumbnail] = useState(0)
+  const isAnimated =
+    snap.toolConfig?.bannerSlideAnimation !== SlideAnimationType.None
 
   const FontsType = ['Arial', 'Inherit', 'Open Sans', 'Cookie', 'Titillium Web']
   const defaultFontIndex = FontsType.findIndex(
@@ -241,14 +242,21 @@ export const BuilderCollapseExpand: React.FC<BuilderCollapseExpandProps> = ({
           <div className="w-[89px]">
             <Checkbox
               checked={isAnimated}
-              onChange={() => setIsAnimated(!isAnimated)}
+              onChange={() => {
+                toolActions.setToolConfig({
+                  bannerSlideAnimation: isAnimated
+                    ? SlideAnimationType.None
+                    : SlideAnimationType.Down
+                })
+              }}
               label="Animated"
             />
           </div>
           <div className="flex-1">
             <ToolsDropdown
               label="Type"
-              defaultValue={snap.toolConfig?.bannerSlideAnimation}
+              disabled={!isAnimated}
+              defaultValue={SlideAnimationType.Down}
               options={[{ label: 'Slide up', value: SlideAnimationType.Down }]}
               onChange={(value) =>
                 toolActions.setToolConfig({

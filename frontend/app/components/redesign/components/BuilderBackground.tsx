@@ -6,7 +6,6 @@ import React, {
   useState
 } from 'react'
 import { useSnapshot } from 'valtio'
-import wmLogo from '~/assets/images/wm_logo.svg?url'
 import { toolState } from '~/stores/toolStore'
 
 import { ToolsSecondaryButton } from './ToolsSecondaryButton'
@@ -87,7 +86,7 @@ export const BuilderBackground: React.FC<BuilderBackgroundProps> = ({
       <div
         id="browser-mockup"
         className="w-full h-[406px]
-          bg-white
+          bg-transparent
           rounded-2xl
           border border-field-border
           overflow-hidden
@@ -95,7 +94,7 @@ export const BuilderBackground: React.FC<BuilderBackgroundProps> = ({
         "
       >
         {/* Browser Header */}
-        <div className="flex items-center p-md">
+        <div className="flex items-center p-md bg-white">
           <div className="flex items-center gap-4 w-full">
             <BrowserDots />
             <div className="flex-1 h-2 bg-field-border rounded-full" />
@@ -105,7 +104,7 @@ export const BuilderBackground: React.FC<BuilderBackgroundProps> = ({
         {/* Browser Content */}
         <div
           id="browser-content"
-          className={`flex-1 p-md flex justify-center bg-gray-50 ${
+          className={`flex-1 p-md flex justify-center bg-transparent ${
             snap.toolConfig?.bannerPosition === 'Top'
               ? 'items-start'
               : 'items-end'
@@ -161,7 +160,6 @@ const Banner = React.forwardRef<BannerHandle>((props, ref) => {
         bannerPosition: snap.toolConfig?.bannerPosition,
         bannerBorderRadius: snap.toolConfig?.bannerBorder,
         bannerSlideAnimation: snap.toolConfig?.bannerSlideAnimation,
-        logo: wmLogo,
         theme: {
           backgroundColor: snap.toolConfig?.bannerBackgroundColor,
           textColor: snap.toolConfig?.bannerTextColor,

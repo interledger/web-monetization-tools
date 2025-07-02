@@ -3,6 +3,7 @@ import { useSnapshot } from 'valtio'
 import { Tooltip } from './Tooltip'
 import { InputField } from './InputField'
 import { ToolsSecondaryButton } from './ToolsSecondaryButton'
+import { cx } from 'class-variance-authority'
 import { SVGRefresh, SVGSpinner } from '~/assets/svg'
 import { toolState, toolActions } from '~/stores/toolStore'
 import { APP_BASEPATH } from '~/lib/constants'
@@ -64,7 +65,12 @@ export const ToolsWalletAddress = () => {
     }
   }
   return (
-    <div className="flex items-start gap-8 p-4 relative bg-white rounded-lg min-h-[165px]">
+    <div
+      className={cx(
+        'flex items-start gap-8 p-4 relative bg-white rounded-lg min-h-[165px]',
+        snap.walletConnectStep === 'error' && 'border border-red-600'
+      )}
+    >
       <div className="flex flex-col items-start gap-4 relative flex-1 grow z-[1] bg-white rounded-2xl">
         <div className="flex items-center relative self-stretch w-full flex-[0_0_auto] z-[1]">
           <div className="inline-flex items-center gap-2 relative flex-[0_0_auto]">
@@ -89,7 +95,7 @@ export const ToolsWalletAddress = () => {
                 placeholder={
                   snap.isWalletConnected
                     ? undefined
-                    : 'Fill in your wallet address'
+                    : 'walletprovider.com/MyWallet'
                 }
                 value={snap.walletAddress || ''}
                 onChange={handleWalletAddressChange}

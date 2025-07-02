@@ -13,7 +13,7 @@ export interface BannerConfig {
   bannerDescriptionText?: string
   bannerBorderRadius?: string
   bannerPosition?: 'Top' | 'Bottom'
-  bannerSlideAnimation?: boolean
+  bannerSlideAnimation?: 'Down' | 'None'
   theme?: {
     primaryColor?: string
     backgroundColor?: string
@@ -243,13 +243,18 @@ export class PaymentBanner extends LitElement {
     window.open(getWebMonetizationLinkHref(), '_blank')
   }
 
+  /**
+   * Triggers the preview animation for the banner.
+   * If the banner was previously dismissed, it will be shown again before animating.
+   */
   public previewAnimation() {
     if (this.isAnimating) return
 
+    this.isDismissed = false
     this.isAnimating = true
     const position = this.config.bannerPosition || 'Bottom'
 
-    if (this.config.bannerSlideAnimation) {
+    if (this.config.bannerSlideAnimation === 'Down') {
       this.animationClass =
         position === 'Top' ? 'slide-down-preview' : 'slide-up-preview'
     } else {
