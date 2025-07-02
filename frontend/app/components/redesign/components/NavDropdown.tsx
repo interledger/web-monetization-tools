@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { ToolsMenuItem } from './ToolsMenuItem'
+import { NavLink as RemixNavLink } from '@remix-run/react'
 import { cx } from 'class-variance-authority'
 import { SVGDownArrow } from '~/assets/svg'
 import devHeroSVG from '~/assets/images/dev-hero.svg?url'
@@ -9,9 +9,45 @@ import supHeroSVG from '~/assets/images/supporters-hero.svg?url'
 // Navigation Dropdown Props
 type NavDropdownProps = {
   title: string
+  isMobile?: boolean
+  onMenuItemClick?: () => void
 }
 
-export const NavDropdown = ({ title }: NavDropdownProps) => {
+// Tools Menu Item Props
+type ToolsMenuItemProps = {
+  to: string
+  imgSrc: string
+  text: string
+  onClick?: () => void
+}
+
+const ToolsMenuItem = ({ to, imgSrc, text, onClick }: ToolsMenuItemProps) => {
+  return (
+    <li>
+      <RemixNavLink
+        to={to}
+        className="w-full p-sm rounded-lg flex justify-start items-center gap-xs hover:bg-secondary-hover-surface"
+        onClick={onClick}
+      >
+        <img
+          className="w-[120px] h-[120px]"
+          src={imgSrc}
+          aria-hidden="true"
+          alt=""
+        />
+        <div className="flex-grow text-text-primary text-base font-bold font-sans leading-normal">
+          {text}
+        </div>
+      </RemixNavLink>
+    </li>
+  )
+}
+
+export const NavDropdown = ({
+  title,
+  isMobile = false,
+  onMenuItemClick
+}: NavDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [isHoveringMenuItems, setIsHoveringMenuItems] = useState(false)
 
@@ -31,18 +67,25 @@ export const NavDropdown = ({ title }: NavDropdownProps) => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [])
+  }, [isMobile])
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen)
   }
 
   const handleDropdownContentMouseEnter = () => {
-    setIsHoveringMenuItems(true)
+    if (!isMobile) setIsHoveringMenuItems(true)
   }
 
   const handleDropdownContentMouseLeave = () => {
-    setIsHoveringMenuItems(false)
+    if (!isMobile) setIsHoveringMenuItems(false)
+  }
+
+  const handleToolsMenuItemClick = () => {
+    setIsOpen(false)
+    if (onMenuItemClick) {
+      onMenuItemClick()
+    }
   }
 
   return (
@@ -50,9 +93,7 @@ export const NavDropdown = ({ title }: NavDropdownProps) => {
       ref={dropdownRef}
       className={cx(
         'group gap-2.5 rounded-lg inline-flex flex-col justify-center items-start relative',
-        // Apply hover background to the li ONLY if the dropdown is NOT open
-        // and the mouse is not hovering over the dropdown content (which implies it's closed)
-        !isHoveringMenuItems && 'hover:bg-secondary-hover-surface'
+        !isHoveringMenuItems && !isMobile && 'hover:bg-secondary-hover-surface'
       )}
     >
       <button
@@ -60,8 +101,9 @@ export const NavDropdown = ({ title }: NavDropdownProps) => {
         onClick={toggleDropdown}
         className={cx(
           'flex items-center gap-xs px-md py-sm font-sans font-normal text-sm leading-sm',
+          isMobile ? 'w-full justify-between' : '',
           isOpen ? 'text-buttons-hover' : 'text-buttons-default',
-          !isHoveringMenuItems && 'group-hover:text-buttons-hover'
+          !isHoveringMenuItems && !isMobile && 'group-hover:text-buttons-hover'
         )}
         aria-label="Toggle Dropdown"
       >
@@ -75,7 +117,9 @@ export const NavDropdown = ({ title }: NavDropdownProps) => {
           <SVGDownArrow
             className={cx(
               isOpen ? 'fill-buttons-hover' : 'fill-buttons-default',
-              !isHoveringMenuItems && 'group-hover:fill-buttons-hover'
+              !isHoveringMenuItems &&
+                !isMobile &&
+                'group-hover:fill-buttons-hover'
             )}
           />
         </span>
@@ -83,7 +127,12 @@ export const NavDropdown = ({ title }: NavDropdownProps) => {
       {/* Dropdown Content */}
       {isOpen && (
         <div
-          className="flex flex-col justify-start items-start w-[299px] h-[472px] absolute top-[calc(100%+24px)] left-0 gap-xs p-sm bg-interface-bg-container rounded-lg shadow-[0px_24px_24px_0px_rgba(0,0,0,0.08)] outline outline-1 outline-offset-[-1px] outline-interface-edge-container z-50"
+          className={cx(
+            'flex flex-col justify-start items-start gap-xs p-sm bg-interface-bg-container rounded-lg',
+            isMobile
+              ? 'relative w-full h-auto transition-all duration-300 ease-in-out overflow-hidden z-50'
+              : 'w-[299px] h-[472px] absolute top-[calc(100%+16px)] left-0 shadow-[0px_24px_24px_0px_rgba(0,0,0,0.08)] outline outline-1 outline-offset-[-1px] outline-interface-edge-container z-50'
+          )}
           onMouseEnter={handleDropdownContentMouseEnter}
           onMouseLeave={handleDropdownContentMouseLeave}
         >
@@ -92,16 +141,19 @@ export const NavDropdown = ({ title }: NavDropdownProps) => {
               to="/publishers"
               imgSrc={pubHeroSVG}
               text="Publisher tools"
+              onClick={handleToolsMenuItemClick}
             />
             <ToolsMenuItem
               to="/supporters"
               imgSrc={supHeroSVG}
               text="Supporter tools"
+              onClick={handleToolsMenuItemClick}
             />
             <ToolsMenuItem
               to="/developers"
               imgSrc={devHeroSVG}
               text="Developer tools"
+              onClick={handleToolsMenuItemClick}
             />
           </ul>
         </div>
