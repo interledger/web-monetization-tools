@@ -47,6 +47,7 @@ export const NavDropdown = ({ title, onMenuItemClick }: NavDropdownProps) => {
   const [isHoveringMenuItems, setIsHoveringMenuItems] = useState(false)
 
   const dropdownRef = useRef<HTMLLIElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -63,6 +64,22 @@ export const NavDropdown = ({ title, onMenuItemClick }: NavDropdownProps) => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
+
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isOpen) {
+        setIsOpen(false)
+        if (triggerRef.current) {
+          triggerRef.current.focus()
+        }
+      }
+    }
+
+    document.addEventListener('keydown', handleEscapeKey)
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey)
+    }
+  }, [isOpen])
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen)
@@ -91,6 +108,7 @@ export const NavDropdown = ({ title, onMenuItemClick }: NavDropdownProps) => {
       )}
     >
       <button
+        ref={triggerRef}
         type="button"
         onClick={toggleDropdown}
         className={cx(
@@ -101,6 +119,8 @@ export const NavDropdown = ({ title, onMenuItemClick }: NavDropdownProps) => {
             'group-hover:text-buttons-hover group-hover:bg-secondary-hover-surface'
         )}
         aria-label="Toggle Dropdown"
+        aria-expanded={isOpen}
+        aria-controls="nav-dropdown-content"
       >
         {title}
         <span
@@ -120,12 +140,15 @@ export const NavDropdown = ({ title, onMenuItemClick }: NavDropdownProps) => {
       {/* Dropdown Content */}
       {isOpen && (
         <div
+          id="nav-dropdown-content"
           className={cx(
             'flex flex-col gap-xs p-sm rounded-lg relative overflow-hidden z-50',
             'md:w-[299px] md:h-[472px] md:absolute md:top-[calc(100%+16px)] md:left-0 md:shadow-[0px_24px_24px_0px_rgba(0,0,0,0.08)] md:outline md:outline-1 md:outline-offset-[-1px] md:outline-interface-edge-container md:justify-start md:items-start md:bg-interface-bg-container'
           )}
           onMouseEnter={handleDropdownContentMouseEnter}
           onMouseLeave={handleDropdownContentMouseLeave}
+          role="menu"
+          aria-hidden={!isOpen}
         >
           <ul className="w-full flex-grow list-none flex flex-col gap-xs">
             <ToolsMenuItem
