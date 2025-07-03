@@ -2,7 +2,7 @@ import { NavBar } from './index.js'
 
 export const Header = () => {
   return (
-    <header>
+    <header className="md:fixed md:w-full bg-white shadow-[0px_12px_20px_0px_rgba(0,0,0,0.06)] z-50">
       <NavBar />
     </header>
   )
