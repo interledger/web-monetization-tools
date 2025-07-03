@@ -129,6 +129,7 @@ export const BuilderCollapseExpand: React.FC<BuilderCollapseExpandProps> = ({
           </button>
         </div>
       </div>
+
       {/* Text section */}
       <div className="flex flex-col gap-2">
         <SectionHeader icon={<SVGText />} label="Text" />
@@ -187,32 +188,36 @@ export const BuilderCollapseExpand: React.FC<BuilderCollapseExpandProps> = ({
           </div>
         </div>
       </div>
+
       <Divider />
+
       {/* Colors section */}
       <div className="flex flex-col gap-2">
         <SectionHeader icon={<SVGColorPicker />} label="Colors" />
 
-        <div className="flex justify-between">
+        <div className="flex justify-between xl:flex-row flex-col gap-md">
           <ColorSelector
             label="Background"
-            value={snap.toolConfig?.bannerBackgroundColor || '#ffffff'}
+            value={snap.toolConfig?.bannerBackgroundColor}
             onChange={(color) => {
               toolActions.setToolConfig({ bannerBackgroundColor: color })
             }}
           />
           <ColorSelector
             label="Text"
-            value={snap.toolConfig?.bannerTextColor || '#363636'}
+            value={snap.toolConfig?.bannerTextColor}
             onChange={(color) => {
               toolActions.setToolConfig({ bannerTextColor: color })
             }}
           />
-          <div className="w-[147px]"></div>
+          <div className="w-[150px] xl:block hidden"></div>
         </div>
       </div>
+
       <Divider />
+
       {/* Corner radius section */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-xs">
         <SectionHeader
           icon={<SVGRoundedCorner />}
           label="Container Corner Radius"
@@ -224,9 +229,11 @@ export const BuilderCollapseExpand: React.FC<BuilderCollapseExpandProps> = ({
           }
         />
       </div>
+
       <Divider />
+
       {/* Position section */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-xs">
         <SectionHeader icon={<SVGPosition />} label="Position (Appears from)" />
         <PositionSelector
           defaultValue={snap.toolConfig?.bannerPosition}
@@ -235,24 +242,25 @@ export const BuilderCollapseExpand: React.FC<BuilderCollapseExpandProps> = ({
           }
         />
       </div>
-      <Divider /> {/* Animation section */}
-      <div className="flex flex-col gap-2">
+
+      <Divider />
+
+      {/* Animation section */}
+      <div className="flex flex-col gap-xs">
         <SectionHeader icon={<SVGAnimation />} label="Animation" />
-        <div className="flex items-center">
-          <div className="w-[89px]">
-            <Checkbox
-              checked={isAnimated}
-              onChange={() => {
-                toolActions.setToolConfig({
-                  bannerSlideAnimation: isAnimated
-                    ? SlideAnimationType.None
-                    : SlideAnimationType.Down
-                })
-              }}
-              label="Animated"
-            />
-          </div>
-          <div className="flex-1">
+        <div className="flex gap-md xl:flex-row flex-col xl:items-center items-start">
+          <Checkbox
+            checked={isAnimated}
+            onChange={() => {
+              toolActions.setToolConfig({
+                bannerSlideAnimation: isAnimated
+                  ? SlideAnimationType.None
+                  : SlideAnimationType.Down
+              })
+            }}
+            label="Animated"
+          />
+          <div className="flex-1 w-full xl:w-auto">
             <ToolsDropdown
               label="Type"
               disabled={!isAnimated}
@@ -269,17 +277,15 @@ export const BuilderCollapseExpand: React.FC<BuilderCollapseExpandProps> = ({
       </div>
       <Divider />
       {/* Thumbnail section */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-xs">
         <SectionHeader icon={<SVGThumbnail />} label="Thumbnail" />
-        <div className="flex items-center">
-          <div className="w-[89px]">
-            <Checkbox
-              checked={isThumbnailVisible}
-              onChange={() => setIsThumbnailVisible(!isThumbnailVisible)}
-              label="Visible"
-            />
-          </div>
-          <div className="flex-grow flex gap-4">
+        <div className="flex gap-md xl:flex-row flex-col xl:items-center items-start">
+          <Checkbox
+            checked={isThumbnailVisible}
+            onChange={() => setIsThumbnailVisible(!isThumbnailVisible)}
+            label="Visible"
+          />
+          <div className="flex gap-md">
             {thumbnails.map((thumbnail, index) => (
               <Thumbnail
                 key={index}
@@ -294,7 +300,10 @@ export const BuilderCollapseExpand: React.FC<BuilderCollapseExpandProps> = ({
       <Divider />
       {/* Footer button */}
       <div className="flex justify-end">
-        <ToolsSecondaryButton className="w-[140px]" onClick={handleDoneClick}>
+        <ToolsSecondaryButton
+          className="w-full xl:w-[140px]"
+          onClick={handleDoneClick}
+        >
           Done
         </ToolsSecondaryButton>
       </div>

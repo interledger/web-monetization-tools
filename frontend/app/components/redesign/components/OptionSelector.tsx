@@ -37,49 +37,54 @@ export function OptionSelector<T extends string | number>({
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className={cx('flex flex-row', className)}>
-        {options.map((option) => {
-          const isSelected = selectedValue === option.value
+    <div
+      className={cx('flex flex-row max-xl:self-center items-start', className)}
+    >
+      {options.map((option) => {
+        const isSelected = selectedValue === option.value
 
-          if (renderCustomOption) {
-            return (
-              <div
-                key={option.id}
-                onClick={() => handleChange(option.value)}
-                className="cursor-pointer"
-              >
-                {renderCustomOption(option, isSelected)}
-              </div>
-            )
-          }
-
+        if (renderCustomOption) {
           return (
             <div
               key={option.id}
-              className="flex flex-row items-center gap-2 h-11 cursor-pointer"
               onClick={() => handleChange(option.value)}
+              className="cursor-pointer"
             >
+              {renderCustomOption(option, isSelected)}
+            </div>
+          )
+        }
+
+        return (
+          <div
+            key={option.id}
+            className={cx(
+              'flex flex-row flex-1 items-center gap-xs',
+              option.label ? 'cursor-pointer' : 'pointer-events-none'
+            )}
+            onClick={() => option.label && handleChange(option.value)}
+          >
+            {option.label && (
               <button
                 type="button"
                 className={cx(
                   'w-4 h-4 rounded-full flex items-center justify-center border',
-                  isSelected ? 'border-[#5b5380]' : 'border-[#8075b3]'
+                  isSelected ? 'border-purple-600' : 'border-purple-300'
                 )}
               >
                 {isSelected && (
-                  <div className="w-2 h-2 rounded-full bg-[#5b5380]" />
+                  <div className="w-2 h-2 rounded-full bg-purple-600" />
                 )}
               </button>
+            )}
 
-              <div className="flex items-center gap-2">
-                {option.icon && <div>{option.icon}</div>}
-                <div className="text-style-body-standard">{option.label}</div>
-              </div>
-            </div>
-          )
-        })}
-      </div>
+            {option.icon && <div>{option.icon}</div>}
+            {option.label && (
+              <span className="text-style-body-standard">{option.label}</span>
+            )}
+          </div>
+        )
+      })}
     </div>
   )
 }

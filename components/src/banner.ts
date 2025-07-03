@@ -73,6 +73,25 @@ export class PaymentBanner extends LitElement {
       overflow: hidden;
       transition: all 0.3s ease;
     }
+
+    /* Tablet styles */
+    @media (max-width: 768px) {
+      .banner {
+        padding: 10px;
+        gap: 12px;
+      }
+    }
+
+    /* Mobile styles */
+    @media (max-width: 480px) {
+      .banner {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 12px;
+        gap: 12px;
+        text-align: left;
+      }
+    }
     .banner.hidden {
       display: none;
     }
@@ -147,12 +166,35 @@ export class PaymentBanner extends LitElement {
       flex-shrink: 0;
     }
 
+    /* Tablet styles */
+    @media (max-width: 768px) {
+      .banner-logo {
+        width: 45px;
+      }
+    }
+
+    /* Mobile styles */
+    @media (max-width: 480px) {
+      .banner-logo {
+        width: 40px;
+        align-self: center;
+      }
+    }
+
     .banner-content {
       flex: 1;
       display: flex;
       flex-direction: column;
       gap: 4px;
       min-width: 0;
+    }
+
+    /* Mobile styles */
+    @media (max-width: 480px) {
+      .banner-content {
+        width: 100%;
+        gap: 8px;
+      }
     }
 
     .banner-title {
@@ -163,12 +205,43 @@ export class PaymentBanner extends LitElement {
       line-height: 1.2;
     }
 
+    /* Tablet styles */
+    @media (max-width: 768px) {
+      .banner-title {
+        font-size: calc(var(--font-size) * 0.9);
+      }
+    }
+
+    /* Mobile styles */
+    @media (max-width: 480px) {
+      .banner-title {
+        font-size: calc(var(--font-size) * 0.85);
+        line-height: 1.3;
+      }
+    }
+
     .banner-description {
       margin: 0;
       font-size: calc(var(--font-size) * 0.75);
       color: var(--text-color);
       line-height: 1.3;
       opacity: 0.9;
+    }
+
+    /* Tablet styles */
+    @media (max-width: 768px) {
+      .banner-description {
+        font-size: calc(var(--font-size) * 0.7);
+        line-height: 1.4;
+      }
+    }
+
+    /* Mobile styles */
+    @media (max-width: 480px) {
+      .banner-description {
+        font-size: calc(var(--font-size) * 0.75);
+        line-height: 1.4;
+      }
     }
 
     .banner-link {
@@ -178,6 +251,21 @@ export class PaymentBanner extends LitElement {
       text-decoration: underline;
       cursor: pointer;
       line-height: 1.3;
+    }
+
+    /* Tablet styles */
+    @media (max-width: 768px) {
+      .banner-link {
+        font-size: calc(var(--font-size) * 0.7);
+      }
+    }
+
+    /* Mobile styles */
+    @media (max-width: 480px) {
+      .banner-link {
+        font-size: calc(var(--font-size) * 0.75);
+        margin-top: 4px;
+      }
     }
 
     .banner-link:hover {
@@ -201,6 +289,26 @@ export class PaymentBanner extends LitElement {
       transition: all 0.2s ease;
     }
 
+    /* Tablet styles */
+    @media (max-width: 768px) {
+      .close-button {
+        top: 10px;
+        right: 10px;
+        width: 22px;
+        height: 22px;
+      }
+    }
+
+    /* Mobile styles */
+    @media (max-width: 480px) {
+      .close-button {
+        top: 8px;
+        right: 8px;
+        width: 28px;
+        height: 28px;
+      }
+    }
+
     .close-button:hover {
       background-color: #f3f4f6;
       color: #374151;
@@ -209,6 +317,14 @@ export class PaymentBanner extends LitElement {
     .close-button svg {
       width: 16px;
       height: 16px;
+    }
+
+    /* Mobile styles */
+    @media (max-width: 480px) {
+      .close-button svg {
+        width: 18px;
+        height: 18px;
+      }
     }
   `
   private handleClose() {

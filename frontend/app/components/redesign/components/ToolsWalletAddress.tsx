@@ -68,7 +68,7 @@ export const ToolsWalletAddress = () => {
   return (
     <div
       className={cx(
-        'flex flex-col xl:flex-row xl:items-start gap-2xl p-md bg-white rounded-lg min-h-[165px]',
+        'flex flex-col xl:flex-row xl:items-start gap-2xl p-md bg-white rounded-lg',
         snap.walletConnectStep === 'error' && 'border border-red-600'
       )}
     >
@@ -128,7 +128,7 @@ export const ToolsWalletAddress = () => {
         )}
         {!snap.isWalletConnected && (
           <ToolsSecondaryButton
-            className="w-[94px] xl:w-[143px]"
+            className="xl:w-[143px]"
             disabled={isLoading}
             onClick={handleContinue}
           >

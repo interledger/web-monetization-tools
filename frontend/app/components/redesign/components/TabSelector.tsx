@@ -28,8 +28,13 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
   const [tabLabels, setTabLabels] = useState<Record<string, string>>({})
   const [inputValue, setInputValue] = useState<string>('')
   const [hoveredId, setHoveredId] = useState<string | null>(null)
+  const [dragDistance, setDragDistance] = useState(0)
 
   const inputRef = useRef<HTMLInputElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const mouseDownRef = useRef(false)
+  const startXRef = useRef(0)
+  const scrollLeftRef = useRef(0)
 
   useEffect(() => {
     const initialLabels: Record<string, string> = {}
@@ -65,6 +70,12 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
   }, [editingId, inputValue])
 
   const handleTabClick = (tabId: string) => {
+    // Prevent click if user was dragging
+    if (dragDistance > 5) {
+      setDragDistance(0)
+      return
+    }
+
     if (selectedId === tabId && !editingId) {
       beginEditing(tabId)
     } else {
@@ -116,72 +127,111 @@ export const TabSelector: React.FC<TabSelectorProps> = ({
 
     setEditingId(null)
   }
+
+  const startDragging = (e: React.MouseEvent) => {
+    if (editingId || !containerRef.current) return
+
+    mouseDownRef.current = true
+    setDragDistance(0)
+    startXRef.current = e.pageX - containerRef.current.offsetLeft
+    scrollLeftRef.current = containerRef.current.scrollLeft
+  }
+
+  const stopDragging = () => {
+    mouseDownRef.current = false
+  }
+
+  const move = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (!mouseDownRef.current || !containerRef.current) return
+
+    const x = e.pageX - containerRef.current.offsetLeft
+    const scroll = x - startXRef.current
+    setDragDistance(Math.abs(scroll))
+    containerRef.current.scrollLeft = scrollLeftRef.current - scroll
+  }
+
   return (
-    <div className={`flex w-full ${className}`}>
-      {options.map((tab) => {
-        const isSelected = selectedId === tab.id
-        const isEditing = editingId === tab.id
-        const displayLabel = tabLabels[tab.id] || tab.label
+    <div id="tab-selector" className={`w-full overflow-hidden ${className}`}>
+      <div
+        ref={containerRef}
+        className={`flex w-full overflow-x-auto scrollbar-hide select-none ${
+          mouseDownRef.current ? 'cursor-grabbing' : 'cursor-grab'
+        }`}
+        onMouseDown={startDragging}
+        onMouseMove={move}
+        onMouseUp={stopDragging}
+        onMouseLeave={stopDragging}
+      >
+        {options.map((tab) => {
+          const isSelected = selectedId === tab.id
+          const isEditing = editingId === tab.id
+          const displayLabel = tabLabels[tab.id] || tab.label
 
-        return (
-          <div
-            key={tab.id}
-            onClick={() => handleTabClick(tab.id)}
-            onMouseEnter={() => setHoveredId(tab.id)}
-            onMouseLeave={() => setHoveredId(null)}
-            className={`
-              rounded-t-sm flex-1 cursor-pointer
-              ${
-                isSelected
-                  ? 'bg-white text-purple-300'
-                  : 'text-silver-600 hover:bg-purple-50'
-              }
-            `}
-            aria-selected={isSelected}
-            role="tab"
-          >
-            <div className="flex flex-row items-center w-full h-[50px] gap-1 px-1">
-              <div
-                className="cursor-pointer"
-                onClick={(e: React.MouseEvent) => {
-                  e.stopPropagation()
-                  if (isSelected) beginEditing(tab.id)
-                }}
-              >
-                <SVGEdit
-                  className={cx(
-                    isEditing || (isSelected && hoveredId === tab.id)
-                      ? 'visible'
-                      : 'invisible'
-                  )}
-                />
-              </div>
-
-              {isEditing ? (
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={inputValue}
-                  onChange={handleInputChange}
-                  onKeyDown={handleKeyDown}
-                  className="bg-transparent border-none outline-none text-purple-600 text-base leading-md font-normal w-full box-border"
-                  maxLength={50}
-                  autoFocus
-                />
-              ) : (
-                <TabTooltip
-                  text={displayLabel}
-                  className={`
-                      ${isSelected ? 'text-purple-300' : 'text-silver-600'}
-                    `}
+          return (
+            <div
+              key={tab.id}
+              onClick={() => handleTabClick(tab.id)}
+              onMouseEnter={() => setHoveredId(tab.id)}
+              onMouseLeave={() => setHoveredId(null)}
+              className={`
+                rounded-t-sm flex-1 cursor-pointer ${isEditing ? 'min-w-[200px]' : ''}
+                ${
+                  isSelected
+                    ? 'bg-white text-purple-300'
+                    : 'text-silver-600 hover:bg-purple-50'
+                }
+              `}
+              aria-selected={isSelected}
+              role="tab"
+            >
+              <div className="flex flex-row items-center w-full h-[50px] gap-1 px-3 py-2">
+                <div
+                  className="cursor-pointer flex-shrink-0"
+                  onClick={(e: React.MouseEvent) => {
+                    e.stopPropagation()
+                    if (isSelected) beginEditing(tab.id)
+                  }}
                 >
-                  {displayLabel}
-                </TabTooltip>
-              )}
+                  <SVGEdit
+                    className={cx(
+                      'w-4 h-4',
+                      isEditing || (isSelected && hoveredId === tab.id)
+                        ? 'visible'
+                        : 'invisible'
+                    )}
+                  />
+                </div>
+
+                {isEditing ? (
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={inputValue}
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
+                    className="bg-transparent border-none outline-none text-purple-600 text-base leading-md font-normal w-full box-border"
+                    maxLength={40}
+                    autoFocus
+                  />
+                ) : (
+                  <div className="flex-1 min-w-0">
+                    <TabTooltip
+                      text={displayLabel}
+                      className={`
+                        truncate block
+                        ${isSelected ? 'text-purple-300' : 'text-silver-600'}
+                      `}
+                    >
+                      {displayLabel}
+                    </TabTooltip>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        )
-      })}
+          )
+        })}
+      </div>
     </div>
   )
 }

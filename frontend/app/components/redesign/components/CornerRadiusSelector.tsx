@@ -5,6 +5,7 @@ import { CornerType } from '~/lib/types'
 export interface CornerRadiusSelectorProps {
   defaultValue?: CornerType
   onChange?: (value: CornerType) => void
+  className?: string
 }
 
 const cornerRadiusOptions: Option<CornerType>[] = [
@@ -15,14 +16,15 @@ const cornerRadiusOptions: Option<CornerType>[] = [
 
 export function CornerRadiusSelector({
   defaultValue = CornerType.Light,
-  onChange
+  onChange,
+  className
 }: CornerRadiusSelectorProps) {
   return (
     <OptionSelector
       options={cornerRadiusOptions}
       defaultValue={defaultValue}
       onChange={onChange}
-      className="justify-between"
+      className={`xl:flex-row flex-col gap-md ${className}`}
     />
   )
 }

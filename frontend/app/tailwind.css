@@ -12,3 +12,15 @@
     font-family: 'Titillium Web', system-ui, sans-serif;
   }
 }
+
+/* Hides browser scrollbar */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

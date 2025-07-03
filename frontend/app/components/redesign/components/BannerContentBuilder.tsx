@@ -170,7 +170,7 @@ export const BannerContentBuilder: React.FC<BannerContentBuilderProps> = ({
           <h4 className="text-base leading-md font-bold text-text-primary">
             Banner message
           </h4>
-          <div className="flex gap-lg items-start">
+          <div className="flex gap-lg items-start xl:flex-row flex-col">
             {/* Checkbox */}
             <div className="flex items-center gap-2 shrink-0">
               <Checkbox
@@ -203,7 +203,10 @@ export const BannerContentBuilder: React.FC<BannerContentBuilderProps> = ({
 
       {/* Footer button */}
       <div className="flex justify-end">
-        <ToolsSecondaryButton className="w-[140px]" onClick={handleDoneClick}>
+        <ToolsSecondaryButton
+          className="w-full xl:w-[140px]"
+          onClick={handleDoneClick}
+        >
           Done
         </ToolsSecondaryButton>
       </div>
