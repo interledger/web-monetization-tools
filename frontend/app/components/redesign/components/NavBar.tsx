@@ -75,7 +75,7 @@ export const NavBar = () => {
       {/* Mobile Navigation */}
       {isMobileMenuOpen && (
         <div className="md:hidden fixed top-0 left-0 w-full h-screen bg-white flex flex-col items-center justify-center z-40">
-          <ul className="flex flex-col gap-md list-none">
+          <ul className="flex flex-col gap-md list-none fixed">
             <NavDropdown title="Tools" onMenuItemClick={closeMobileMenu} />
             <NavLink to="/docs" onClick={closeMobileMenu}>
               Documentation

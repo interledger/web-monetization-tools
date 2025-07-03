@@ -150,7 +150,7 @@ export const NavDropdown = ({ title, onMenuItemClick }: NavDropdownProps) => {
           role="menu"
           aria-hidden={!isOpen}
         >
-          <ul className="w-full flex-grow list-none flex flex-col gap-xs fixed">
+          <ul className="w-full flex-grow list-none flex flex-col gap-xs">
             <ToolsMenuItem
               to="/publishers"
               imgSrc={pubHeroSVG}
