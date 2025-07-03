@@ -30,12 +30,12 @@ const ToolsMenuItem = ({ to, imgSrc, text, onClick }: ToolsMenuItemProps) => {
         onClick={onClick}
       >
         <img
-          className="w-[120px] h-[120px]"
+          className="w-10 h-10 md:w-[120px] md:h-[120px]"
           src={imgSrc}
           aria-hidden="true"
           alt=""
         />
-        <div className="flex-grow text-text-primary text-base font-bold font-sans leading-normal">
+        <div className="flex-grow text-text-primary text-sm font-normal font-sans leading-normal whitespace-nowrap md:text-base md:font-bold">
           {text}
         </div>
       </RemixNavLink>
@@ -130,7 +130,7 @@ export const NavDropdown = ({
           className={cx(
             'flex flex-col justify-start items-start gap-xs p-sm bg-interface-bg-container rounded-lg',
             isMobile
-              ? 'relative w-full h-auto transition-all duration-300 ease-in-out overflow-hidden z-50'
+              ? 'relative transition-all duration-300 ease-in-out overflow-hidden w-[175px] h-[208px] z-50'
               : 'w-[299px] h-[472px] absolute top-[calc(100%+16px)] left-0 shadow-[0px_24px_24px_0px_rgba(0,0,0,0.08)] outline outline-1 outline-offset-[-1px] outline-interface-edge-container z-50'
           )}
           onMouseEnter={handleDropdownContentMouseEnter}
