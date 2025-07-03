@@ -45,20 +45,9 @@ export const NavBar = () => {
   return (
     <nav
       role="navigation"
-      className=" max-w-7xl mx-auto px-xl py-xs flex justify-between items-center"
+      className="relative flex items-center justify-between bg-white shadow-[0px_12px_20px_0px_rgba(0,0,0,0.06)] rounded-lg mx-4 mt-4 h-14 py-1 px-4 pr-2 
+      md:max-w-7xl md:mx-auto md:px-xl md:py-xs md:mt-0 md:rounded-none md:shadow-none md:bg-transparent md:h-auto md:w-full"
     >
-      {/* Hamburger Menu Button */}
-      <button
-        className="md:hidden flex items-center justify-center p-2 fill-buttons-default hover:text-buttons-hover focus:outline-none focus:ring-2 focus:ring-buttons-hover z-50"
-        onClick={toggleMobileMenu}
-        aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-      >
-        {isMobileMenuOpen ? (
-          <SVGCloseIcon className="fill-buttons-default" />
-        ) : (
-          <SVGHamburgerIcon className="fill-buttons-default" />
-        )}
-      </button>
       {/* Web Monetization Logo */}
       <RemixNavLink to="/">
         <img
@@ -67,6 +56,14 @@ export const NavBar = () => {
           className="w-8 h-8 md:w-11 md:h-11 z-50"
         />
       </RemixNavLink>
+      {/* Hamburger Menu Button */}
+      <button
+        className="md:hidden flex items-center justify-center px-xs py-sm group hover:bg-secondary-hover-surface z-50 w-12 h-12 rounded-lg gap-xs overflow-hidden"
+        onClick={toggleMobileMenu}
+        aria-label="Toggle Menu"
+      >
+        {isMobileMenuOpen ? <SVGCloseIcon /> : <SVGHamburgerIcon />}
+      </button>
       <ul className="hidden md:flex gap-md list-none">
         <NavDropdown title="Tools"></NavDropdown>
         <NavLink to="/docs">Documentation</NavLink>
@@ -75,8 +72,8 @@ export const NavBar = () => {
 
       {/* Mobile Navigation */}
       {isMobileMenuOpen && (
-        <div className="md:hidden fixed top-0 left-0 w-full h-screen bg-white flex flex-col items-center justify-center z-40 overflow-y-auto">
-          <ul className="flex flex-col gap-md py-md">
+        <div className="md:hidden fixed top-0 left-0 w-full h-screen bg-white flex flex-col items-center justify-center z-40">
+          <ul className="flex flex-col gap-md list-none">
             <NavDropdown
               title="Tools"
               isMobile={true}

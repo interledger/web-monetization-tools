@@ -74,11 +74,11 @@ export const NavDropdown = ({
   }
 
   const handleDropdownContentMouseEnter = () => {
-    if (!isMobile) setIsHoveringMenuItems(true)
+    setIsHoveringMenuItems(true)
   }
 
   const handleDropdownContentMouseLeave = () => {
-    if (!isMobile) setIsHoveringMenuItems(false)
+    setIsHoveringMenuItems(false)
   }
 
   const handleToolsMenuItemClick = () => {
@@ -93,17 +93,17 @@ export const NavDropdown = ({
       ref={dropdownRef}
       className={cx(
         'group gap-2.5 rounded-lg inline-flex flex-col justify-center items-start relative',
-        !isHoveringMenuItems && !isMobile && 'hover:bg-secondary-hover-surface'
+        !isHoveringMenuItems && 'hover:bg-secondary-hover-surface'
       )}
     >
       <button
         type="button"
         onClick={toggleDropdown}
         className={cx(
-          'flex items-center gap-xs px-md py-sm font-sans font-normal text-sm leading-sm',
-          isMobile ? 'w-full justify-between' : '',
+          'flex items-center gap-xs px-md py-sm font-sans font-normal text-sm leading-sm w-full justify-between',
+          'md:w-auto md:justify-normal',
           isOpen ? 'text-buttons-hover' : 'text-buttons-default',
-          !isHoveringMenuItems && !isMobile && 'group-hover:text-buttons-hover'
+          !isHoveringMenuItems && 'group-hover:text-buttons-hover'
         )}
         aria-label="Toggle Dropdown"
       >
@@ -117,9 +117,7 @@ export const NavDropdown = ({
           <SVGDownArrow
             className={cx(
               isOpen ? 'fill-buttons-hover' : 'fill-buttons-default',
-              !isHoveringMenuItems &&
-                !isMobile &&
-                'group-hover:fill-buttons-hover'
+              !isHoveringMenuItems && 'group-hover:fill-buttons-hover'
             )}
           />
         </span>
@@ -128,10 +126,10 @@ export const NavDropdown = ({
       {isOpen && (
         <div
           className={cx(
-            'flex flex-col justify-start items-start gap-xs p-sm bg-interface-bg-container rounded-lg',
+            'flex flex-col ',
             isMobile
-              ? 'relative transition-all duration-300 ease-in-out overflow-hidden w-[175px] h-[208px] z-50'
-              : 'w-[299px] h-[472px] absolute top-[calc(100%+16px)] left-0 shadow-[0px_24px_24px_0px_rgba(0,0,0,0.08)] outline outline-1 outline-offset-[-1px] outline-interface-edge-container z-50'
+              ? 'relative overflow-hidden max-w-[175px] h-[208px] z-50'
+              : 'w-[299px] h-[472px] absolute top-[calc(100%+16px)] left-0 shadow-[0px_24px_24px_0px_rgba(0,0,0,0.08)] outline outline-1 outline-offset-[-1px] outline-interface-edge-container z-50 justify-start items-start gap-xs p-sm bg-interface-bg-container rounded-lg'
           )}
           onMouseEnter={handleDropdownContentMouseEnter}
           onMouseLeave={handleDropdownContentMouseLeave}
