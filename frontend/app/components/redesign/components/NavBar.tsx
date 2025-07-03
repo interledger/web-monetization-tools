@@ -59,6 +59,7 @@ export const NavBar = () => {
       <button
         className={cx(
           'md:hidden flex items-center justify-center px-xs py-sm group text-buttons-default hover:text-buttons-hover hover:bg-secondary-hover-surface z-50 w-12 h-12 rounded-lg gap-xs overflow-hidden',
+          'focus:outline-none focus-visible:outline-offset-1 focus-visible:outline-buttons-hover focus-visible:bg-secondary-hover-surface focus-visible:text-buttons-hover',
           isMobileMenuOpen && 'm-sm fixed top-0 right-0'
         )}
         onClick={toggleMobileMenu}
