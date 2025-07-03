@@ -14,13 +14,11 @@ type NavLinkProps = {
 
 const NavLink = ({ to, children, onClick }: NavLinkProps) => {
   return (
-    <li
-      className={'group inline-flex md:justify-center md:items-center gap-2.5'}
-    >
+    <li className={'group flex md:justify-center md:items-center'}>
       <RemixNavLink
         to={to}
         className={
-          'px-md py-sm rounded-lg hover:bg-secondary-hover-surface font-sans font-light text-sm leading-sm text-buttons-default group-hover:text-buttons-hover focus:outline-none focus-visible:outline-offset-1 focus-visible:outline-buttons-hover focus-visible:bg-secondary-hover-surface focus-visible:text-buttons-hover'
+          'w-full px-md py-sm font-sans font-light text-sm leading-sm rounded-lg hover:bg-secondary-hover-surface text-buttons-default group-hover:text-buttons-hover focus:outline-none focus-visible:outline-offset-1 focus-visible:outline-buttons-hover focus-visible:bg-secondary-hover-surface focus-visible:text-buttons-hover'
         }
         onClick={onClick}
       >
