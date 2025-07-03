@@ -22,7 +22,7 @@ const NavLink = ({ to, children, onClick }: NavLinkProps) => {
       <RemixNavLink
         to={to}
         className={
-          'px-md py-sm font-sans font-normal text-sm leading-sm text-buttons-default group-hover:text-buttons-hover'
+          'px-md py-sm font-sans font-light text-sm leading-sm text-buttons-default group-hover:text-buttons-hover'
         }
         onClick={onClick}
       >
