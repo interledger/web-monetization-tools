@@ -9,7 +9,6 @@ import supHeroSVG from '~/assets/images/supporters-hero.svg?url'
 // Navigation Dropdown Props
 type NavDropdownProps = {
   title: string
-  isMobile?: boolean
   onMenuItemClick?: () => void
 }
 
@@ -43,11 +42,7 @@ const ToolsMenuItem = ({ to, imgSrc, text, onClick }: ToolsMenuItemProps) => {
   )
 }
 
-export const NavDropdown = ({
-  title,
-  isMobile = false,
-  onMenuItemClick
-}: NavDropdownProps) => {
+export const NavDropdown = ({ title, onMenuItemClick }: NavDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [isHoveringMenuItems, setIsHoveringMenuItems] = useState(false)
 
@@ -67,7 +62,7 @@ export const NavDropdown = ({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [isMobile])
+  }, [])
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen)
@@ -126,10 +121,8 @@ export const NavDropdown = ({
       {isOpen && (
         <div
           className={cx(
-            'flex flex-col rounded-lg',
-            isMobile
-              ? 'relative overflow-hidden z-50'
-              : 'w-[299px] h-[472px] absolute top-[calc(100%+16px)] left-0 shadow-[0px_24px_24px_0px_rgba(0,0,0,0.08)] outline outline-1 outline-offset-[-1px] outline-interface-edge-container z-50 justify-start items-start gap-xs p-sm bg-interface-bg-container'
+            'flex flex-col gap-xs p-sm rounded-lg relative overflow-hidden z-50',
+            'md:w-[299px] md:h-[472px] md:absolute md:top-[calc(100%+16px)] md:left-0 md:shadow-[0px_24px_24px_0px_rgba(0,0,0,0.08)] md:outline md:outline-1 md:outline-offset-[-1px] md:outline-interface-edge-container md:justify-start md:items-start md:bg-interface-bg-container'
           )}
           onMouseEnter={handleDropdownContentMouseEnter}
           onMouseLeave={handleDropdownContentMouseLeave}
