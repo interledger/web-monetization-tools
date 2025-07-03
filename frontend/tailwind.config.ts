@@ -135,10 +135,10 @@ export default {
         'sm': '12px',
         'md': '16px',
         'lg': '24px',
-        'xl': '32px',
-        '2xl': '48px',
-        '3xl': '60px',
-        '4xl': '120px',
+        '2xl': '32px',
+        '3xl': '48px',
+        '4xl': '60px',
+        '5xl': '120px',
 
         // Custom old sizes
         '256': '72rem',
@@ -201,7 +201,8 @@ export default {
           {
             lineHeight: '56px',
             fontWeight: '700', // Bold
-            fontFamily: 'Inter, ui-sans-serif, system-ui'
+            fontFamily: 'Inter, ui-sans-serif, system-ui',
+            color: '#363636' // silver-950
           }
         ],
         'h2': [
@@ -209,7 +210,17 @@ export default {
           {
             lineHeight: '44px',
             fontWeight: '700', // Bold
-            fontFamily: 'Inter, ui-sans-serif, system-ui'
+            fontFamily: 'Inter, ui-sans-serif, system-ui',
+            color: '#363636' // silver-950
+          }
+        ],
+        'h2-semibold': [
+          '36px',
+          {
+            lineHeight: '44px',
+            fontWeight: '600', // Semi-bold
+            fontFamily: 'Inter, ui-sans-serif, system-ui',
+            color: '#363636' // silver-950
           }
         ],
         'h3': [
@@ -217,7 +228,8 @@ export default {
           {
             lineHeight: '38px',
             fontWeight: '500', // Medium
-            fontFamily: 'Inter, ui-sans-serif, system-ui'
+            fontFamily: 'Inter, ui-sans-serif, system-ui',
+            color: '#363636' // silver-950
           }
         ],
         'h4': [
@@ -225,7 +237,8 @@ export default {
           {
             lineHeight: '32px',
             fontWeight: '700', // Bold
-            fontFamily: 'Inter, ui-sans-serif, system-ui'
+            fontFamily: 'Inter, ui-sans-serif, system-ui',
+            color: '#363636' // silver-950
           }
         ],
         'h5': [
@@ -242,7 +255,8 @@ export default {
           {
             lineHeight: '26px',
             fontWeight: '700', // Bold
-            fontFamily: 'Inter, ui-sans-serif, system-ui'
+            fontFamily: 'Inter, ui-sans-serif, system-ui',
+            color: '#363636' // silver-950
           }
         ],
 

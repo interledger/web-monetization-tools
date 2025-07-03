@@ -1,4 +1,3 @@
-// Example Remix components using the design tokens
 import { TypographyExample } from '../components/redesign/TypographyExample'
 import { InputField } from '../components/redesign/components/InputField'
 import { ToolsPrimaryButton } from '../components/redesign/components/ToolsPrimaryButton'
@@ -8,7 +7,10 @@ import { ToolsWalletAddress } from '../components/redesign/components/ToolsWalle
 import { ToolsDropdown } from '../components/redesign/components/ToolsDropdown'
 import { ColorSelector } from '../components/redesign/components/ColorSelector'
 import { CornerRadiusSelector } from '../components/redesign/components/CornerRadiusSelector'
-import { StepsIndicator } from '../components/redesign/components/StepsIndicator'
+import {
+  MobileStepsIndicator,
+  StepsIndicator
+} from '../components/redesign/components/StepsIndicator'
 import { SectionHeader } from '~/components/redesign/components/SectionHeader'
 import { SVGColorPicker, SVGRoundedCorner } from '~/assets/svg'
 import { GhostButton } from '../components/redesign/components/GhostButton'
@@ -238,6 +240,11 @@ export function RedesignDemo() {
                   { number: 1, label: 'Success', status: 'filled' },
                   { number: 2, label: 'Error', status: 'error' }
                 ]}
+              />
+              <MobileStepsIndicator
+                number={1}
+                label="Connect"
+                status="unfilled"
               />
             </div>
           </div>

@@ -8,6 +8,7 @@ import { SVGRefresh, SVGSpinner } from '~/assets/svg'
 import { toolState, toolActions } from '~/stores/toolStore'
 import { APP_BASEPATH } from '~/lib/constants'
 import type { ElementErrors } from '~/lib/types'
+import { Heading5 } from '../Typography'
 
 export const ToolsWalletAddress = () => {
   const snap = useSnapshot(toolState)
@@ -67,76 +68,67 @@ export const ToolsWalletAddress = () => {
   return (
     <div
       className={cx(
-        'flex items-start gap-8 p-4 relative bg-white rounded-lg min-h-[165px]',
+        'flex flex-col xl:flex-row xl:items-start gap-2xl p-md bg-white rounded-lg min-h-[165px]',
         snap.walletConnectStep === 'error' && 'border border-red-600'
       )}
     >
-      <div className="flex flex-col items-start gap-4 relative flex-1 grow z-[1] bg-white rounded-2xl">
-        <div className="flex items-center relative self-stretch w-full flex-[0_0_auto] z-[1]">
-          <div className="inline-flex items-center gap-2 relative flex-[0_0_auto]">
-            <h5 className="text-style-h5 relative w-fit mt-[-1.00px]">
-              Wallet address
-            </h5>
-
-            <Tooltip>
-              Your wallet is required in order for us to save this components
-              configuration for you, link it to the original author, and verify
-              ownership for future updates. It also embeds the wallet address
-              into your web page automatically, enabling Web Monetization on
-              your behalf.
-            </Tooltip>
-          </div>
+      <div className="flex flex-col items-start gap-md w-full xl:flex-1 xl:grow">
+        <div className="inline-flex items-center gap-xs">
+          <Heading5>Wallet address</Heading5>
+          <Tooltip>
+            Your wallet is required in order for us to save this components
+            configuration for you, link it to the original author, and verify
+            ownership for future updates. It also embeds the wallet address into
+            your web page automatically, enabling Web Monetization on your
+            behalf.
+          </Tooltip>
         </div>
 
-        <div className="flex flex-col items-start gap-1 relative self-stretch w-full flex-[0_0_auto] z-0">
-          <div className="flex items-center gap-3 w-full">
-            <div className="w-[470px]">
-              <InputField
-                placeholder={
-                  snap.isWalletConnected
-                    ? undefined
-                    : 'walletprovider.com/MyWallet'
-                }
-                value={snap.walletAddress || ''}
-                onChange={handleWalletAddressChange}
-                disabled={snap.isWalletConnected}
-                error={error?.fieldErrors.walletAddress}
-              />
-            </div>
-            {snap.isWalletConnected && (
-              <button onClick={handleRefresh}>
-                <SVGRefresh className="w-5 h-5" />
-              </button>
-            )}
+        <div className="flex items-center w-full">
+          <div className="w-full">
+            <InputField
+              placeholder={
+                snap.isWalletConnected
+                  ? undefined
+                  : 'walletprovider.com/MyWallet'
+              }
+              value={snap.walletAddress || ''}
+              onChange={handleWalletAddressChange}
+              disabled={snap.isWalletConnected}
+              error={error?.fieldErrors.walletAddress}
+            />
           </div>
+          {snap.isWalletConnected && (
+            <button onClick={handleRefresh}>
+              <SVGRefresh className="w-5 h-5" />
+            </button>
+          )}
         </div>
       </div>
 
-      <div className="flex flex-col max-w-[490px] items-start gap-5 relative flex-1 grow z-0">
-        <div id="wallet-address-info" className="relative self-stretch w-full">
-          {snap.walletConnectStep === 'error' ? (
-            <p className="w-full text-style-small-standard !text-red-600">
-              You have not connected your wallet address yet.
-            </p>
-          ) : !snap.isWalletConnected ? (
-            <p className="w-full text-style-small-standard">
-              If you&apos;re connecting your wallet address to Web Monetization
-              for the first time, you&apos;ll start with the default
-              configuration.
-              <br />
-              You can then customize and save your config as needed.
-            </p>
-          ) : (
-            <p className="w-full text-style-small-standard !text-text-success">
-              We&apos;ve loaded your configuration.
-              <br />
-              Feel free to keep customizing your banner to fit your style.
-            </p>
-          )}
-        </div>
+      <div className="flex flex-col w-full xl:max-w-[490px] items-start gap-xs xl:flex-1 xl:grow">
+        {snap.walletConnectStep === 'error' ? (
+          <p className="w-full text-style-small-standard !text-red-600">
+            You have not connected your wallet address yet.
+          </p>
+        ) : !snap.isWalletConnected ? (
+          <p className="w-full text-style-small-standard">
+            If you&apos;re connecting your wallet address to Web Monetization
+            for the first time, you&apos;ll start with the default
+            configuration.
+            <br />
+            You can then customize and save your config as needed.
+          </p>
+        ) : (
+          <p className="w-full text-style-small-standard !text-text-success">
+            We&apos;ve loaded your configuration.
+            <br />
+            Feel free to keep customizing your banner to fit your style.
+          </p>
+        )}
         {!snap.isWalletConnected && (
           <ToolsSecondaryButton
-            className="w-[143px]"
+            className="w-[94px] xl:w-[143px]"
             disabled={isLoading}
             onClick={handleContinue}
           >

@@ -68,7 +68,7 @@ export const BuilderForm: React.FC<BuilderFormProps> = ({
     }
   }
   return (
-    <div className="flex flex-col w-[628px]">
+    <div className="flex flex-col">
       {/* Tab Selector */}
       <TabSelector
         options={snap.versionOptions.map((option) => ({

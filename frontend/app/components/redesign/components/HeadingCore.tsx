@@ -4,37 +4,39 @@ import { SVGArrowLeft } from '../../../assets/svg'
 import { Heading1 } from '../Typography'
 
 interface HeadingCoreProps {
+  children: React.ReactNode
   title: string
   onBackClick?: () => void
   className?: string
 }
 
 export const HeadingCore: React.FC<HeadingCoreProps> = ({
+  children,
   title,
   onBackClick,
   className = ''
 }) => {
   return (
-    <div className={`relative w-full ${className}`}>
-      <div className="flex flex-row relative items-center justify-between py-0 w-full">
-        <div id="back-button" className="relative rounded-sm">
-          <GhostButton onClick={onBackClick}>
-            <SVGArrowLeft />
-            All tools
-          </GhostButton>
-        </div>
-        <div className="flex flex-col gap-sm items-center justify-start shrink-0">
-          <Heading1>{title}</Heading1>
+    <div className={`w-full ${className}`}>
+      <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between xl:py-0 w-full mb-3xl gap-md xl:gap-0">
+        <GhostButton onClick={onBackClick} className="xl:order-1">
+          <SVGArrowLeft />
+          All tools
+        </GhostButton>
+
+        <div className="xl:order-2">
+          <Heading1 className="hidden xl:block">{title}</Heading1>
+          <h2 className="block xl:hidden text-style-h2-semibold text-center">
+            {title}
+          </h2>
         </div>
 
-        <div className="opacity-0 relative rounded-sm shrink-0">
-          <div className="flex flex-row items-center gap-xs px-xs py-sm">
-            <div className="w-5 h-5" />
-            <span className="font-normal text-base leading-md text-nowrap">
-              All tools
-            </span>
-          </div>
-        </div>
+        {/* Empty spacer to maintain center alignment on desktop */}
+        <div className="hidden xl:block shrink-0 w-[100px] xl:order-3" />
+      </div>
+
+      <div className="text-center max-w-[1280px] mx-auto mb-3xl">
+        <p className="text-base leading-md text-text-primary">{children}</p>
       </div>
     </div>
   )
