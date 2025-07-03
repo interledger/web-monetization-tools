@@ -87,18 +87,18 @@ export const NavDropdown = ({ title, onMenuItemClick }: NavDropdownProps) => {
     <li
       ref={dropdownRef}
       className={cx(
-        'group gap-md rounded-lg inline-flex flex-col justify-center items-start relative',
-        !isHoveringMenuItems && 'hover:bg-secondary-hover-surface'
+        'group gap-md inline-flex flex-col justify-center items-start relative'
       )}
     >
       <button
         type="button"
         onClick={toggleDropdown}
         className={cx(
-          'flex items-center gap-xs px-md py-sm font-sans font-light text-sm leading-sm w-full justify-between',
+          'flex items-center gap-xs px-md py-sm font-sans font-light text-sm leading-sm w-full justify-between rounded-lg',
           'md:w-auto md:justify-normal',
           isOpen ? 'text-buttons-hover' : 'text-buttons-default',
-          !isHoveringMenuItems && 'group-hover:text-buttons-hover'
+          !isHoveringMenuItems &&
+            'group-hover:text-buttons-hover group-hover:bg-secondary-hover-surface'
         )}
         aria-label="Toggle Dropdown"
       >
