@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { NavLink as RemixNavLink } from '@remix-run/react'
 import { NavDropdown } from './index.js'
 import { SVGHamburgerIcon, SVGCloseIcon } from '~/assets/svg'
+import { cx } from 'class-variance-authority'
 import wmLogo from '~/assets/images/wm_logo.svg?url'
 
 // Navigation Link Props
@@ -45,8 +46,10 @@ export const NavBar = () => {
   return (
     <nav
       role="navigation"
-      className="relative flex items-center justify-between bg-white shadow-[0px_12px_20px_0px_rgba(0,0,0,0.06)] rounded-lg mx-4 mt-4 h-14 py-1 px-4 pr-2 
-      md:max-w-7xl md:mx-auto md:px-xl md:py-xs md:mt-0 md:rounded-none md:shadow-none md:bg-transparent md:h-auto md:w-full"
+      className={cx(
+        'relative flex items-center justify-between bg-white shadow-[0px_12px_20px_0px_rgba(0,0,0,0.06)] rounded-lg mx-4 mt-4 h-14 py-1 px-4 pr-2',
+        'md:max-w-7xl md:mx-auto md:px-xl md:py-xs md:mt-0 md:rounded-none md:shadow-none md:bg-transparent md:h-auto md:w-full'
+      )}
     >
       {/* Web Monetization Logo */}
       <RemixNavLink to="/">
@@ -58,7 +61,10 @@ export const NavBar = () => {
       </RemixNavLink>
       {/* Hamburger Menu Button */}
       <button
-        className="md:hidden flex items-center justify-center px-xs py-sm group hover:bg-secondary-hover-surface z-50 w-12 h-12 rounded-lg gap-xs overflow-hidden"
+        className={cx(
+          'md:hidden flex items-center justify-center px-xs py-sm group text-buttons-default hover:text-buttons-hover hover:bg-secondary-hover-surface z-50 w-12 h-12 rounded-lg gap-xs overflow-hidden',
+          isMobileMenuOpen && 'm-sm'
+        )}
         onClick={toggleMobileMenu}
         aria-label="Toggle Menu"
       >
