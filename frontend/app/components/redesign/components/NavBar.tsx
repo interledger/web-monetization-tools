@@ -20,7 +20,7 @@ const NavLink = ({ to, children, onClick }: NavLinkProps) => {
       <RemixNavLink
         to={to}
         className={
-          'px-md py-sm rounded-lg hover:bg-secondary-hover-surface font-sans font-light text-sm leading-sm text-buttons-default group-hover:text-buttons-hover'
+          'px-md py-sm rounded-lg hover:bg-secondary-hover-surface font-sans font-light text-sm leading-sm text-buttons-default group-hover:text-buttons-hover focus:outline-none focus-visible:outline-offset-1 focus-visible:outline-buttons-hover focus-visible:bg-secondary-hover-surface focus-visible:text-buttons-hover'
         }
         onClick={onClick}
       >
@@ -50,11 +50,11 @@ export const NavBar = () => {
       )}
     >
       {/* Web Monetization Logo */}
-      <RemixNavLink to="/">
+      <RemixNavLink to="/" className="focus-visible:outline-buttons-hover">
         <img
           src={wmLogo}
           alt="Web Monetization Logo"
-          className="w-8 h-8 md:w-11 md:h-11 z-50"
+          className="w-8 h-8 md:w-11 md:h-11 z-50 focus:outline-none"
         />
       </RemixNavLink>
       {/* Hamburger Menu Button */}

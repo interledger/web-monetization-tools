@@ -6,12 +6,6 @@ import devHeroSVG from '~/assets/images/dev-hero.svg?url'
 import pubHeroSVG from '~/assets/images/publishers-hero.svg?url'
 import supHeroSVG from '~/assets/images/supporters-hero.svg?url'
 
-// Navigation Dropdown Props
-type NavDropdownProps = {
-  title: string
-  onMenuItemClick?: () => void
-}
-
 // Tools Menu Item Props
 type ToolsMenuItemProps = {
   to: string
@@ -40,6 +34,12 @@ const ToolsMenuItem = ({ to, imgSrc, text, onClick }: ToolsMenuItemProps) => {
       </RemixNavLink>
     </li>
   )
+}
+
+// Navigation Dropdown Props
+type NavDropdownProps = {
+  title: string
+  onMenuItemClick?: () => void
 }
 
 export const NavDropdown = ({ title, onMenuItemClick }: NavDropdownProps) => {
@@ -94,7 +94,7 @@ export const NavDropdown = ({ title, onMenuItemClick }: NavDropdownProps) => {
         type="button"
         onClick={toggleDropdown}
         className={cx(
-          'flex items-center gap-xs px-md py-sm font-sans font-light text-sm leading-sm w-full justify-between rounded-lg',
+          'flex items-center gap-xs px-md py-sm font-sans font-light text-sm leading-sm w-full justify-between rounded-lg focus:outline-none focus-visible:outline-offset-1 focus-visible:outline-buttons-hover focus-visible:bg-secondary-hover-surface focus-visible:text-buttons-hover',
           'md:w-auto md:justify-normal',
           isOpen ? 'text-buttons-hover' : 'text-buttons-default',
           !isHoveringMenuItems &&
