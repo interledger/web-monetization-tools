@@ -63,7 +63,7 @@ export const NavBar = () => {
       <button
         className={cx(
           'md:hidden flex items-center justify-center px-xs py-sm group text-buttons-default hover:text-buttons-hover hover:bg-secondary-hover-surface z-50 w-12 h-12 rounded-lg gap-xs overflow-hidden',
-          isMobileMenuOpen && 'm-sm'
+          isMobileMenuOpen && 'm-sm fixed top-0 right-0'
         )}
         onClick={toggleMobileMenu}
         aria-label="Toggle Menu"
