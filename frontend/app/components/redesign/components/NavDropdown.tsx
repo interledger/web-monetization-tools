@@ -19,7 +19,7 @@ const ToolsMenuItem = ({ to, imgSrc, text, onClick }: ToolsMenuItemProps) => {
     <li>
       <RemixNavLink
         to={to}
-        className="w-full p-sm rounded-lg flex justify-start items-center gap-xs hover:bg-secondary-hover-surface"
+        className="w-full p-sm rounded-lg flex justify-start items-center gap-xs hover:bg-secondary-hover-surface focus:outline-none focus-visible:outline-offset-1 focus-visible:outline-buttons-hover focus-visible:bg-secondary-hover-surface focus-visible:text-buttons-hover"
         onClick={onClick}
       >
         <img
