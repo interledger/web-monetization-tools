@@ -113,7 +113,6 @@ export default {
         'text-disabled': palettes['silver-300'], // #C9C9C9
         'text-error': palettes['red-600'], // #E51D25
         'text-success': palettes['green-600'], // #27797A
-        'text-helper': palettes['silver-800'], // #676767
 
         'field-border': palettes['silver-300'], // #C9C9C9
         'field-border-hover': palettes['silver-400'], // #ADADAD
@@ -129,8 +128,8 @@ export default {
         'landing-button-border-hover': palettes['black'], // #000000
         'landing-pill-border': palettes['blue-300'], // #A3BEDC
 
-        'buttons-default': palettes['purple-300'], // #8075B3
-        'buttons-hover': palettes['purple-600'], // #5B5380
+        'nav-link-default': palettes['purple-300'], // #8075B3
+        'nav-link-hover': palettes['purple-600'], // #5B5380
 
         // Custom old WM colors
         'wm-green': '#5BC8BB',

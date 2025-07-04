@@ -355,7 +355,7 @@ export const SVGHamburgerIcon = ({
   className?: string
 }) => (
   <svg
-    className="w-5 h-5"
+    className={`w-5 h-5 ${className}`}
     viewBox="0 0 24 24"
     fill="currentColor"
     xmlns="http://www.w3.org/2000/svg"
@@ -366,7 +366,7 @@ export const SVGHamburgerIcon = ({
 
 export const SVGCloseIcon = ({ className = '' }: { className?: string }) => (
   <svg
-    className="w-5 h-5"
+    className={`w-5 h-5 ${className}`}
     viewBox="0 0 24 24"
     fill="currentColor"
     xmlns="http://www.w3.org/2000/svg"

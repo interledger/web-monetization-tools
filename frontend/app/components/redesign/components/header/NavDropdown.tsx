@@ -16,7 +16,7 @@ const ToolsMenuItem = ({ to, imgSrc, text }: ToolsMenuItemProps) => {
     <li>
       <a
         href={to}
-        className="flex w-full items-center gap-xs rounded-lg p-sm transition-colors duration-200 ease-in hover:bg-secondary-hover-surface focus:outline-none focus-visible:bg-secondary-hover-surface focus-visible:text-buttons-hover focus-visible:outline-buttons-hover focus-visible:outline-offset-1"
+        className="flex w-full items-center gap-xs rounded-lg p-sm transition-colors duration-200 ease-in hover:bg-secondary-hover-surface focus:outline-none focus-visible:bg-secondary-hover-surface focus-visible:text-nav-link-hover focus-visible:outline-nav-link-hover focus-visible:outline-offset-1"
       >
         <img
           className="size-10 md:size-5xl"
@@ -72,8 +72,8 @@ export const NavDropdown = ({
         type="button"
         onClick={toggleDropdown}
         className={cx(
-          'flex w-full items-center justify-between gap-xs rounded-lg px-md py-sm font-sans text-sm font-normal leading-sm transition-colors hover:bg-secondary-hover-surface hover:text-buttons-hover focus:outline-none focus-visible:bg-secondary-hover-surface focus-visible:text-buttons-hover focus-visible:outline-buttons-hover focus-visible:outline-offset-1 md:w-auto md:justify-normal',
-          isOpen ? 'text-buttons-hover' : 'text-buttons-default'
+          'flex w-full items-center justify-between gap-xs rounded-lg px-md py-sm font-sans text-sm font-normal leading-sm transition-colors hover:bg-secondary-hover-surface hover:text-nav-link-hover focus:outline-none focus-visible:bg-secondary-hover-surface focus-visible:text-nav-link-hover focus-visible:outline-nav-link-hover focus-visible:outline-offset-1 md:w-auto md:justify-normal',
+          isOpen ? 'text-nav-link-hover' : 'text-nav-link-default'
         )}
         aria-label="Toggle Dropdown"
         aria-expanded={isOpen}
@@ -88,7 +88,7 @@ export const NavDropdown = ({
         >
           <SVGDownArrow
             className={cx(
-              isOpen ? 'fill-buttons-hover' : 'fill-buttons-default'
+              isOpen ? 'fill-nav-link-hover' : 'fill-nav-link-default'
             )}
           />
         </span>
