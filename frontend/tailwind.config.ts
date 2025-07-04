@@ -113,7 +113,7 @@ export default {
         'text-disabled': palettes['silver-300'], // #C9C9C9
         'text-error': palettes['red-600'], // #E51D25
         'text-success': palettes['green-600'], // #27797A
-        'text-helper':palettes['silver-800'], // #676767
+        'text-helper': palettes['silver-800'], // #676767
 
         'field-border': palettes['silver-300'], // #C9C9C9
         'field-border-hover': palettes['silver-400'], // #ADADAD
@@ -201,7 +201,23 @@ export default {
       },
 
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui']
+        sans: [
+          'Inter',
+          'ui-sans-serif',
+          'system-ui',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'Segoe UI',
+          'Roboto',
+          'Helvetica Neue',
+          'Arial',
+          'Noto Sans',
+          'sans-serif',
+          'Apple Color Emoji',
+          'Segoe UI Emoji',
+          'Segoe UI Symbol',
+          'Noto Color Emoji'
+        ]
       },
 
       borderRadius: {
