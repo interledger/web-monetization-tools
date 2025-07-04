@@ -13,11 +13,11 @@ export const GhostButton: React.FC<GhostButtonProps> = ({
 }) => {
   return (
     <button
-      className={`flex flex-row items-center
+      tabIndex={0}
+      className={`flex flex-row items-center justify-center
         rounded-sm
         font-normal
         transition-all duration-200
-        focus:outline-none focus:ring-2 focus:ring-primary-focus
         
         text-secondary-edge
         bg-transparent

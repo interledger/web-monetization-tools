@@ -128,6 +128,9 @@ export default {
         'landing-button-border-hover': palettes['black'], // #000000
         'landing-pill-border': palettes['blue-300'], // #A3BEDC
 
+        'nav-link-default': palettes['purple-300'], // #8075B3
+        'nav-link-hover': palettes['purple-600'], // #5B5380
+
         // Custom old WM colors
         'wm-green': '#5BC8BB',
         'wm-green-fade': '#BFEEE8',
@@ -197,7 +200,23 @@ export default {
       },
 
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui']
+        sans: [
+          'Inter',
+          'ui-sans-serif',
+          'system-ui',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'Segoe UI',
+          'Roboto',
+          'Helvetica Neue',
+          'Arial',
+          'Noto Sans',
+          'sans-serif',
+          'Apple Color Emoji',
+          'Segoe UI Emoji',
+          'Segoe UI Symbol',
+          'Noto Color Emoji'
+        ]
       },
 
       borderRadius: {
